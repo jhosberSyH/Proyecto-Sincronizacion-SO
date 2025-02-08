@@ -1,13 +1,13 @@
 TARGET = RUN
-LIBS = -lm
+LIBS = -lm -pthread
 CC = gcc
-CFLAGS = -std=c98
+CFLAGS = -std=c99 -pthread
 
 .PHONY:	default all clean
 
 default:	$(TARGET)
 all:	default
-OBJECTS = $(patsubst %.cpp, %.o, $(wildcard *.cpp))
+OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
 HEADERS = $(wildcard *.h)
 
 %.o:	%.c $(HEADERS)
