@@ -1,6 +1,6 @@
 #ifndef Nodos_h
 #define Nodos_h
-#include "Clases.h"
+#include "Equipaje.h"
 	typedef Equipaje Elemento;
 
 	typedef struct apuntador{

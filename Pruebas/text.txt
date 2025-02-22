@@ -118749,7 +118749,7 @@ Facturado Brussels Bélgica 22
 Facturado Milan Italia 21
 Sobredimensionado Caracas Venezuela 31
 Facturado Bogota Colombia 22
-Facturado Quito Ecuador 21
+Especial Quito Ecuador 21
 Facturado Rio_de_Janeiro Brasil 24
 Especial San_Francisco EE.UU. 18
 Facturado Toronto Canadá 24
@@ -120733,4 +120733,4 @@ Facturado Buenos_Aires Argentina 25
 Especial Hong_Kong China 17
 Facturado Chicago EE.UU. 22
 Facturado Beijing China 24
-Facturado Amsterdam Países_Bajos 21
+Especial Amsterdam Países_Bajos 21

@@ -1,85 +1,92 @@
-#include <pthread.h>
-#include <unistd.h>
-#include "Cola.h"
+#include "Semaforo.h"
+#include "Almacen.h"
+#include "Interfaz.h"
 
 
 #define MAX_MOSTRADORES 5000
 #define MAX_CINTAS 500
+#define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
 
 void *mostrador(void *args);
+void *cinta(void *args);
 void leer_entradas(const char *filename);
 
-sem_t semMostrador;
-Cola pasajeros,cinta[MAX_CINTAS];
-int band = 1,nroEquipaje = 0,cantidad = 0;
+sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen;
+Cola pasajeros,cintas[MAX_CINTAS];
+Almacen almacenes[MAX_ALMACEN];
+int banderaFinMostrador = 1,nroEquipaje = 0;
 
 
 int main() {
-    int i,j = 0,k = 0,contador = 0;
+    int i,w = 0,p = 0,t,cintasUso = 0,equipajeAtorado = 0,requisito;
     Cola res;
-    pthread_t mostradores[MAX_MOSTRADORES];
+    pthread_t mostradores[MAX_MOSTRADORES],cintaHilo[MAX_CINTAS];
     
     printf("\n\t\tBienvenido\n");
+    //requisito = usuario();
     sem_init(&semMostrador,1);
+    sem_init(&mutexMostrador,1);
+    sem_init(&semCinta,1);
+    sem_init(&mutexAlmacen,1);
 
     crear(&pasajeros);
+    constructorAlmacen(almacenes);
     leer_entradas("../Pruebas/text.txt");
     printf("\t===1 leido===\n");
 
-    for (i = 0; i < MAX_MOSTRADORES; i++){
-        pthread_create(&mostradores[i],NULL,mostrador,&i);
+    for (i = 0; i < MAX_MOSTRADORES; i++) {
+        int *arg = malloc(sizeof(*arg));  
+        *arg = i; 
+        pthread_create(&mostradores[i], NULL, mostrador, arg);
     }
-
-    for (i = 0; i < MAX_MOSTRADORES; i++){
-        pthread_join(mostradores[i],NULL);
+    for (t = 0; t < MAX_CINTAS; t++){
+        int *arg = malloc(sizeof(*arg));  
+        *arg = t; 
+        pthread_create(&cintaHilo[t],NULL,cinta,arg);
+        
+    }
+    for (p = 0; p < MAX_MOSTRADORES; p++){
+        pthread_join(mostradores[p],NULL);
+    }
+    for (w = 0; w < MAX_CINTAS; w++){
+        pthread_join(cintaHilo[w],NULL);
     }
 
     sem_destroy(&semMostrador);
+    sem_destroy(&mutexMostrador);
+    sem_destroy(&semCinta);
+    sem_destroy(&mutexAlmacen);
     printf("\t===2 numeros de equipajes y distribucion en cintas===\n");
-
+    printf("\t===3 Almacenados===\n");
     //verificaciones 
-    for ( i = 0; i < MAX_CINTAS; i++){
-        res =  cinta[i];
-        j += 10;
-        printf("mostrador %d-%d pasaron : %d equipajes\n",k+1,j,res.log);
-        k += 10;
-        if(res.log == 0){
-            contador+=+1;
-        }
-    }
-
-    printf("===hay esta cantidad de cintas sin utilizarse===%d\n",contador);
-    printf("===cantidad===%d\n",cantidad);
-
-    if(cantidad > MAX_EQUIPAJES){ 
-            printf("===se esta leyendo mas elementos de los deseados en la zona critica===\n");
-    }
+    //respuestasFinal(requisito,almacenes,cintas);
 
     return 0;
 }
 
 
 void *mostrador(void *args){
-    int id = *((int *)args),i,indice = 0;
+    int id = *((int *)args),indice = 0;
     while(1){ 
         sem_wait(&semMostrador);
-        if(band){
+        if(banderaFinMostrador){
             Cola equipaje;
+
+            sem_wait(&mutexMostrador);
+
             nroEquipaje++;
-            pasajeros.primero->info.id = nroEquipaje;
-
+            pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
             indice = id/10; //distribucion de cintas
-            equipaje = cinta[indice];
-
+            equipaje = cintas[indice];
             encolar(&equipaje,primero(pasajeros));
-            cinta[indice] = equipaje;
+            cintas[indice] = equipaje;
             desencolar(&pasajeros);
 
-            cantidad++;
+            sem_post(&mutexMostrador);
         }
         if (esVacio(pasajeros)){
-            band = 0;
+            banderaFinMostrador = 0;
             sem_post(&semMostrador);
             pthread_exit(NULL);
         }else{
@@ -88,7 +95,50 @@ void *mostrador(void *args){
     }
 }
 
+void *cinta(void *args){
+    int idx = *((int *)args);
+    Cola equipaje,vacia;
+    int indice = 0,almacenado = 0;
+    crear(&vacia);
+    while (1){
+        sem_wait(&semCinta);
+        sem_wait(&mutexMostrador);
 
+        equipaje = cintas[idx];
+        cintas[idx] = vacia;
+
+        sem_post(&mutexMostrador);
+
+        while (esVacio(equipaje) != 1){
+            while ((indice < MAX_ALMACEN) && (!almacenado)){
+                if(compararPais(equipaje.primero->info.pais,&almacenes[indice])){
+                    almacenado = 1;
+                    sem_wait(&mutexAlmacen);
+
+                    equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
+                    almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
+
+                    sem_post(&mutexAlmacen);
+                }
+                indice++;
+            }
+            indice = 0;
+            almacenado = 0;
+            desencolar(&equipaje);
+        }
+
+        sem_post(&semCinta);
+        sem_wait(&mutexMostrador);
+
+        equipaje = cintas[idx];
+        if((!banderaFinMostrador) && (esVacio(equipaje) == 1)){
+            sem_post(&mutexMostrador);
+            pthread_exit(NULL);
+        }
+
+        sem_post(&mutexMostrador);
+    }
+}
 void leer_entradas(const char *filename) {
     Equipaje equipaje;
     FILE *file = fopen(filename, "r");
