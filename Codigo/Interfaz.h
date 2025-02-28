@@ -15,7 +15,10 @@
 int usuario();
 int menu();
 int validarNumero(char num[]);
-void respuestasFinal(int requisito,Almacen almacenes[],Cola cintas[]);
+void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]);
+void incrementar(int id,int valores[]);
+void inicializarInt(int n,int valores[]);
+void mostrarInformacion(int identificador,int valores[],int n);
 
 int usuario(){
     int requisitos = 0,indice;
@@ -26,13 +29,15 @@ int usuario(){
 int menu(){
     int numero = -1;
     char val[20];
+    system("clear");
+    printf("\n\t\t\tBienvenido\n\n\n");
     printf("\t+------------------ MENU ------------------+\n");
     printf("\t|                                          |\n");
-    printf("\t| [1] Informacion Almacenes                |\n");
+    printf("\t| [1] Informacion Mostrador                |\n");
     printf("\t| [2] Informacion Cintas                   |\n");
-    printf("\t| [3]                                      |\n");
-    printf("\t| [4]                                      |\n");
-    printf("\t| [5] Mostrar Todo                         |\n");
+    printf("\t| [3] Informacion Almacen                  |\n");
+    printf("\t| [4] Mostrar Todo                         |\n");
+    printf("\t| [5] Informacion Especifica               |\n");
     printf("\t|                                          |\n");
     printf("\t+------------------------------------------+\n");
     printf("Opcion: ");
@@ -43,7 +48,7 @@ int menu(){
     
     numero = atoi(val);
     system("clear");
-    
+    printf("\t\tCargando....\n");
     return (numero);
 }
 
@@ -60,62 +65,70 @@ int validarNumero(char num[]){
 }
 
 
-void respuestasFinal(int requisito,Almacen almacenes[],Cola cintas[]){
-    int cantidad = 0,i,k = 0,j = 0,equipajeAtorado = 0,cintasUso = 0;
-    Cola res;
+void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]){
+    system("clear");
     switch (requisito){
     case 1:
-        for ( i = 0; i < MAX_ALMACEN; i++){
-            Cola res =  almacenes[i].equipajes;
-            printf("El almacen %d tiene %d Equipajes del pais %s\n",almacenes[i].id + 1,res.log,almacenes[i].pais);
-            cantidad += res.log;
-        }
-        printf("===Almacenados===%d\n",cantidad);
-        printf("===Equipajes Perdidos===%d\n",MAX_EQUIPAJES-cantidad);
+        mostrarInformacion(1,mostradores,MAX_MOSTRADORES);
         break;
 
     case 2:
-        for ( i = 0; i < MAX_CINTAS; i++){
-            res =  cintas[i];
-            j += 10;
-            printf("mostrador %d-%d pasaron : %d equipajes\n",k+1,j,res.log);
-            k += 10;
-            equipajeAtorado += res.log;
-            if(res.log == 0){
-                cintasUso+=1;
-            }
-        }
-        printf("===Se usaron esta cantidad de cintas===%d\n",cintasUso);
-        printf("===Se atoraron en la cinta esta cantidad de Equipajes ===%d\n",equipajeAtorado);
+        mostrarInformacion(2,cintas,MAX_CINTAS);
         break;
-
-    case 5:
-        printf("\t\tAlmacenes:\n\n");
-        for ( i = 0; i < MAX_ALMACEN; i++){
-            Cola res =  almacenes[i].equipajes;
-            printf("El almacen %d tiene %d Equipajes del pais %s\n",almacenes[i].id + 1,res.log,almacenes[i].pais);
-            cantidad += res.log;
-        }
-        printf("\t\tCintas:\n\n");
-        for ( i = 0; i < MAX_CINTAS; i++){
-            res =  cintas[i];
-            j += 10;
-            printf("mostrador %d-%d pasaron : %d equipajes\n",k+1,j,res.log);
-            k += 10;
-            equipajeAtorado += res.log;
-            if(res.log == 0){
-                cintasUso+=1;
-            }
-        }
-        printf("===Almacenados===%d\n",cantidad);
-        printf("===Equipajes Perdidos===%d\n",MAX_EQUIPAJES-cantidad);
-        printf("===Se usaron esta cantidad de cintas===%d\n",cintasUso);
-        printf("===Se atoraron en la cinta esta cantidad de Equipajes ===%d\n",equipajeAtorado);
-
+    
+    case 3:
+        mostrarInformacion(3,almacenes,MAX_ALMACEN);
+            break;
+    case 4:
+        mostrarInformacion(1,mostradores,MAX_MOSTRADORES);
+        mostrarInformacion(2,cintas,MAX_CINTAS);
+        mostrarInformacion(3,almacenes,MAX_ALMACEN);
         break;
-
     default:
         break;
     }
+}
+
+//funciones necesarias 
+void incrementar(int id,int valores[]){
+    int aux = 0;
+    aux = valores[id];
+    aux += 1;
+    valores[id] = aux;
+}
+
+void inicializarInt(int n,int valores[]){
+    int i;
+    for (i = 0; i < n; i++){
+        valores[i] = 0;
+    }
+    
+}
+void mostrarInformacion(int identificador,int valores[],int n){
+    int cantidad = 0,total = 0,sinUso = 0,i;
+    char nombrePlural[13],nombre[11];
+    if(identificador == 1){
+        strcpy(nombrePlural,"Mostradores");
+        strcpy(nombre,"Mostrador");
+    }else if(identificador == 2){
+        strcpy(nombrePlural,"Cintas");
+        strcpy(nombre,"Cinta");
+    }else{
+        strcpy(nombrePlural,"Almacenes");
+        strcpy(nombre,"Almacen");
+    }
+    printf("\t+----------------------------------------------------------------+\n");
+    for ( i = 0; i < n; i++){
+        cantidad =  valores[i];
+        printf("\t|En el %s %d pasaron %d equipajes\n",nombre,i+1,cantidad);
+        total += cantidad;
+        if(cantidad == 0){
+            sinUso += 1;
+        }
+    }
+    printf("\t+----------------------------------------------------------------+\n");
+    printf("\t|Se usaron esta cantidad de %s = %d                   |\n",nombrePlural,n-sinUso);
+    printf("\t|Pasaron un total de %d equipajes por los %d %s   |\n",total,n,nombrePlural);
+    printf("\t+----------------------------------------------------------------+\n");
 }
 #endif

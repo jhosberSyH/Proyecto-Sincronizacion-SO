@@ -12,24 +12,27 @@ void *mostrador(void *args);
 void *cinta(void *args);
 void leer_entradas(const char *filename);
 
-sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen;
+sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz;
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN];
 int banderaFinMostrador = 1,nroEquipaje = 0;
+int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN];
 
 
 int main() {
-    int i,w = 0,p = 0,t,cintasUso = 0,equipajeAtorado = 0,requisito;
-    Cola res;
+    int i,w = 0,p = 0,t,requisito;
     pthread_t mostradores[MAX_MOSTRADORES],cintaHilo[MAX_CINTAS];
     
-    printf("\n\t\tBienvenido\n");
-    //requisito = usuario();
-    sem_init(&semMostrador,1);
-    sem_init(&mutexMostrador,1);
-    sem_init(&semCinta,1);
+    requisito = usuario();
     sem_init(&mutexAlmacen,1);
+    sem_init(&mutexMostrador,1);
+    sem_init(&mutexCintaInterfaz,1);
+    sem_init(&semCinta,1);
+    sem_init(&semMostrador,1);
 
+    inicializarInt(MAX_CINTAS,cintaInterfaz);
+    inicializarInt(MAX_MOSTRADORES,mostradorInterfaz);
+    inicializarInt(MAX_ALMACEN,almacenInterfaz);
     crear(&pasajeros);
     constructorAlmacen(almacenes);
     leer_entradas("../Pruebas/text.txt");
@@ -53,14 +56,15 @@ int main() {
         pthread_join(cintaHilo[w],NULL);
     }
 
-    sem_destroy(&semMostrador);
-    sem_destroy(&mutexMostrador);
-    sem_destroy(&semCinta);
     sem_destroy(&mutexAlmacen);
+    sem_destroy(&mutexMostrador);
+    sem_destroy(&mutexCintaInterfaz);
+    sem_destroy(&semCinta);
+    sem_destroy(&semMostrador);
     printf("\t===2 numeros de equipajes y distribucion en cintas===\n");
     printf("\t===3 Almacenados===\n");
     //verificaciones 
-    //respuestasFinal(requisito,almacenes,cintas);
+    respuestasFinal(requisito,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
 
     return 0;
 }
@@ -74,7 +78,7 @@ void *mostrador(void *args){
             Cola equipaje;
 
             sem_wait(&mutexMostrador);
-
+            incrementar(id,mostradorInterfaz);
             nroEquipaje++;
             pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
             indice = id/10; //distribucion de cintas
@@ -96,20 +100,25 @@ void *mostrador(void *args){
 }
 
 void *cinta(void *args){
-    int idx = *((int *)args);
+    int id = *((int *)args);
     Cola equipaje,vacia;
-    int indice = 0,almacenado = 0;
+    int indice = 0,almacenado = 0,aux = 0;
     crear(&vacia);
     while (1){
         sem_wait(&semCinta);
         sem_wait(&mutexMostrador);
 
-        equipaje = cintas[idx];
-        cintas[idx] = vacia;
+        equipaje = cintas[id];
+        cintas[id] = vacia;
 
         sem_post(&mutexMostrador);
 
         while (esVacio(equipaje) != 1){
+
+            sem_wait(&mutexCintaInterfaz);
+            incrementar(id,cintaInterfaz);
+            sem_post(&mutexCintaInterfaz);
+
             while ((indice < MAX_ALMACEN) && (!almacenado)){
                 if(compararPais(equipaje.primero->info.pais,&almacenes[indice])){
                     almacenado = 1;
@@ -117,7 +126,7 @@ void *cinta(void *args){
 
                     equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
                     almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
-
+                    incrementar(indice,almacenInterfaz);
                     sem_post(&mutexAlmacen);
                 }
                 indice++;
@@ -130,7 +139,7 @@ void *cinta(void *args){
         sem_post(&semCinta);
         sem_wait(&mutexMostrador);
 
-        equipaje = cintas[idx];
+        equipaje = cintas[id];
         if((!banderaFinMostrador) && (esVacio(equipaje) == 1)){
             sem_post(&mutexMostrador);
             pthread_exit(NULL);
