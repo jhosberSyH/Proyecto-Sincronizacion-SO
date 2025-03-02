@@ -13,14 +13,13 @@
 #define MAX_EQUIPAJES 120736
 
 int menu();
-int validarNumero(char num[]);
+int opcion_valida(char num[]);
 void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]);
 void incrementar(int id,int valores[]);
 void inicializarInt(int n,int valores[]);
 void mostrarInformacion(int identificador,int valores[],int n);
 
 int menu(){
-    int numero = -1;
     char val[20];
     system("clear");
     printf("\n\t\t\tBienvenido\n\n\n");
@@ -34,27 +33,39 @@ int menu(){
     printf("\t|                                          |\n");
     printf("\t+------------------------------------------+\n");
     printf("Opcion: ");
+
     do{
         scanf("%s",val);
-        numero = validarNumero(val);
-    }while(numero == 0);
+    }while(opcion_valida(val) == 0);
     
-    numero = atoi(val);
     system("clear");
     printf("\t\tCargando....\n");
-    return (numero);
+    return (atoi(val));
 }
 
-int validarNumero(char num[]){
-    int i, len; 
-    len = strlen(num); 
-    for (i = 0; i < len ; i++){ 
+int opcion_valida(char num[]){
+    int i = 0; 
+    int len = strlen(num); 
+    int valido = 1;
+
+    while(i < len && valido == 1){
         if (!(isdigit(num[i]))){ 
-            printf("!Solo se permiten numeros!\nIntente de nuevo: "); 
-            return (0);
+            printf("!Solo se permiten numeros!\n"); 
+            valido = 0;
         }
+        i++;
     }
-	return (1); 
+
+    if ((valido == 1) && (atoi(num) < 1) || (atoi(num) > 5) ){ 
+        printf("!No se ingreso un valor valido!\n"); 
+        valido = 0;
+    }
+
+    if(valido == 0){
+        printf("Intente de nuevo: "); 
+    }
+
+	return valido; 
 }
 
 
