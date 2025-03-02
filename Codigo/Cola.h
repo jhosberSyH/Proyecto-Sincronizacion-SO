@@ -102,43 +102,4 @@ void encolarPrioridad(Cola *c, Elemento p) {
     }
     c->log++;
 }
-/*
-void encolarSjf(Cola *c, Proceso p) {
-    Nodo *nuevo;
-	nuevo = (Nodo*)malloc(sizeof(Nodo));
-    nuevo->info = p;
-    nuevo->prox = NULL;
-    if ((c->primero == NULL) || ((p.tiempoEjecucion < c->primero->info.tiempoEjecucion) && (c->primero->info.estaEjecutada != 1))) {
-        nuevo->prox = c->primero;
-        c->primero = nuevo;
-    } else {
-        Nodo *actual = c->primero;
-        while ((actual->prox != NULL) && (actual->prox->info.tiempoEjecucion <= p.tiempoEjecucion)) {
-            actual = actual->prox;
-        }
-        nuevo->prox = actual->prox;
-        actual->prox = nuevo;
-    }
-    c->log++;
-}
-
-void encolarSrtf(Cola *c, Proceso p) {
-    Nodo *nuevo;
-	nuevo = (Nodo*)malloc(sizeof(Nodo));
-    nuevo->info = p;
-    nuevo->prox = NULL;
-    if ((c->primero == NULL) || (p.tiempoEjecucion < c->primero->info.tiempoEjecucion)) {
-        nuevo->prox = c->primero;
-        c->primero = nuevo;
-    } else {
-        Nodo *actual = c->primero;
-        while ((actual->prox != NULL) && (actual->prox->info.tiempoEjecucion <= p.tiempoEjecucion)) {
-            actual = actual->prox;
-        }
-        nuevo->prox = actual->prox;
-        actual->prox = nuevo;
-    }
-    c->log++;
-}
-*/
 #endif

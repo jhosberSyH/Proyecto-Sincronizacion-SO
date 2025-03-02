@@ -1,6 +1,7 @@
 #include "Semaforo.h"
 #include "Almacen.h"
 #include "Interfaz.h"
+#include "ColaEntero.h"
 
 
 #define MAX_MOSTRADORES 5000
@@ -16,14 +17,15 @@ sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz;
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN];
 int banderaFinMostrador = 1,nroEquipaje = 0;
-int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN];
+int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
+ColaEntero buscarInterfaz;
 
 
 int main() {
-    int i,w = 0,p = 0,t,requisito;
+    int i,w = 0,p = 0,t;
     pthread_t mostradores[MAX_MOSTRADORES],cintaHilo[MAX_CINTAS];
     
-    requisito = usuario();
+    usuario(&requisitoInterfaz,&buscarInterfaz);
     sem_init(&mutexAlmacen,1);
     sem_init(&mutexMostrador,1);
     sem_init(&mutexCintaInterfaz,1);
@@ -36,7 +38,6 @@ int main() {
     crear(&pasajeros);
     constructorAlmacen(almacenes);
     leer_entradas("../Pruebas/text.txt");
-    printf("\t===1 leido===\n");
 
     for (i = 0; i < MAX_MOSTRADORES; i++) {
         int *arg = malloc(sizeof(*arg));  
@@ -61,10 +62,8 @@ int main() {
     sem_destroy(&mutexCintaInterfaz);
     sem_destroy(&semCinta);
     sem_destroy(&semMostrador);
-    printf("\t===2 numeros de equipajes y distribucion en cintas===\n");
-    printf("\t===3 Almacenados===\n");
     //verificaciones 
-    respuestasFinal(requisito,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
+    respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
 
     return 0;
 }
@@ -78,9 +77,10 @@ void *mostrador(void *args){
             Cola equipaje;
 
             sem_wait(&mutexMostrador);
-            incrementar(id,mostradorInterfaz);
             nroEquipaje++;
             pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
+            incrementar(id,mostradorInterfaz);
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,1,pasajeros.primero->info);// tinee detalles no funciona al 100% todavia
             indice = id/10; //distribucion de cintas
             equipaje = cintas[indice];
             encolar(&equipaje,primero(pasajeros));
@@ -117,6 +117,7 @@ void *cinta(void *args){
 
             sem_wait(&mutexCintaInterfaz);
             incrementar(id,cintaInterfaz);
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,2,equipaje.primero->info);// tinee detalles no funciona al 100% todavia
             sem_post(&mutexCintaInterfaz);
 
             while ((indice < MAX_ALMACEN) && (!almacenado)){
@@ -127,6 +128,7 @@ void *cinta(void *args){
                     equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
                     almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
                     incrementar(indice,almacenInterfaz);
+                    mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,3,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
                     sem_post(&mutexAlmacen);
                 }
                 indice++;
