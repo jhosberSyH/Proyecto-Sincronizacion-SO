@@ -12,19 +12,12 @@
 #define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
 
-int usuario();
 int menu();
 int validarNumero(char num[]);
 void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]);
 void incrementar(int id,int valores[]);
 void inicializarInt(int n,int valores[]);
 void mostrarInformacion(int identificador,int valores[],int n);
-
-int usuario(){
-    int requisitos = 0,indice;
-    requisitos = menu();
-    return (requisitos);
-}
 
 int menu(){
     int numero = -1;
