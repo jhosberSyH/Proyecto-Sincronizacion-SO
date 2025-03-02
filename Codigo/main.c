@@ -3,7 +3,7 @@
 #include "interfaz.h"
 
 
-#define MAX_MOSTRADORES 5000
+#define MAX_MOSTRADORES 5000 // numero de mostradores
 #define MAX_CINTAS 500
 #define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
@@ -20,23 +20,32 @@ int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz
 
 
 int main() {
-    int i,w = 0,p = 0,t,requisito;
-    pthread_t mostradores[MAX_MOSTRADORES],cintaHilo[MAX_CINTAS];
+    int i,t,w,p; //variables para bucles
+    int op_menu; //opcion del menu seleccionada
+    pthread_t mostradores[MAX_MOSTRADORES];
+    pthread_t cintaHilo[MAX_CINTAS];
     
-    requisito = usuario();
+    //selecciona la opcion de menu
+    op_menu = menu();
+
+    //inicializacion de semaforos
     sem_init(&mutexAlmacen,1);
     sem_init(&mutexMostrador,1);
     sem_init(&mutexCintaInterfaz,1);
     sem_init(&semCinta,1);
     sem_init(&semMostrador,1);
 
+    //inicializar listas con 0
     inicializarInt(MAX_CINTAS,cintaInterfaz);
     inicializarInt(MAX_MOSTRADORES,mostradorInterfaz);
     inicializarInt(MAX_ALMACEN,almacenInterfaz);
+
+    //creacion de colas y almacenes
     crear(&pasajeros);
     constructorAlmacen(almacenes);
-    leer_entradas("../Pruebas/text.txt");
-    printf("\t===1 leido===\n");
+
+    leer_entradas("../pruebas/text.txt");
+    printf("\t===leyendo entrada===\n");
 
     for (i = 0; i < MAX_MOSTRADORES; i++) {
         int *arg = malloc(sizeof(*arg));  
