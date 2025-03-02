@@ -44,9 +44,11 @@ int main() {
     crear(&pasajeros);
     constructorAlmacen(almacenes);
 
+    //lectura de archivo
     leer_entradas("../pruebas/text.txt");
-    printf("\t===leyendo entrada===\n");
+    printf("\t===1 Entrada leida===\n");
 
+    //creacion de hilos
     for (i = 0; i < MAX_MOSTRADORES; i++) {
         int *arg = malloc(sizeof(*arg));  
         *arg = i; 
@@ -65,15 +67,15 @@ int main() {
         pthread_join(cintaHilo[w],NULL);
     }
 
+    //destruccion de semaforos
     sem_destroy(&mutexAlmacen);
     sem_destroy(&mutexMostrador);
     sem_destroy(&mutexCintaInterfaz);
     sem_destroy(&semCinta);
     sem_destroy(&semMostrador);
-    printf("\t===2 numeros de equipajes y distribucion en cintas===\n");
-    printf("\t===3 Almacenados===\n");
+
     //verificaciones 
-    respuestasFinal(requisito,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
+    respuestasFinal(op_menu,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
 
     return 0;
 }
