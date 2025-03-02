@@ -19,6 +19,7 @@ void incrementar(int id,int valores[]);
 void inicializarInt(int n,int valores[]);
 void mostrarInformacion(int identificador,int valores[],int n);
 
+//interfaz del menu
 int menu(){
     char val[20];
     system("clear");
@@ -43,6 +44,7 @@ int menu(){
     return (atoi(val));
 }
 
+//verifica si la opcion de menu ingresada es valida
 int opcion_valida(char num[]){
     int i = 0; 
     int len = strlen(num); 
@@ -101,6 +103,7 @@ void incrementar(int id,int valores[]){
     valores[id] = aux;
 }
 
+//rellenar un arreglo con 0
 void inicializarInt(int n,int valores[]){
     int i;
     for (i = 0; i < n; i++){
