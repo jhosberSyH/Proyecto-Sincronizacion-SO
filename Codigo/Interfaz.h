@@ -56,6 +56,7 @@ void menu(int *requisito){
         scanf("%s",val);
     }while(opcion_valida(val) == 0);
     
+    numero = atoi(val);
     system("clear");
     if (numero == 5){
         printf("\t+-------- MENU DE ESPECIFICACIONES --------+\n");
