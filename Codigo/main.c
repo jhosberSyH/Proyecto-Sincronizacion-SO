@@ -1,6 +1,6 @@
-#include "Semaforo.h"
-#include "Almacen.h"
-#include "Interfaz.h"
+#include "semaforo.h"
+#include "almacen.h"
+#include "interfaz.h"
 
 
 #define MAX_MOSTRADORES 5000
