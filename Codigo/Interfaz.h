@@ -16,6 +16,7 @@
 void usuario(int *requisito,ColaEntero *valores);
 void menu(int *requisito);
 int validarNumero(char num[]);
+int opcion_valida(char num[]);
 void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]);
 void incrementar(int id,int valores[]);
 void inicializarInt(int n,int valores[]);
@@ -85,17 +86,31 @@ int opcion_valida(char num[]){
     int len = strlen(num); 
     int valido = 1;
 
+    valido = validarNumero(num);
+
+    if ((valido == 1) && (atoi(num) < 1) || (atoi(num) > 5) ){ 
+        printf("!No se ingreso un valor valido!\n"); 
+        valido = 0;
+    }
+
+    if(valido == 0){
+        printf("Intente de nuevo: "); 
+    }
+
+	return valido; 
+}
+
+int validarNumero(char num[]){
+    int i = 0; 
+    int len = strlen(num); 
+    int valido = 1;
+
     while(i < len && valido == 1){
         if (!(isdigit(num[i]))){ 
             printf("!Solo se permiten numeros!\n"); 
             valido = 0;
         }
         i++;
-    }
-
-    if ((valido == 1) && (atoi(num) < 1) || (atoi(num) > 5) ){ 
-        printf("!No se ingreso un valor valido!\n"); 
-        valido = 0;
     }
 
     if(valido == 0){
