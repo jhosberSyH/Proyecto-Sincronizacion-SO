@@ -1,6 +1,7 @@
 #include "semaforo.h"
 #include "almacen.h"
 #include "interfaz.h"
+#include "ColaEntero.h"
 
 
 #define MAX_MOSTRADORES 5000 // numero de mostradores
@@ -16,7 +17,8 @@ sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz;
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN];
 int banderaFinMostrador = 1,nroEquipaje = 0;
-int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN];
+int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
+ColaEntero buscarInterfaz;
 
 
 int main() {
@@ -25,10 +27,7 @@ int main() {
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
     
-    //selecciona la opcion de menu
-    op_menu = menu();
-
-    //inicializacion de semaforos
+    usuario(&requisitoInterfaz,&buscarInterfaz);
     sem_init(&mutexAlmacen,1);
     sem_init(&mutexMostrador,1);
     sem_init(&mutexCintaInterfaz,1);
@@ -75,7 +74,7 @@ int main() {
     sem_destroy(&semMostrador);
 
     //verificaciones 
-    respuestasFinal(op_menu,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
+    respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
 
     return 0;
 }
@@ -89,9 +88,10 @@ void *mostrador(void *args){
             Cola equipaje;
 
             sem_wait(&mutexMostrador);
-            incrementar(id,mostradorInterfaz);
             nroEquipaje++;
             pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
+            incrementar(id,mostradorInterfaz);
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,1,pasajeros.primero->info);// tinee detalles no funciona al 100% todavia
             indice = id/10; //distribucion de cintas
             equipaje = cintas[indice];
             encolar(&equipaje,primero(pasajeros));
@@ -128,6 +128,7 @@ void *cinta(void *args){
 
             sem_wait(&mutexCintaInterfaz);
             incrementar(id,cintaInterfaz);
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,2,equipaje.primero->info);// tinee detalles no funciona al 100% todavia
             sem_post(&mutexCintaInterfaz);
 
             while ((indice < MAX_ALMACEN) && (!almacenado)){
@@ -138,6 +139,7 @@ void *cinta(void *args){
                     equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
                     almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
                     incrementar(indice,almacenInterfaz);
+                    mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,3,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
                     sem_post(&mutexAlmacen);
                 }
                 indice++;

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "Cola.h"
+#include "ColaEntero.h"
 #include "Almacen.h"
 
 #define MAX_MOSTRADORES 5000
@@ -12,15 +13,30 @@
 #define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
 
-int menu();
-int opcion_valida(char num[]);
+void usuario(int *requisito,ColaEntero *valores);
+void menu(int *requisito);
+int validarNumero(char num[]);
 void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]);
 void incrementar(int id,int valores[]);
 void inicializarInt(int n,int valores[]);
-void mostrarInformacion(int identificador,int valores[],int n);
+void mostrarInformacion(int id,int valores[],int n);
+void especificaciones(int requisito,ColaEntero *valores);
+void mostrarEspecificacion(int requisito,int hilo,ColaEntero valores,int etapa,Equipaje equipaje);
 
-//interfaz del menu
-int menu(){
+void usuario(int *requisito,ColaEntero *valores){
+    menu(requisito);
+    if(*requisito > 4){
+
+        crearEntero(valores);
+        especificaciones(*requisito,valores);
+    }
+    system("clear");
+    printf("\t\tCargando....\n");
+    printf("\t\tHey bro la funcion 5 esta en matenimiento\n");
+}
+
+void menu(int *requisito){
+    int numero = -1;
     char val[20];
     system("clear");
     printf("\n\t\t\tBienvenido\n\n\n");
@@ -40,8 +56,27 @@ int menu(){
     }while(opcion_valida(val) == 0);
     
     system("clear");
-    printf("\t\tCargando....\n");
-    return (atoi(val));
+    if (numero == 5){
+        printf("\t+-------- MENU DE ESPECIFICACIONES --------+\n");
+        printf("\t|                                          |\n");
+        printf("\t| [5] Buscar Equipajes con Numero          |\n");
+        printf("\t| [7]                                      |\n");
+        printf("\t| [8]                                      |\n");
+        printf("\t| [9]                                      |\n");
+        printf("\t| [10]                                     |\n");
+        printf("\t|                                          |\n");
+        printf("\t+------------------------------------------+\n");
+        printf("Opcion: ");
+        do{
+            scanf("%s",val);
+            numero = validarNumero(val);
+        }while(numero == 0);
+        
+        numero = atoi(val);
+        system("clear");
+    }
+    *requisito = numero;
+    
 }
 
 //verifica si la opcion de menu ingresada es valida
@@ -72,7 +107,6 @@ int opcion_valida(char num[]){
 
 
 void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]){
-    system("clear");
     switch (requisito){
     case 1:
         mostrarInformacion(1,mostradores,MAX_MOSTRADORES);
@@ -108,13 +142,13 @@ void inicializarInt(int n,int valores[]){
     }
     
 }
-void mostrarInformacion(int identificador,int valores[],int n){
+void mostrarInformacion(int id,int valores[],int n){
     int cantidad = 0,total = 0,sinUso = 0,i;
     char nombrePlural[13],nombre[11];
-    if(identificador == 1){
+    if(id == 1){
         strcpy(nombrePlural,"Mostradores");
         strcpy(nombre,"Mostrador");
-    }else if(identificador == 2){
+    }else if(id == 2){
         strcpy(nombrePlural,"Cintas");
         strcpy(nombre,"Cinta");
     }else{
@@ -134,5 +168,78 @@ void mostrarInformacion(int identificador,int valores[],int n){
     printf("\t|Se usaron esta cantidad de %s = %d                   |\n",nombrePlural,n-sinUso);
     printf("\t|Pasaron un total de %d equipajes por los %d %s   |\n",total,n,nombrePlural);
     printf("\t+----------------------------------------------------------------+\n");
+}
+
+void especificaciones(int requisito,ColaEntero *valores){ // tinee detalles no funciona al 100% todavia
+    int numero,n,i; 
+    char val[20];
+    switch (requisito){
+    case 5:
+        /*printf("Ingrese la cantidad de Equipaje que desea buscar:");
+        do{
+            scanf("%s",val);
+            n = validarNumero(val);
+        }while(n == 0);
+        
+        n = atoi(val);
+        for (i = 0; i < n; i++){
+            printf("\nIngrese el Numero de Equipaje %d que desee seguir:",i+1);
+            do{
+                scanf("%s",val);
+                numero = validarNumero(val);
+            }while(numero == 0);
+            numero = atoi(val);
+            encolarEntero(valores,numero);
+        }
+        */
+        break;
+    
+    default:
+        break;
+    }
+}
+void mostrarEspecificacion(int requisito,int hilo,ColaEntero valores,int etapa,Equipaje equipaje){  // tinee detalles no funciona al 100% todavia
+    /*if(requisito > 4){
+        switch (requisito){
+        case 5:
+        
+            int conseguido = 0,i = 0;
+            while ((i < longitudEntero(valores)) && (!conseguido)){
+                if(equipaje.id == primeroEntero(valores)){
+                    conseguido = 1;
+                    printf("\t+-------------------------------------------------------------------------+\n");
+                    switch (etapa){
+                    case 1:
+                        printf("\t|El Equipaje Numero %d con destino a %s paso por el Mostrador %d\n",equipaje.id,equipaje.pais,hilo);
+                        break;
+                    case 2:
+                        printf("\t|El Equipaje Numero %d con destino a %s paso por la Cinta %d\n",equipaje.id,equipaje.pais,hilo);
+                        break;
+                    case 3:
+                        printf("\t|El Equipaje Numero %d con destino a %s paso por el Almacen %d\n",equipaje.id,equipaje.pais,hilo);
+                        break;
+                    case 4:
+                        //avion
+                        break;
+                    case 5:
+                        // destino 
+                        break;
+                    
+                    default:
+                        printf("\t\t\tNo existe esa etapa!\n");
+                        break;
+                    }
+                }
+                encolarEntero(&valores,valores.primero->info);
+                desencolarEntero(&valores);
+                i++;
+            }
+            
+            break;
+        
+        default:
+            break;
+        }
+    }*/
 }
 #endif
