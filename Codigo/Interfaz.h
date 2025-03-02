@@ -97,10 +97,7 @@ void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[
 
 //funciones necesarias 
 void incrementar(int id,int valores[]){
-    int aux = 0;
-    aux = valores[id];
-    aux += 1;
-    valores[id] = aux;
+    valores[id] = valores[id] + 1;
 }
 
 //rellenar un arreglo con 0
