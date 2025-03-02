@@ -19,6 +19,8 @@ Almacen almacenes[MAX_ALMACEN];
 int banderaFinMostrador = 1,nroEquipaje = 0;
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
 ColaEntero buscarInterfaz;
+int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
+ColaEntero buscarInterfaz;
 
 
 int main() {
@@ -27,6 +29,7 @@ int main() {
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
     
+    usuario(&requisitoInterfaz,&buscarInterfaz);
     usuario(&requisitoInterfaz,&buscarInterfaz);
     sem_init(&mutexAlmacen,1);
     sem_init(&mutexMostrador,1);
@@ -74,6 +77,7 @@ int main() {
     sem_destroy(&semMostrador);
 
     //verificaciones 
+    respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
 
     return 0;
