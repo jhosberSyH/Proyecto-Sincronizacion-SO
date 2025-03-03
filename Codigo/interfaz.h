@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include "Cola.h"
 #include "ColaEntero.h"
-#include "Almacen.h"
+#include "almacen.h"
 
 #define MAX_MOSTRADORES 5000
 #define MAX_CINTAS 500
