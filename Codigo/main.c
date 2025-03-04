@@ -27,6 +27,8 @@ int main() {
     int op_menu; //opcion del menu seleccionada
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
+
+    fclose(fopen("../pruebas/logAlmacen.txt", "w")); //Vaciar archivo de log (Por si ya existe)
     
     usuario(&requisitoInterfaz,&buscarInterfaz);
     sem_init(&mutexAlmacen,1);
@@ -76,6 +78,7 @@ int main() {
 
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
+    verColasAlmacenes(almacenes); //Escribir resultados almacen
 
     return 0;
 }
@@ -138,7 +141,7 @@ void *cinta(void *args){
                     sem_wait(&mutexAlmacen);
 
                     equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
-                    almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
+                    almacenado = almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
                     incrementar(indice,almacenInterfaz);
                     mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,3,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
                     sem_post(&mutexAlmacen);
