@@ -14,8 +14,9 @@
 void *mostrador(void *args);
 void *cinta(void *args);
 void leer_entradas(const char *filename);
+int existeVuelo(Equipaje *e);
 
-sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz;
+sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN];
 Avion aviones[MAX_AVIONES];
@@ -40,6 +41,12 @@ int main() {
     sem_init(&mutexCintaInterfaz,1);
     sem_init(&semCinta,1);
     sem_init(&semMostrador,1);
+    for(int i=0;i<MAX_ALMACEN;i++){
+        sem_init(&mutexAlmacenes[i],1);
+    }
+    for(int i=0;i<MAX_AVIONES;i++){
+        sem_init(&mutexAviones[i],1);
+    }
 
     //inicializar listas con 0
     inicializarInt(MAX_CINTAS,cintaInterfaz);
@@ -80,6 +87,9 @@ int main() {
     sem_destroy(&mutexCintaInterfaz);
     sem_destroy(&semCinta);
     sem_destroy(&semMostrador);
+    for(int i=0;i<MAX_ALMACEN;i++){
+        sem_destroy(&mutexAlmacenes[i]);
+    }
 
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
@@ -143,13 +153,13 @@ void *cinta(void *args){
             while ((indice < MAX_ALMACEN) && (!almacenado)){
                 if(compararPais(equipaje.primero->info.pais,&almacenes[indice])){
                     almacenado = 1;
-                    sem_wait(&mutexAlmacen);
+                    sem_wait(&mutexAlmacenes[indice]);
 
                     equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
                     almacenado = almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
                     incrementar(indice,almacenInterfaz);
                     mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,3,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
-                    sem_post(&mutexAlmacen);
+                    sem_post(&mutexAlmacenes[indice]);
                 }
                 indice++;
             }
@@ -181,9 +191,24 @@ void leer_entradas(const char *filename) {
     }
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         construtorEquipaje(&equipaje);
-        if (sscanf(buffer, "%s %s %s %f ", equipaje.tipo, equipaje.ciudad, equipaje.pais,&equipaje.peso)) {
-            encolar(&pasajeros, equipaje);
+        if (sscanf(buffer, "%s %s %s %f ", equipaje.tipo, equipaje.ciudad, equipaje.pais,&equipaje.peso)) {            
+            //Solo ir aceptando los de vuelos listos para ser cargados
+            if(existeVuelo(&equipaje)){
+                encolar(&pasajeros, equipaje);
+            }
         }
     }
+    printf("%i", longitud(pasajeros));
     fclose(file);
+}
+int existeVuelo(Equipaje *e){
+    int i;
+    for(i=0;i<20;i++){
+        if((strcmp(e->ciudad,aviones[i].ciudad) == 0) && (strcmp(e->pais,aviones[i].pais) == 0)){
+            e->idVuelo = i;
+            //printf("El vuelo de (%s, %s) si existe\n", e->ciudad, e->pais);
+            return 1;
+        }
+    }
+    return 0;
 }

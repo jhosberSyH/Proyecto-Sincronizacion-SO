@@ -1,6 +1,7 @@
 #ifndef Almacen_h
 #define Almacen_h
 #include "Cola.h"
+#include "avion.h"
 #define MAX_ALMACEN 250
 #define MAX_CAPACIDAD_ALMACEN 1000
 
@@ -11,6 +12,7 @@ typedef struct {
     Cola equipajeEsp; //Equipaje especial (MAXIMA PRIORIDAD)
     Cola equipajes;   //Equipaje facturado (PRIORIDAD MEDIA)
     Cola equipajeSD;  //Equipaje sobredimensionado (PRIORIDAD BAJA)
+    int lleno;  //Espacios del almacén llenos
 } Almacen;
 
 void constructorAlmacen(Almacen almacen[]);
@@ -24,6 +26,7 @@ void constructorAlmacen(Almacen almacen[]){
     for (i = 0; i < MAX_ALMACEN; i++){
         almacen[i].id = i;
         almacen[i].capacidad = MAX_CAPACIDAD_ALMACEN;
+        almacen[i].lleno = 0;
     }    
 }
 
@@ -58,8 +61,34 @@ int almacenar(Almacen *almacen,Equipaje equipaje){
     }
     //encolarPrioridad(&almacen->equipajes,equipaje);
     almacen->capacidad -= 1;
+    almacen->lleno += 1;
     escribirAlmacenado(*almacen, equipaje);
     return 1;
+}
+void descargarAlmacen(Almacen *almacen, Avion aviones[], sem_t semAlmacen, sem_t semAviones[]){
+    Equipaje e;
+    sem_wait(&semAlmacen);
+    if(almacen->lleno > 0){
+        if(esVacio(almacen->equipajeEsp) == 0){
+            e = primero(almacen->equipajeEsp);
+        }else{
+            if(esVacio(almacen->equipajes) == 0){
+                e = primero(almacen->equipajes);
+            }else{
+                if(esVacio(almacen->equipajeSD) == 0){
+                    e = primero(almacen->equipajes);
+                }
+            }
+        }
+        //CARGAR EQUIPAJE AL AVIÓN
+        int descarga = cargarEquipaje(&aviones[e.idVuelo], &e, &semAviones[e.idVuelo]);
+        if(descarga == 0){
+            printf("NO CABE EN EL VUELO");
+        }
+        almacen->lleno -=1;
+        almacen->capacidad +=1;
+    }
+    sem_post(&semAlmacen);
 }
 
 int compararPais(char pais[],Almacen *almacen){

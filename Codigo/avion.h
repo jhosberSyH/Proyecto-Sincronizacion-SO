@@ -1,10 +1,11 @@
 #ifndef Avion_h
 #define Avion_h
 #include "Cola.h"
+#include "Equipaje.h"
 
 typedef struct {
 	int id;
-    int capacidad;
+    float capacidad;
     char nombre[50];
     char codigoVuelo[10];
     char ciudad[50];
@@ -26,7 +27,7 @@ void crearAviones(Avion aviones[], int *cantidadAviones){
         exit(EXIT_FAILURE);
     }
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
-        if (sscanf(buffer, "%s %s %s %s %i", a.codigoVuelo, a.nombre, a.ciudad, a.pais, &a.capacidad)) {
+        if (sscanf(buffer, "%s %s %s %s %f", a.codigoVuelo, a.nombre, a.ciudad, a.pais, &a.capacidad)) {
             a.id=i;
             crear(&a.equipajeEsp);
             crear(&a.equipajeSD);
@@ -39,5 +40,27 @@ void crearAviones(Avion aviones[], int *cantidadAviones){
     }
     fclose(file); 
 }
-
+int cargarEquipaje(Avion *avion, Equipaje *e, sem_t *semAvion){
+    sem_wait(semAvion);
+    int estado = 0;
+    if(e->peso <= avion->capacidad){
+        switch(e->prioridad){
+            case 1:
+                encolar(&avion->equipajeEsp, *e);
+                break;
+            case 2:
+                encolar(&avion->equipajes, *e);
+                break;
+            case 3:
+                encolar(&avion->equipajeSD, *e);
+                break;
+            default:
+                break;
+        }
+        avion->capacidad -= e->peso;
+        estado = 1;
+    }
+    sem_post(semAvion);
+    return estado;
+}
 #endif
