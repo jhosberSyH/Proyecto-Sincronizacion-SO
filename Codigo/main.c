@@ -13,6 +13,7 @@
 
 void *mostrador(void *args);
 void *cinta(void *args);
+void *almacen(void *args);
 void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
 
@@ -32,6 +33,7 @@ int main() {
     int cantAviones = 0; //Cantidad de aviones en el aeropuerto
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
+    pthread_t hilosAlmacenes[MAX_ALMACEN];
 
     fclose(fopen("../pruebas/logAlmacen.txt", "w")); //Vaciar archivo de log (Por si ya existe)
     
@@ -74,11 +76,20 @@ int main() {
         pthread_create(&cintaHilo[t],NULL,cinta,arg);
         
     }
+    for (int j = 0; j < MAX_ALMACEN; j++){
+        int *arg = malloc(sizeof(*arg));  
+        *arg = j; 
+        pthread_create(&hilosAlmacenes[j],NULL,almacen,arg);
+        
+    }
     for (p = 0; p < MAX_MOSTRADORES; p++){
         pthread_join(mostradores[p],NULL);
     }
     for (w = 0; w < MAX_CINTAS; w++){
         pthread_join(cintaHilo[w],NULL);
+    }
+    for(int k=0; k< MAX_ALMACEN;k++){
+        pthread_join(hilosAlmacenes[k], NULL);
     }
 
     //destruccion de semaforos
@@ -94,6 +105,7 @@ int main() {
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
     verColasAlmacenes(almacenes); //Escribir resultados almacen
+    verAviones(aviones, cantAviones); //Escribir estado final de los aviones
 
     return 0;
 }
@@ -178,6 +190,24 @@ void *cinta(void *args){
         }
 
         sem_post(&mutexMostrador);
+    }
+}
+
+void *almacen(void *args){
+    int id = *((int *)args);
+    Cola equipajes;
+    while (1){
+        sem_wait(&mutexAlmacenes[id]);
+        //CONSUMIR
+        if(almacenes[id].lleno > 0){
+            //printf("DESCARGA DE ALMACEN %i (%i) \n", id, almacenes[id].lleno);
+            descargarAlmacen(&almacenes[id], aviones, mutexAviones);
+        }
+        if(almacenes[id].lleno <= 0){
+            sem_post(&mutexAlmacenes[id]);
+            pthread_exit(NULL);
+        }
+        sem_post(&mutexAlmacenes[id]);
     }
 }
 void leer_entradas(const char *filename) {

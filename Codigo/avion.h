@@ -2,10 +2,12 @@
 #define Avion_h
 #include "Cola.h"
 #include "Equipaje.h"
+#define MAX_AVIONES 100
 
 typedef struct {
 	int id;
     float capacidad;
+    float capacidadMaxima;
     char nombre[50];
     char codigoVuelo[10];
     char ciudad[50];
@@ -17,7 +19,7 @@ typedef struct {
 
 
 
-void crearAviones(Avion aviones[], int *cantidadAviones){
+void crearAviones(Avion aviones[MAX_AVIONES], int *cantidadAviones){
     Avion a;
     int i=0;
     FILE *file = fopen("../pruebas/vuelos.txt", "r");
@@ -29,6 +31,7 @@ void crearAviones(Avion aviones[], int *cantidadAviones){
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         if (sscanf(buffer, "%s %s %s %s %f", a.codigoVuelo, a.nombre, a.ciudad, a.pais, &a.capacidad)) {
             a.id=i;
+            a.capacidadMaxima = a.capacidad;
             crear(&a.equipajeEsp);
             crear(&a.equipajeSD);
             crear(&a.equipajes);
@@ -62,5 +65,36 @@ int cargarEquipaje(Avion *avion, Equipaje *e, sem_t *semAvion){
     }
     sem_post(semAvion);
     return estado;
+}
+
+void verAviones(Avion aviones[MAX_AVIONES], int cantidad){
+    int i;
+    FILE *f = fopen("../pruebas/finalAviones.txt", "w");
+
+    for (i = 0; i < cantidad; i++){
+        fprintf(f,"\nAVION NUMERO %i\n", i);
+        fprintf(f,"DESTINO: (%s, %s)\n", aviones[i].ciudad, aviones[i].pais);
+        fprintf(f,"Capacidad inicial: %f\n", aviones[i].capacidadMaxima);
+        fprintf(f,"Capacidad restante: %f\n", aviones[i].capacidad);
+        fprintf(f,"Equipaje Especial: %i\n", longitud(aviones[i].equipajeEsp));
+        fprintf(f,"Equipaje Facturado: %i\n", longitud(aviones[i].equipajes));
+        fprintf(f,"Equipaje sobredimensionado: %i\n", longitud(aviones[i].equipajeSD));
+        fprintf(f,"\nEQUIPAJES\n");
+        while (esVacio(aviones[i].equipajeEsp) == 0){
+            fprintf(f,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajeEsp).id, primero(aviones[i].equipajeEsp).ciudad, primero(aviones[i].equipajeEsp).pais, primero(aviones[i].equipajeEsp).prioridad, primero(aviones[i].equipajeEsp).peso);
+            desencolar(&aviones[i].equipajeEsp);
+        }
+        fprintf(f,"------------------\n");
+        while (esVacio(aviones[i].equipajes) == 0){
+            fprintf(f,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajes).id, primero(aviones[i].equipajes).ciudad, primero(aviones[i].equipajes).pais, primero(aviones[i].equipajes).prioridad, primero(aviones[i].equipajes).peso);
+            desencolar(&aviones[i].equipajes);
+        }
+        fprintf(f,"----------------\n");
+        while (esVacio(aviones[i].equipajeSD) == 0){
+            fprintf(f,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajeSD).id, primero(aviones[i].equipajeSD).ciudad, primero(aviones[i].equipajeSD).pais, primero(aviones[i].equipajeSD).prioridad, primero(aviones[i].equipajeSD).peso);
+            desencolar(&aviones[i].equipajeSD);
+        }
+    }
+    fclose(f);
 }
 #endif

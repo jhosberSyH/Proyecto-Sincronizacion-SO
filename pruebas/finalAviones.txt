@@ -1,0 +1,756 @@
+
+AVION NUMERO 0
+DESTINO: (Madrid, España)
+Capacidad incial: 1000.000000
+Capacidad restante: 11.000000
+Equipaje Especial: 0
+Equipaje Facturado: 43
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11672 (Madrid,España) [prioridad: 2] peso: 23.000000
+11674 (Madrid,España) [prioridad: 2] peso: 23.000000
+11694 (Madrid,España) [prioridad: 2] peso: 23.000000
+11696 (Madrid,España) [prioridad: 2] peso: 23.000000
+11716 (Madrid,España) [prioridad: 2] peso: 23.000000
+11718 (Madrid,España) [prioridad: 2] peso: 23.000000
+11738 (Madrid,España) [prioridad: 2] peso: 23.000000
+11740 (Madrid,España) [prioridad: 2] peso: 23.000000
+11760 (Madrid,España) [prioridad: 2] peso: 23.000000
+11762 (Madrid,España) [prioridad: 2] peso: 23.000000
+11782 (Madrid,España) [prioridad: 2] peso: 23.000000
+11784 (Madrid,España) [prioridad: 2] peso: 23.000000
+11804 (Madrid,España) [prioridad: 2] peso: 23.000000
+11806 (Madrid,España) [prioridad: 2] peso: 23.000000
+11826 (Madrid,España) [prioridad: 2] peso: 23.000000
+11828 (Madrid,España) [prioridad: 2] peso: 23.000000
+11848 (Madrid,España) [prioridad: 2] peso: 23.000000
+11850 (Madrid,España) [prioridad: 2] peso: 23.000000
+11870 (Madrid,España) [prioridad: 2] peso: 23.000000
+11872 (Madrid,España) [prioridad: 2] peso: 23.000000
+11892 (Madrid,España) [prioridad: 2] peso: 23.000000
+11894 (Madrid,España) [prioridad: 2] peso: 23.000000
+11914 (Madrid,España) [prioridad: 2] peso: 23.000000
+11916 (Madrid,España) [prioridad: 2] peso: 23.000000
+16220 (Madrid,España) [prioridad: 2] peso: 23.000000
+16222 (Madrid,España) [prioridad: 2] peso: 23.000000
+16242 (Madrid,España) [prioridad: 2] peso: 23.000000
+16244 (Madrid,España) [prioridad: 2] peso: 23.000000
+16264 (Madrid,España) [prioridad: 2] peso: 23.000000
+16266 (Madrid,España) [prioridad: 2] peso: 23.000000
+16286 (Madrid,España) [prioridad: 2] peso: 23.000000
+16288 (Madrid,España) [prioridad: 2] peso: 23.000000
+16308 (Madrid,España) [prioridad: 2] peso: 23.000000
+16310 (Madrid,España) [prioridad: 2] peso: 23.000000
+16330 (Madrid,España) [prioridad: 2] peso: 23.000000
+16332 (Madrid,España) [prioridad: 2] peso: 23.000000
+16352 (Madrid,España) [prioridad: 2] peso: 23.000000
+16354 (Madrid,España) [prioridad: 2] peso: 23.000000
+16374 (Madrid,España) [prioridad: 2] peso: 23.000000
+16376 (Madrid,España) [prioridad: 2] peso: 23.000000
+16396 (Madrid,España) [prioridad: 2] peso: 23.000000
+16398 (Madrid,España) [prioridad: 2] peso: 23.000000
+16418 (Madrid,España) [prioridad: 2] peso: 23.000000
+----------------
+
+AVION NUMERO 1
+DESTINO: (Nueva_York, EE.UU.)
+Capacidad incial: 750.000000
+Capacidad restante: 130.000000
+Equipaje Especial: 0
+Equipaje Facturado: 31
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11675 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11697 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11719 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11741 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11763 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11785 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11807 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11829 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11851 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11873 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11895 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+11917 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16223 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16245 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16267 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16289 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16311 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16333 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16355 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16377 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16399 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16421 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16443 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16465 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16487 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16509 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16685 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16707 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16729 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16751 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+16773 (Nueva_York,EE.UU.) [prioridad: 2] peso: 20.000000
+----------------
+
+AVION NUMERO 2
+DESTINO: (Tokio, Japón)
+Capacidad incial: 1000.000000
+Capacidad restante: 450.000000
+Equipaje Especial: 0
+Equipaje Facturado: 22
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11676 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11698 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11720 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11742 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11764 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11786 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11808 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11830 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11852 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11874 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11896 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+11918 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16224 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16246 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16268 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16290 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16312 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16334 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16356 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16378 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16400 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+16422 (Tokio,Japón) [prioridad: 2] peso: 25.000000
+----------------
+
+AVION NUMERO 3
+DESTINO: (Paris, Francia)
+Capacidad incial: 1275.000000
+Capacidad restante: 717.000000
+Equipaje Especial: 31
+Equipaje Facturado: 0
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+11677 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11699 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11721 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11743 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11765 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11787 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11809 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11831 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11853 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11875 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11897 (Paris,Francia) [prioridad: 1] peso: 18.000000
+11919 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16225 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16247 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16269 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16291 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16313 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16335 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16357 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16379 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16401 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16423 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16445 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16467 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16489 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16511 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16687 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16709 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16731 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16753 (Paris,Francia) [prioridad: 1] peso: 18.000000
+16775 (Paris,Francia) [prioridad: 1] peso: 18.000000
+------------------
+----------------
+
+AVION NUMERO 4
+DESTINO: (Buenos_Aires, Argentina)
+Capacidad incial: 1000.000000
+Capacidad restante: 20.000000
+Equipaje Especial: 31
+Equipaje Facturado: 2
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+11678 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11700 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11722 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11744 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11766 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11788 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11810 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11832 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11854 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11876 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11898 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+11920 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16226 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16248 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16270 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16292 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16314 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16336 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16358 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16380 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16402 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16424 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16446 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16468 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16490 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16512 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16688 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16710 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16732 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16754 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+16776 (Buenos_Aires,Argentina) [prioridad: 1] peso: 30.000000
+------------------
+11689 (Buenos_Aires,Argentina) [prioridad: 2] peso: 25.000000
+11711 (Buenos_Aires,Argentina) [prioridad: 2] peso: 25.000000
+----------------
+
+AVION NUMERO 5
+DESTINO: (Lima, Perú)
+Capacidad incial: 1000.000000
+Capacidad restante: 318.000000
+Equipaje Especial: 0
+Equipaje Facturado: 31
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11679 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11701 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11723 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11745 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11767 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11789 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11811 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11833 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11855 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11877 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11899 (Lima,Perú) [prioridad: 2] peso: 22.000000
+11921 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16227 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16249 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16271 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16293 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16315 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16337 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16359 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16381 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16403 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16425 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16447 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16469 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16491 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16513 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16689 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16711 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16733 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16755 (Lima,Perú) [prioridad: 2] peso: 22.000000
+16777 (Lima,Perú) [prioridad: 2] peso: 22.000000
+----------------
+
+AVION NUMERO 6
+DESTINO: (Berlin, Alemania)
+Capacidad incial: 350.000000
+Capacidad restante: 40.000000
+Equipaje Especial: 0
+Equipaje Facturado: 0
+Equipaje sobredimensionado: 31
+
+EQUIPAJES
+------------------
+----------------
+11680 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11702 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11724 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11746 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11768 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11790 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11812 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11834 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11856 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11878 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11900 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+11922 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16228 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16250 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16272 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16294 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16316 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16338 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16360 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16382 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16404 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16426 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16448 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16470 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16492 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16514 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16690 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16712 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16734 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16756 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+16778 (Berlin,Alemania) [prioridad: 3] peso: 10.000000
+
+AVION NUMERO 7
+DESTINO: (Toronto, Canadá)
+Capacidad incial: 1000.000000
+Capacidad restante: 16.000000
+Equipaje Especial: 0
+Equipaje Facturado: 41
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11673 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11681 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11695 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11703 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11717 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11725 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11739 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11747 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11761 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11769 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11783 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11791 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11805 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11813 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11827 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11835 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11849 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11857 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11871 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11879 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11893 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11901 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11915 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+11923 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16221 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16229 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16243 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16251 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16265 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16273 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16287 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16295 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16309 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16317 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16331 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16339 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16353 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16361 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16375 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16383 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+16397 (Toronto,Canadá) [prioridad: 2] peso: 24.000000
+----------------
+
+AVION NUMERO 8
+DESTINO: (Roma, Italia)
+Capacidad incial: 2000.000000
+Capacidad restante: 1370.000000
+Equipaje Especial: 0
+Equipaje Facturado: 30
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11682 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11704 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11726 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11748 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11770 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11792 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11814 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11836 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11858 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11880 (Roma,Italia) [prioridad: 2] peso: 21.000000
+11902 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16230 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16252 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16274 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16296 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16318 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16340 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16362 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16384 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16406 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16428 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16450 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16472 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16494 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16516 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16692 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16714 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16736 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16758 (Roma,Italia) [prioridad: 2] peso: 21.000000
+16780 (Roma,Italia) [prioridad: 2] peso: 21.000000
+----------------
+
+AVION NUMERO 9
+DESTINO: (Londres, Reino_Unido)
+Capacidad incial: 1500.000000
+Capacidad restante: 1006.000000
+Equipaje Especial: 26
+Equipaje Facturado: 0
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+11683 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11705 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11727 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11749 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11771 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11793 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11815 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11837 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11859 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11881 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+11903 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16231 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16253 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16275 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16297 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16319 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16341 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16363 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16385 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16407 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16429 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16451 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16473 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16495 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16517 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+16693 (Londres,Reino_Unido) [prioridad: 1] peso: 19.000000
+------------------
+----------------
+
+AVION NUMERO 10
+DESTINO: (Sydney, Australia)
+Capacidad incial: 1000.000000
+Capacidad restante: 428.000000
+Equipaje Especial: 0
+Equipaje Facturado: 22
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11684 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11706 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11728 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11750 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11772 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11794 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11816 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11838 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11860 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11882 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+11904 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16232 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16254 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16276 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16298 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16320 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16342 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16364 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16386 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16408 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16430 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+16452 (Sydney,Australia) [prioridad: 2] peso: 26.000000
+----------------
+
+AVION NUMERO 11
+DESTINO: (Moscú, Rusia)
+Capacidad incial: 500.000000
+Capacidad restante: 20.000000
+Equipaje Especial: 15
+Equipaje Facturado: 0
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+11685 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11707 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11729 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11751 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11773 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11795 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11817 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11839 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11861 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11883 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+11905 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+16233 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+16255 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+16277 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+16299 (Moscú,Rusia) [prioridad: 1] peso: 32.000000
+------------------
+----------------
+
+AVION NUMERO 12
+DESTINO: (Dubai, Emiratos_Árabes)
+Capacidad incial: 1000.000000
+Capacidad restante: 433.000000
+Equipaje Especial: 0
+Equipaje Facturado: 21
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11686 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11708 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11730 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11752 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11774 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11796 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11818 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11840 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11862 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11884 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+11906 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16234 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16256 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16278 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16300 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16322 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16344 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16366 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16388 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16410 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+16432 (Dubai,Emiratos_Árabes) [prioridad: 2] peso: 27.000000
+----------------
+
+AVION NUMERO 13
+DESTINO: (Los_Angeles, EE.UU.)
+Capacidad incial: 1250.000000
+Capacidad restante: 650.000000
+Equipaje Especial: 0
+Equipaje Facturado: 30
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11687 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11709 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11731 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11753 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11775 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11797 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11819 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11841 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11863 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11885 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+11907 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16235 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16257 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16279 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16301 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16323 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16345 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16367 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16389 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16411 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16433 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16455 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16477 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16499 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16675 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16697 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16719 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16741 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16763 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+16785 (Los_Angeles,EE.UU.) [prioridad: 2] peso: 20.000000
+----------------
+
+AVION NUMERO 14
+DESTINO: (Mexico_City, México)
+Capacidad incial: 1000.000000
+Capacidad restante: 517.000000
+Equipaje Especial: 0
+Equipaje Facturado: 21
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11688 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11710 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11732 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11754 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11776 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11798 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11820 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11842 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11864 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11886 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+11908 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16236 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16258 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16280 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16302 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16324 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16346 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16368 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16390 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16412 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+16434 (Mexico_City,México) [prioridad: 2] peso: 23.000000
+----------------
+
+AVION NUMERO 15
+DESTINO: (Hong_Kong, China)
+Capacidad incial: 1000.000000
+Capacidad restante: 643.000000
+Equipaje Especial: 21
+Equipaje Facturado: 0
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+11690 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11712 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11734 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11756 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11778 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11800 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11822 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11844 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11866 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11888 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+11910 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16238 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16260 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16282 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16304 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16326 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16348 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16370 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16392 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16414 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+16436 (Hong_Kong,China) [prioridad: 1] peso: 17.000000
+------------------
+----------------
+
+AVION NUMERO 16
+DESTINO: (Chicago, EE.UU.1000)
+Capacidad incial: 1000.000000
+Capacidad restante: 1000.000000
+Equipaje Especial: 0
+Equipaje Facturado: 0
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+----------------
+
+AVION NUMERO 17
+DESTINO: (Beijing, China)
+Capacidad incial: 1050.000000
+Capacidad restante: 522.000000
+Equipaje Especial: 0
+Equipaje Facturado: 22
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11691 (Beijing,China) [prioridad: 2] peso: 24.000000
+11713 (Beijing,China) [prioridad: 2] peso: 24.000000
+11735 (Beijing,China) [prioridad: 2] peso: 24.000000
+11757 (Beijing,China) [prioridad: 2] peso: 24.000000
+11779 (Beijing,China) [prioridad: 2] peso: 24.000000
+11801 (Beijing,China) [prioridad: 2] peso: 24.000000
+11823 (Beijing,China) [prioridad: 2] peso: 24.000000
+11845 (Beijing,China) [prioridad: 2] peso: 24.000000
+11867 (Beijing,China) [prioridad: 2] peso: 24.000000
+11889 (Beijing,China) [prioridad: 2] peso: 24.000000
+11911 (Beijing,China) [prioridad: 2] peso: 24.000000
+16217 (Beijing,China) [prioridad: 2] peso: 24.000000
+16239 (Beijing,China) [prioridad: 2] peso: 24.000000
+16261 (Beijing,China) [prioridad: 2] peso: 24.000000
+16283 (Beijing,China) [prioridad: 2] peso: 24.000000
+16305 (Beijing,China) [prioridad: 2] peso: 24.000000
+16327 (Beijing,China) [prioridad: 2] peso: 24.000000
+16349 (Beijing,China) [prioridad: 2] peso: 24.000000
+16371 (Beijing,China) [prioridad: 2] peso: 24.000000
+16393 (Beijing,China) [prioridad: 2] peso: 24.000000
+16415 (Beijing,China) [prioridad: 2] peso: 24.000000
+16437 (Beijing,China) [prioridad: 2] peso: 24.000000
+----------------
+
+AVION NUMERO 18
+DESTINO: (Amsterdam, Países_Bajos)
+Capacidad incial: 1200.000000
+Capacidad restante: 738.000000
+Equipaje Especial: 0
+Equipaje Facturado: 22
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+------------------
+11692 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11714 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11736 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11758 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11780 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11802 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11824 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11846 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11868 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11890 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+11912 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16218 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16240 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16262 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16284 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16306 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16328 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16350 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16372 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16394 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16416 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+16438 (Amsterdam,Países_Bajos) [prioridad: 2] peso: 21.000000
+----------------
+
+AVION NUMERO 19
+DESTINO: (Seul, Corea_del_Sur)
+Capacidad incial: 1005.000000
+Capacidad restante: 246.000000
+Equipaje Especial: 23
+Equipaje Facturado: 0
+Equipaje sobredimensionado: 0
+
+EQUIPAJES
+11671 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11693 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11715 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11737 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11759 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11781 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11803 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11825 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11847 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11869 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11891 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+11913 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16219 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16241 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16263 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16285 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16307 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16329 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16351 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16373 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16395 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16417 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+16439 (Seul,Corea_del_Sur) [prioridad: 1] peso: 33.000000
+------------------
+----------------

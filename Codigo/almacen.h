@@ -4,6 +4,7 @@
 #include "avion.h"
 #define MAX_ALMACEN 250
 #define MAX_CAPACIDAD_ALMACEN 1000
+#define MAX_AVIONES 100
 
 typedef struct {
 	int id;
@@ -27,6 +28,10 @@ void constructorAlmacen(Almacen almacen[]){
         almacen[i].id = i;
         almacen[i].capacidad = MAX_CAPACIDAD_ALMACEN;
         almacen[i].lleno = 0;
+        //INICIALIZAR COLAS DE EQUIPAJES
+        crear(&almacen[i].equipajeEsp);
+        crear(&almacen[i].equipajes);
+        crear(&almacen[i].equipajeSD);
     }    
 }
 
@@ -65,30 +70,34 @@ int almacenar(Almacen *almacen,Equipaje equipaje){
     escribirAlmacenado(*almacen, equipaje);
     return 1;
 }
-void descargarAlmacen(Almacen *almacen, Avion aviones[], sem_t semAlmacen, sem_t semAviones[]){
+void descargarAlmacen(Almacen *almacen, Avion aviones[MAX_AVIONES], sem_t semAviones[MAX_AVIONES]){
     Equipaje e;
-    sem_wait(&semAlmacen);
+
     if(almacen->lleno > 0){
         if(esVacio(almacen->equipajeEsp) == 0){
             e = primero(almacen->equipajeEsp);
+            desencolar(&almacen->equipajeEsp);
         }else{
             if(esVacio(almacen->equipajes) == 0){
                 e = primero(almacen->equipajes);
+                desencolar(&almacen->equipajes);
             }else{
                 if(esVacio(almacen->equipajeSD) == 0){
-                    e = primero(almacen->equipajes);
+                    e = primero(almacen->equipajeSD);
+                    desencolar(&almacen->equipajeSD);
                 }
             }
         }
+        //FALTA HACER IMPRESIONES DE LOGS
         //CARGAR EQUIPAJE AL AVIÓN
+        //printf("SE VA A CARGAR %i, %s\n", e.idVuelo, aviones[e.idVuelo].ciudad);
         int descarga = cargarEquipaje(&aviones[e.idVuelo], &e, &semAviones[e.idVuelo]);
         if(descarga == 0){
-            printf("NO CABE EN EL VUELO");
+            //printf("NO CABE EN EL VUELO el equipaje %i\n", e.id); //SE PIERDE EL EQUIPAJE
         }
         almacen->lleno -=1;
         almacen->capacidad +=1;
     }
-    sem_post(&semAlmacen);
 }
 
 int compararPais(char pais[],Almacen *almacen){
