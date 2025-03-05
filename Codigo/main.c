@@ -93,7 +93,7 @@ void *mostrador(void *args){
             pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
             incrementar(id,mostradorInterfaz);
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,1,pasajeros.primero->info);// tinee detalles no funciona al 100% todavia
-            indice = nroEquipaje % (MAX_CINTAS + 1); //distribucion de cintas por modulo para distribuir equitativamente
+            indice = (nroEquipaje - 1) % MAX_CINTAS; //distribucion de cintas por modulo para distribuir equitativamente
             equipaje = cintas[indice];
             encolar(&equipaje,primero(pasajeros));
             cintas[indice] = equipaje;
