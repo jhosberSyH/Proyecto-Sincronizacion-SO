@@ -18,6 +18,7 @@ typedef struct {
 } Avion;
 
 
+FILE *avionesLog;
 
 void crearAviones(Avion aviones[MAX_AVIONES], int *cantidadAviones){
     Avion a;
@@ -69,32 +70,30 @@ int cargarEquipaje(Avion *avion, Equipaje *e, sem_t *semAvion){
 
 void verAviones(Avion aviones[MAX_AVIONES], int cantidad){
     int i;
-    FILE *f = fopen("../pruebas/finalAviones.txt", "w");
 
     for (i = 0; i < cantidad; i++){
-        fprintf(f,"\nAVION NUMERO %i\n", i);
-        fprintf(f,"DESTINO: (%s, %s)\n", aviones[i].ciudad, aviones[i].pais);
-        fprintf(f,"Capacidad inicial: %f\n", aviones[i].capacidadMaxima);
-        fprintf(f,"Capacidad restante: %f\n", aviones[i].capacidad);
-        fprintf(f,"Equipaje Especial: %i\n", longitud(aviones[i].equipajeEsp));
-        fprintf(f,"Equipaje Facturado: %i\n", longitud(aviones[i].equipajes));
-        fprintf(f,"Equipaje sobredimensionado: %i\n", longitud(aviones[i].equipajeSD));
-        fprintf(f,"\nEQUIPAJES\n");
+        fprintf(avionesLog,"\nAVION NUMERO %i\n", i);
+        fprintf(avionesLog,"DESTINO: (%s, %s)\n", aviones[i].ciudad, aviones[i].pais);
+        fprintf(avionesLog,"Capacidad inicial: %f\n", aviones[i].capacidadMaxima);
+        fprintf(avionesLog,"Capacidad restante: %f\n", aviones[i].capacidad);
+        fprintf(avionesLog,"Equipaje Especial: %i\n", longitud(aviones[i].equipajeEsp));
+        fprintf(avionesLog,"Equipaje Facturado: %i\n", longitud(aviones[i].equipajes));
+        fprintf(avionesLog,"Equipaje sobredimensionado: %i\n", longitud(aviones[i].equipajeSD));
+        fprintf(avionesLog,"\nEQUIPAJES\n");
         while (esVacio(aviones[i].equipajeEsp) == 0){
-            fprintf(f,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajeEsp).id, primero(aviones[i].equipajeEsp).ciudad, primero(aviones[i].equipajeEsp).pais, primero(aviones[i].equipajeEsp).prioridad, primero(aviones[i].equipajeEsp).peso);
+            fprintf(avionesLog,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajeEsp).id, primero(aviones[i].equipajeEsp).ciudad, primero(aviones[i].equipajeEsp).pais, primero(aviones[i].equipajeEsp).prioridad, primero(aviones[i].equipajeEsp).peso);
             desencolar(&aviones[i].equipajeEsp);
         }
-        fprintf(f,"------------------\n");
+        fprintf(avionesLog,"------------------\n");
         while (esVacio(aviones[i].equipajes) == 0){
-            fprintf(f,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajes).id, primero(aviones[i].equipajes).ciudad, primero(aviones[i].equipajes).pais, primero(aviones[i].equipajes).prioridad, primero(aviones[i].equipajes).peso);
+            fprintf(avionesLog,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajes).id, primero(aviones[i].equipajes).ciudad, primero(aviones[i].equipajes).pais, primero(aviones[i].equipajes).prioridad, primero(aviones[i].equipajes).peso);
             desencolar(&aviones[i].equipajes);
         }
-        fprintf(f,"----------------\n");
+        fprintf(avionesLog,"----------------\n");
         while (esVacio(aviones[i].equipajeSD) == 0){
-            fprintf(f,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajeSD).id, primero(aviones[i].equipajeSD).ciudad, primero(aviones[i].equipajeSD).pais, primero(aviones[i].equipajeSD).prioridad, primero(aviones[i].equipajeSD).peso);
+            fprintf(avionesLog,"%i (%s,%s) [prioridad: %i] peso: %f\n", primero(aviones[i].equipajeSD).id, primero(aviones[i].equipajeSD).ciudad, primero(aviones[i].equipajeSD).pais, primero(aviones[i].equipajeSD).prioridad, primero(aviones[i].equipajeSD).peso);
             desencolar(&aviones[i].equipajeSD);
         }
     }
-    fclose(f);
 }
 #endif

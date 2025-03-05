@@ -26,7 +26,6 @@ int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz
 ColaEntero buscarInterfaz;
 
 
-
 int main() {
     int i,t,w,p; //variables para bucles
     int op_menu; //opcion del menu seleccionada
@@ -35,7 +34,8 @@ int main() {
     pthread_t cintaHilo[MAX_CINTAS];
     pthread_t hilosAlmacenes[MAX_ALMACEN];
 
-    fclose(fopen("../pruebas/logAlmacen.txt", "w")); //Vaciar archivo de log (Por si ya existe)
+    almacenLog = fopen("../pruebas/logAlmacen.txt", "w");
+    avionesLog = fopen("../pruebas/finalAviones.txt", "w");
     
     usuario(&requisitoInterfaz,&buscarInterfaz);
     sem_init(&mutexAlmacen,1);
@@ -106,6 +106,9 @@ int main() {
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
     verColasAlmacenes(almacenes); //Escribir resultados almacen
     verAviones(aviones, cantAviones); //Escribir estado final de los aviones
+
+    fclose(almacenLog);
+    fclose(avionesLog);
 
     return 0;
 }
