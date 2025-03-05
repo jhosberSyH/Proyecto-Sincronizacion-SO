@@ -5,8 +5,8 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 1
-Equipaje especial: 250
-Equipaje facturado: 750
+Equipaje especial: 249
+Equipaje facturado: 751
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 2
@@ -20,8 +20,8 @@ Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 4
-Equipaje especial: 501
-Equipaje facturado: 499
+Equipaje especial: 500
+Equipaje facturado: 500
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 5
@@ -75,8 +75,8 @@ Equipaje facturado: 500
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 15
-Equipaje especial: 0
-Equipaje facturado: 1000
+Equipaje especial: 1
+Equipaje facturado: 999
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 16
@@ -200,13 +200,13 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 40
-Equipaje especial: 0
-Equipaje facturado: 1000
+Equipaje especial: 1
+Equipaje facturado: 999
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 41
-Equipaje especial: 247
-Equipaje facturado: 753
+Equipaje especial: 248
+Equipaje facturado: 752
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 42
@@ -220,19 +220,19 @@ Equipaje facturado: 500
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 44
-Equipaje especial: 500
-Equipaje facturado: 500
+Equipaje especial: 499
+Equipaje facturado: 501
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 45
-Equipaje especial: 0
-Equipaje facturado: 1000
+Equipaje especial: 251
+Equipaje facturado: 749
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 46
 Equipaje especial: 0
-Equipaje facturado: 499
-Equipaje sobredimensionado: 501
+Equipaje facturado: 1000
+Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 47
 Equipaje especial: 0
@@ -240,9 +240,9 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 48
-Equipaje especial: 250
-Equipaje facturado: 750
-Equipaje sobredimensionado: 0
+Equipaje especial: 0
+Equipaje facturado: 497
+Equipaje sobredimensionado: 503
 
 ALMACEN NUMERO 49
 Equipaje especial: 0
@@ -255,8 +255,8 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 51
-Equipaje especial: 247
-Equipaje facturado: 753
+Equipaje especial: 248
+Equipaje facturado: 752
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 52
@@ -280,8 +280,8 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 56
-Equipaje especial: 1000
-Equipaje facturado: 0
+Equipaje especial: 0
+Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 57
@@ -290,29 +290,29 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 58
-Equipaje especial: 0
-Equipaje facturado: 1000
+Equipaje especial: 1000
+Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 59
-Equipaje especial: 499
-Equipaje facturado: 501
-Equipaje sobredimensionado: 0
-
-ALMACEN NUMERO 60
-Equipaje especial: 499
-Equipaje facturado: 501
-Equipaje sobredimensionado: 0
-
-ALMACEN NUMERO 61
 Equipaje especial: 0
 Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
+ALMACEN NUMERO 60
+Equipaje especial: 1000
+Equipaje facturado: 0
+Equipaje sobredimensionado: 0
+
+ALMACEN NUMERO 61
+Equipaje especial: 500
+Equipaje facturado: 500
+Equipaje sobredimensionado: 0
+
 ALMACEN NUMERO 62
-Equipaje especial: 0
-Equipaje facturado: 498
-Equipaje sobredimensionado: 502
+Equipaje especial: 249
+Equipaje facturado: 751
+Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 63
 Equipaje especial: 0
@@ -320,8 +320,8 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 64
-Equipaje especial: 250
-Equipaje facturado: 750
+Equipaje especial: 501
+Equipaje facturado: 499
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 65
@@ -330,8 +330,8 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 66
-Equipaje especial: 1000
-Equipaje facturado: 0
+Equipaje especial: 0
+Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 67
@@ -346,8 +346,8 @@ Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 69
 Equipaje especial: 0
-Equipaje facturado: 1000
-Equipaje sobredimensionado: 0
+Equipaje facturado: 500
+Equipaje sobredimensionado: 500
 
 ALMACEN NUMERO 70
 Equipaje especial: 0
@@ -360,13 +360,13 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 72
-Equipaje especial: 0
-Equipaje facturado: 1000
+Equipaje especial: 1000
+Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 73
-Equipaje especial: 1000
-Equipaje facturado: 0
+Equipaje especial: 0
+Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 74
@@ -395,8 +395,8 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 79
-Equipaje especial: 0
-Equipaje facturado: 1000
+Equipaje especial: 1000
+Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 80
@@ -405,23 +405,23 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 81
-Equipaje especial: 1000
-Equipaje facturado: 0
-Equipaje sobredimensionado: 0
-
-ALMACEN NUMERO 82
-Equipaje especial: 1000
-Equipaje facturado: 0
-Equipaje sobredimensionado: 0
-
-ALMACEN NUMERO 83
 Equipaje especial: 0
 Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
-ALMACEN NUMERO 84
+ALMACEN NUMERO 82
+Equipaje especial: 0
+Equipaje facturado: 1000
+Equipaje sobredimensionado: 0
+
+ALMACEN NUMERO 83
 Equipaje especial: 1000
 Equipaje facturado: 0
+Equipaje sobredimensionado: 0
+
+ALMACEN NUMERO 84
+Equipaje especial: 0
+Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 85
@@ -465,13 +465,13 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 93
-Equipaje especial: 1
-Equipaje facturado: 999
+Equipaje especial: 1000
+Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 94
-Equipaje especial: 248
-Equipaje facturado: 752
+Equipaje especial: 250
+Equipaje facturado: 750
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 95
@@ -480,24 +480,24 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 96
-Equipaje especial: 501
-Equipaje facturado: 499
-Equipaje sobredimensionado: 0
-
-ALMACEN NUMERO 97
 Equipaje especial: 498
 Equipaje facturado: 502
 Equipaje sobredimensionado: 0
 
+ALMACEN NUMERO 97
+Equipaje especial: 246
+Equipaje facturado: 754
+Equipaje sobredimensionado: 0
+
 ALMACEN NUMERO 98
-Equipaje especial: 251
-Equipaje facturado: 749
+Equipaje especial: 500
+Equipaje facturado: 500
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 99
 Equipaje especial: 0
-Equipaje facturado: 501
-Equipaje sobredimensionado: 499
+Equipaje facturado: 1000
+Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 100
 Equipaje especial: 0
@@ -511,8 +511,8 @@ Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 102
 Equipaje especial: 0
-Equipaje facturado: 1000
-Equipaje sobredimensionado: 0
+Equipaje facturado: 501
+Equipaje sobredimensionado: 499
 
 ALMACEN NUMERO 103
 Equipaje especial: 0
@@ -520,8 +520,8 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 104
-Equipaje especial: 246
-Equipaje facturado: 754
+Equipaje especial: 249
+Equipaje facturado: 751
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 105
@@ -530,43 +530,43 @@ Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 106
-Equipaje especial: 1
-Equipaje facturado: 287
-Equipaje sobredimensionado: 0
-
-ALMACEN NUMERO 107
 Equipaje especial: 0
 Equipaje facturado: 288
 Equipaje sobredimensionado: 0
 
+ALMACEN NUMERO 107
+Equipaje especial: 289
+Equipaje facturado: 287
+Equipaje sobredimensionado: 0
+
 ALMACEN NUMERO 108
-Equipaje especial: 291
-Equipaje facturado: 285
+Equipaje especial: 0
+Equipaje facturado: 288
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 109
-Equipaje especial: 287
-Equipaje facturado: 289
+Equipaje especial: 0
+Equipaje facturado: 288
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 110
+Equipaje especial: 0
+Equipaje facturado: 288
+Equipaje sobredimensionado: 0
+
+ALMACEN NUMERO 111
+Equipaje especial: 289
+Equipaje facturado: 287
+Equipaje sobredimensionado: 0
+
+ALMACEN NUMERO 112
 Equipaje especial: 288
 Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
-ALMACEN NUMERO 111
-Equipaje especial: 0
-Equipaje facturado: 288
-Equipaje sobredimensionado: 0
-
-ALMACEN NUMERO 112
-Equipaje especial: 0
-Equipaje facturado: 288
-Equipaje sobredimensionado: 0
-
 ALMACEN NUMERO 113
-Equipaje especial: 0
-Equipaje facturado: 288
+Equipaje especial: 288
+Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 114
@@ -575,8 +575,8 @@ Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 115
-Equipaje especial: 288
-Equipaje facturado: 0
+Equipaje especial: 0
+Equipaje facturado: 288
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 116
@@ -585,14 +585,14 @@ Equipaje facturado: 288
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 117
+Equipaje especial: 250
+Equipaje facturado: 750
+Equipaje sobredimensionado: 0
+
+ALMACEN NUMERO 118
 Equipaje especial: 0
 Equipaje facturado: 276
 Equipaje sobredimensionado: 284
-
-ALMACEN NUMERO 118
-Equipaje especial: 249
-Equipaje facturado: 751
-Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 119
 Equipaje especial: 0
@@ -620,8 +620,8 @@ Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 124
-Equipaje especial: 0
-Equipaje facturado: 272
+Equipaje especial: 272
+Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 125
@@ -631,7 +631,7 @@ Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 126
 Equipaje especial: 0
-Equipaje facturado: 272
+Equipaje facturado: 1000
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 127
@@ -650,13 +650,13 @@ Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 130
-Equipaje especial: 0
-Equipaje facturado: 1000
+Equipaje especial: 272
+Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 131
-Equipaje especial: 272
-Equipaje facturado: 0
+Equipaje especial: 0
+Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 132
@@ -665,8 +665,8 @@ Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 133
-Equipaje especial: 0
-Equipaje facturado: 272
+Equipaje especial: 272
+Equipaje facturado: 0
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 134
@@ -680,18 +680,18 @@ Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 136
-Equipaje especial: 272
-Equipaje facturado: 0
-Equipaje sobredimensionado: 0
-
-ALMACEN NUMERO 137
 Equipaje especial: 0
 Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
-ALMACEN NUMERO 138
+ALMACEN NUMERO 137
 Equipaje especial: 272
 Equipaje facturado: 0
+Equipaje sobredimensionado: 0
+
+ALMACEN NUMERO 138
+Equipaje especial: 0
+Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 139
@@ -706,7 +706,7 @@ Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 141
 Equipaje especial: 0
-Equipaje facturado: 544
+Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 142
@@ -720,8 +720,8 @@ Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 144
-Equipaje especial: 272
-Equipaje facturado: 0
+Equipaje especial: 0
+Equipaje facturado: 272
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 145
@@ -731,12 +731,12 @@ Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 146
 Equipaje especial: 0
-Equipaje facturado: 272
+Equipaje facturado: 544
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 147
-Equipaje especial: 34
-Equipaje facturado: 102
+Equipaje especial: 32
+Equipaje facturado: 104
 Equipaje sobredimensionado: 0
 
 ALMACEN NUMERO 148

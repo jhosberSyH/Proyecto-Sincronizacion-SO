@@ -2,12 +2,14 @@
 #include "almacen.h"
 #include "interfaz.h"
 #include "ColaEntero.h"
+#include "avion.h"
 
 
 #define MAX_MOSTRADORES 5000 // numero de mostradores
 #define MAX_CINTAS 500
 #define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
+#define MAX_AVIONES 100
 
 void *mostrador(void *args);
 void *cinta(void *args);
@@ -16,6 +18,7 @@ void leer_entradas(const char *filename);
 sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz;
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN];
+Avion aviones[MAX_AVIONES];
 int banderaFinMostrador = 1,nroEquipaje = 0;
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
 ColaEntero buscarInterfaz;
@@ -25,6 +28,7 @@ ColaEntero buscarInterfaz;
 int main() {
     int i,t,w,p; //variables para bucles
     int op_menu; //opcion del menu seleccionada
+    int cantAviones = 0; //Cantidad de aviones en el aeropuerto
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
 
@@ -47,6 +51,7 @@ int main() {
     constructorAlmacen(almacenes);
 
     //lectura de archivo
+    crearAviones(aviones, &cantAviones);
     leer_entradas("../pruebas/text.txt");
     printf("\t===1 Entrada leida===\n");
 

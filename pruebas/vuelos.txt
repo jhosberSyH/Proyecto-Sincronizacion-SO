@@ -1,0 +1,20 @@
+00000 Empresa4 Madrid España 1000
+00001 Empresa1 Nueva_York EE.UU. 750
+00010 Empresa2 Tokio Japón 1000
+00011 Empresa1 Paris Francia 1275
+00100 Empresa2 Buenos_Aires Argentina 1000
+00101 Empresa1 Lima Perú 1000
+00110 Empresa1 Berlin Alemania 350
+00111 Empresa1 Toronto Canadá 1000
+01000 Empresa2 Roma Italia 2000
+01001 Empresa1 Londres Reino_Unido 1500
+01010 Empresa3 Sydney Australia 1000
+01011 Empresa4 Moscú Rusia 500
+01100 Empresa2 Dubai Emiratos_Árabes 1000
+01101 Empresa3 Los_Angeles EE.UU. 1250
+01110 Empresa1 Mexico_City México 1000
+01111 Empresa1 Hong_Kong China 1000
+10001 Empresa2 Chicago EE.UU.1000
+10010 Empresa3 Beijing China 1050
+10011 Empresa1 Amsterdam Países_Bajos 1200
+10100 Empresa4 Seul Corea_del_Sur 1005
