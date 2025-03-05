@@ -19,6 +19,7 @@ Almacen almacenes[MAX_ALMACEN];
 int banderaFinMostrador = 1,nroEquipaje = 0;
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
 ColaEntero buscarInterfaz;
+FILE *fileMostrador,*fileCinta,*fileAlmacen;
 
 
 
@@ -47,7 +48,15 @@ int main() {
     //lectura de archivo
     leer_entradas("../pruebas/text.txt");
     printf("\t===1 Entrada leida===\n");
-
+    fileMostrador = fopen("../pruebas/Resultados/mostrador.txt", "w");
+    fileCinta = fopen("../pruebas/Resultados/cinta.txt", "w");
+    fileAlmacen = fopen("../pruebas/Resultados/almacen.txt", "w");
+    if ((fileMostrador == NULL) || (fileCinta == NULL) || (fileAlmacen == NULL)) {
+        perror("Error Creando los archivos\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    
     //creacion de hilos
     for (i = 0; i < MAX_MOSTRADORES; i++) {
         int *arg = malloc(sizeof(*arg));  
@@ -74,9 +83,13 @@ int main() {
     sem_destroy(&semCinta);
     sem_destroy(&semMostrador);
 
+    //cerrando archivos
+    fclose(fileMostrador);
+    fclose(fileCinta);
+    fclose(fileAlmacen);
+
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
-
     return 0;
 }
 
@@ -93,6 +106,7 @@ void *mostrador(void *args){
             pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
             incrementar(id,mostradorInterfaz);
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,1,pasajeros.primero->info);// tinee detalles no funciona al 100% todavia
+            registrar(id,3,pasajeros.primero->info,fileMostrador);
             indice = (nroEquipaje - 1) % MAX_CINTAS; //distribucion de cintas por modulo para distribuir equitativamente
             equipaje = cintas[indice];
             encolar(&equipaje,primero(pasajeros));
@@ -130,6 +144,7 @@ void *cinta(void *args){
             sem_wait(&mutexCintaInterfaz);
             incrementar(id,cintaInterfaz);
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,2,equipaje.primero->info);// tinee detalles no funciona al 100% todavia
+            registrar(id,3,equipaje.primero->info,fileCinta);
             sem_post(&mutexCintaInterfaz);
 
             while ((indice < MAX_ALMACEN) && (!almacenado)){
@@ -141,6 +156,7 @@ void *cinta(void *args){
                     almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
                     incrementar(indice,almacenInterfaz);
                     mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,3,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
+                    registrar(indice,3,equipaje.primero->info,fileAlmacen);
                     sem_post(&mutexAlmacen);
                 }
                 indice++;

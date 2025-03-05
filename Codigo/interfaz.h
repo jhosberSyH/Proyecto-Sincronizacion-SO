@@ -260,4 +260,22 @@ void mostrarEspecificacion(int requisito,int hilo,ColaEntero valores,int etapa,E
         }
     }*/
 }
+void registrar(int id,int etapa,Equipaje equipaje,FILE *file){
+    char nombre[10];
+    switch (etapa){
+    case 1:
+        strcpy(nombre,"Mostrador");
+        break;
+    case 2:
+        strcpy(nombre,"Cinta");
+        break;
+    case 3:
+        strcpy(nombre,"Almacen");
+        break;
+    default:
+        printf("\t\tError al registar");
+        break;
+    }
+    fprintf(file,"El Equipaje %s numero %d con peso %.2f y destino a %s %s paso por %s %d\n",equipaje.tipo,equipaje.id,equipaje.peso ,equipaje.ciudad, equipaje.pais,nombre,id+1);
+}
 #endif
