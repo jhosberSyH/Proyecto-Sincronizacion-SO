@@ -4,16 +4,17 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <unistd.h>
 #include "Cola.h"
-#include "ColaEntero.h"
 #include "almacen.h"
 
 #define MAX_MOSTRADORES 5000
 #define MAX_CINTAS 500
 #define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
+#define MAX_BUSQUEDA 3
 
-void usuario(int *requisito,ColaEntero *valores);
+void usuario(int *requisito,int valores[]);
 void menu(int *requisito);
 int validarNumero(char num[]);
 int opcion_valida(char num[]);
@@ -21,22 +22,22 @@ void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[
 void incrementar(int id,int valores[]);
 void inicializarInt(int n,int valores[]);
 void mostrarInformacion(int id,int valores[],int n);
-void especificaciones(int requisito,ColaEntero *valores);
-void mostrarEspecificacion(int requisito,int hilo,ColaEntero valores,int etapa,Equipaje equipaje);
+void especificaciones(int requisito,int valores[]);
+void mostrarEspecificacion(int requisito,int hilo,int valores[],int etapa,int situacion,Equipaje equipaje);
+void registrar(int id,int etapa,Equipaje equipaje,FILE *file);
+void entradaMostrarEspecificacion(int etapa,int hilo,Equipaje equipaje);
+void salidaMostrarEspecificacion(int etapa,int hilo,Equipaje equipaje);
 
-void usuario(int *requisito,ColaEntero *valores){
+void usuario(int *requisito,int valores[]){
     menu(requisito);
     if(*requisito > 4){
-
-        crearEntero(valores);
+        system("clear");
         especificaciones(*requisito,valores);
     }
     system("clear");
     printf("\t\tCargando....\n");
-    printf("\t\tHey bro la funcion 5 esta en matenimiento\n");
-
 }
-
+//Menu para interacturar con el usuario
 void menu(int *requisito){
     int numero = -1;
     char val[20];
@@ -48,36 +49,14 @@ void menu(int *requisito){
     printf("\t| [2] Informacion Cintas                   |\n");
     printf("\t| [3] Informacion Almacen                  |\n");
     printf("\t| [4] Mostrar Todo                         |\n");
-    printf("\t| [5] Informacion Especifica               |\n");
+    printf("\t| [5] Buscar 3 Equipajes por numero        |\n");
     printf("\t|                                          |\n");
     printf("\t+------------------------------------------+\n");
     printf("Opcion: ");
-
     do{
         scanf("%s",val);
     }while(opcion_valida(val) == 0);
-    
     numero = atoi(val);
-    system("clear");
-    if (numero == 5){
-        printf("\t+-------- MENU DE ESPECIFICACIONES --------+\n");
-        printf("\t|                                          |\n");
-        printf("\t| [5] Buscar Equipajes con Numero          |\n");
-        printf("\t| [7]                                      |\n");
-        printf("\t| [8]                                      |\n");
-        printf("\t| [9]                                      |\n");
-        printf("\t| [10]                                     |\n");
-        printf("\t|                                          |\n");
-        printf("\t+------------------------------------------+\n");
-        printf("Opcion: ");
-        do{
-            scanf("%s",val);
-            numero = validarNumero(val);
-        }while(numero == 0);
-        
-        numero = atoi(val);
-        system("clear");
-    }
     *requisito = numero;
     
 }
@@ -122,7 +101,7 @@ int validarNumero(char num[]){
 	return valido; 
 }
 
-
+//Muestra todas las repuesta que tienen que esperar a que termine el programa
 void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]){
     switch (requisito){
     case 1:
@@ -146,7 +125,7 @@ void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[
     }
 }
 
-//funciones necesarias 
+//Incrementar contenido del vector
 void incrementar(int id,int valores[]){
     valores[id] = valores[id] + 1;
 }
@@ -159,7 +138,7 @@ void inicializarInt(int n,int valores[]){
     }
     
 }
-
+//Mustra los resultados de respuestasFinal
 void mostrarInformacion(int id,int valores[],int n){
     int cantidad = 0,total = 0,sinUso = 0,i;
     char nombrePlural[13],nombre[11];
@@ -188,78 +167,45 @@ void mostrarInformacion(int id,int valores[],int n){
     printf("\t+----------------------------------------------------------------+\n");
 }
 
-void especificaciones(int requisito,ColaEntero *valores){ // tinee detalles no funciona al 100% todavia
+//llena el vector de los equipajes que se van a buscar
+void especificaciones(int requisito,int valores[]){ 
     int numero,n,i; 
     char val[20];
-    switch (requisito){
-    case 5:
-        /*printf("Ingrese la cantidad de Equipaje que desea buscar:");
+    printf("\tIngresa 3 numeros de equipaje que quieras ver su recorrido\n");
+    for (i = 0; i < 3; i++){
+        printf("\nIngrese el Numero de Equipaje %d que desee seguir:",i+1);
         do{
             scanf("%s",val);
-            n = validarNumero(val);
-        }while(n == 0);
-        
-        n = atoi(val);
-        for (i = 0; i < n; i++){
-            printf("\nIngrese el Numero de Equipaje %d que desee seguir:",i+1);
-            do{
-                scanf("%s",val);
-                numero = validarNumero(val);
-            }while(numero == 0);
-            numero = atoi(val);
-            encolarEntero(valores,numero);
-        }
-        */
-        break;
-    
-    default:
-        break;
+            numero = validarNumero(val);
+        }while(numero == 0);
+        numero = atoi(val);
+        valores[i]  = numero;
     }
 }
-void mostrarEspecificacion(int requisito,int hilo,ColaEntero valores,int etapa,Equipaje equipaje){  // tinee detalles no funciona al 100% todavia
-    /*if(requisito > 4){
-        switch (requisito){
-        case 5:
-        
-            int conseguido = 0,i = 0;
-            while ((i < longitudEntero(valores)) && (!conseguido)){
-                if(equipaje.id == primeroEntero(valores)){
-                    conseguido = 1;
-                    printf("\t+-------------------------------------------------------------------------+\n");
-                    switch (etapa){
-                    case 1:
-                        printf("\t|El Equipaje Numero %d con destino a %s paso por el Mostrador %d\n",equipaje.id,equipaje.pais,hilo);
-                        break;
-                    case 2:
-                        printf("\t|El Equipaje Numero %d con destino a %s paso por la Cinta %d\n",equipaje.id,equipaje.pais,hilo);
-                        break;
-                    case 3:
-                        printf("\t|El Equipaje Numero %d con destino a %s paso por el Almacen %d\n",equipaje.id,equipaje.pais,hilo);
-                        break;
-                    case 4:
-                        //avion
-                        break;
-                    case 5:
-                        // destino 
-                        break;
-                    
-                    default:
-                        printf("\t\t\tNo existe esa etapa!\n");
-                        break;
-                    }
-                }
-                encolarEntero(&valores,valores.primero->info);
-                desencolarEntero(&valores);
-                i++;
-            }
-            
-            break;
-        
-        default:
-            break;
+int limpiar = -1;
+//Muestra los equipajes que se buscan por numero
+void mostrarEspecificacion(int requisito,int hilo,int valores[],int etapa,int situacion,Equipaje equipaje){
+    if(requisito > 4){
+        int conseguido = 0,i = 0;
+        if(limpiar < 0){ //limpiar la pantalla de carga 
+            limpiar++;
+            system("clear");
         }
-    }*/
+        while ((i < MAX_BUSQUEDA) && (!conseguido)){
+            if(equipaje.id == valores[i]){
+                conseguido = 1;
+                if(situacion == 1 ){
+                    entradaMostrarEspecificacion(etapa,hilo,equipaje);
+                }else{
+                    salidaMostrarEspecificacion(etapa,hilo,equipaje);
+                }  
+            }
+            i++;
+        }
+    }
 }
+
+//Escribe el log en su respectivo archivo
 void registrar(int id,int etapa,Equipaje equipaje,FILE *file){
     char nombre[10];
     switch (etapa){
@@ -277,5 +223,59 @@ void registrar(int id,int etapa,Equipaje equipaje,FILE *file){
         break;
     }
     fprintf(file,"El Equipaje %s numero %d con peso %.2f y destino a %s %s paso por %s %d\n",equipaje.tipo,equipaje.id,equipaje.peso ,equipaje.ciudad, equipaje.pais,nombre,id+1);
+}
+
+//Muestra la entrada del equipaje a su respectiva etapa
+void entradaMostrarEspecificacion(int etapa,int hilo,Equipaje equipaje){
+    int random = (rand() % 3) + 1;
+    printf("\t+---------------------------------------------------------------------------------------------------------+\n");
+    switch (etapa){
+        case 1:
+            printf("\t|El Equipaje Numero %d con destino a %s Entro al Mostrador %d\n",equipaje.id,equipaje.pais,hilo + 1);
+            sleep(random);
+            break;
+        case 2:
+            printf("\t|El Equipaje Numero %d con destino a %s Entro a la Cinta %d\n",equipaje.id,equipaje.pais,hilo + 1);
+            sleep(random);
+            break;
+        case 3:
+            printf("\t|El Equipaje Numero %d con destino a %s Entro al Almacen %d\n",equipaje.id,equipaje.pais,hilo + 1);
+            sleep(random);
+            break;
+        case 4:
+            //avion
+            break;
+        case 5:
+            // destino 
+            break;
+        default:
+            printf("\t\t\tNo existe esa etapa!\n");
+            break;
+        }
+}
+
+//Muestra la salida del equipaje de su respectiva etapa
+void salidaMostrarEspecificacion(int etapa,int hilo,Equipaje equipaje){
+    printf("\t +========================================================================================================+\n");
+    switch (etapa){
+        case 1:
+            printf("\t|El Equipaje Numero %d con destino a %s se le asigno un numero de equipaje unico y salio del Mostrador %d\n",equipaje.id,equipaje.pais,hilo + 1);
+            break;
+        case 2:
+            printf("\t|El Equipaje Numero %d con destino a %s se clasifico y salio de la Cinta %d\n",equipaje.id,equipaje.pais,hilo + 1);
+            break;
+        case 3:
+            printf("\t|El Equipaje Numero %d con destino a %s se organizo y salio del Almacen %d\n",equipaje.id,equipaje.pais,hilo + 1);
+            break;
+        case 4:
+            //avion
+            break;
+        case 5:
+            // destino 
+            break;
+        default:
+            printf("\t\t\tNo existe esa etapa!\n");
+            break;
+        }
 }
 #endif
