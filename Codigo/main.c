@@ -115,6 +115,8 @@ int main() {
     fclose(fileMostrador);
     fclose(fileCinta);
     fclose(fileAlmacen);
+    fclose(almacenLog);
+    fclose(avionesLog);
 
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
