@@ -191,15 +191,14 @@ void *cinta(void *args){
 
             while ((indice < MAX_ALMACEN) && (!almacenado)){
                 if(compararPais(equipaje.primero->info.pais,&almacenes[indice])){
-                    almacenado = 1;
                     sem_wait(&mutexAlmacenes[indice]);
-
                     equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
                     almacenado = almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
-                    incrementar(indice,almacenInterfaz);
-                    mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,ENTRADA,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
-                    registrar(indice,ETAPA_ALMACEN,equipaje.primero->info,fileAlmacen);
-                    
+                    if (almacenado == 1){
+                        incrementar(indice,almacenInterfaz);
+                        mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,ENTRADA,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
+                        registrar(indice,ETAPA_ALMACEN,equipaje.primero->info,fileAlmacen);
+                    }
                     sem_post(&mutexAlmacenes[indice]);
                 }
                     indice++;

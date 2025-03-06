@@ -256,7 +256,7 @@ void entradaMostrarEspecificacion(int etapa,int hilo,Equipaje equipaje){
 
 //Muestra la salida del equipaje de su respectiva etapa
 void salidaMostrarEspecificacion(int etapa,int hilo,Equipaje equipaje){
-    printf("\t +========================================================================================================+\n");
+    printf("\t+========================================================================================================+\n");
     switch (etapa){
         case 1:
             printf("\t|El Equipaje Numero %d con destino a %s se le asigno un numero de equipaje unico y salio del Mostrador %d\n",equipaje.id,equipaje.pais,hilo + 1);
