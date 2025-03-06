@@ -2,32 +2,41 @@
 #include "almacen.h"
 #include "interfaz.h"
 #include "ColaEntero.h"
+#include "avion.h"
 
 
 #define MAX_MOSTRADORES 5000 // numero de mostradores
 #define MAX_CINTAS 500
 #define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
+#define MAX_AVIONES 100
 
 void *mostrador(void *args);
 void *cinta(void *args);
+void *almacen(void *args);
 void leer_entradas(const char *filename);
+int existeVuelo(Equipaje *e);
 
-sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz;
+sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN];
+Avion aviones[MAX_AVIONES];
 int banderaFinMostrador = 1,nroEquipaje = 0;
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
 ColaEntero buscarInterfaz;
 FILE *fileMostrador,*fileCinta,*fileAlmacen;
 
 
-
 int main() {
     int i,t,w,p; //variables para bucles
     int op_menu; //opcion del menu seleccionada
+    int cantAviones = 0; //Cantidad de aviones en el aeropuerto
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
+    pthread_t hilosAlmacenes[MAX_ALMACEN];
+
+    almacenLog = fopen("../pruebas/logAlmacen.txt", "w");
+    avionesLog = fopen("../pruebas/finalAviones.txt", "w");
     
     usuario(&requisitoInterfaz,&buscarInterfaz);
     sem_init(&mutexAlmacen,1);
@@ -35,6 +44,12 @@ int main() {
     sem_init(&mutexCintaInterfaz,1);
     sem_init(&semCinta,1);
     sem_init(&semMostrador,1);
+    for(int i=0;i<MAX_ALMACEN;i++){
+        sem_init(&mutexAlmacenes[i],1);
+    }
+    for(int i=0;i<MAX_AVIONES;i++){
+        sem_init(&mutexAviones[i],1);
+    }
 
     //inicializar listas con 0
     inicializarInt(MAX_CINTAS,cintaInterfaz);
@@ -46,6 +61,7 @@ int main() {
     constructorAlmacen(almacenes);
 
     //lectura de archivo
+    crearAviones(aviones, &cantAviones);
     leer_entradas("../pruebas/text.txt");
     printf("\t===1 Entrada leida===\n");
     fileMostrador = fopen("../pruebas/Resultados/mostrador.txt", "w");
@@ -69,11 +85,20 @@ int main() {
         pthread_create(&cintaHilo[t],NULL,cinta,arg);
         
     }
+    for (int j = 0; j < MAX_ALMACEN; j++){
+        int *arg = malloc(sizeof(*arg));  
+        *arg = j; 
+        pthread_create(&hilosAlmacenes[j],NULL,almacen,arg);
+        
+    }
     for (p = 0; p < MAX_MOSTRADORES; p++){
         pthread_join(mostradores[p],NULL);
     }
     for (w = 0; w < MAX_CINTAS; w++){
         pthread_join(cintaHilo[w],NULL);
+    }
+    for(int k=0; k< MAX_ALMACEN;k++){
+        pthread_join(hilosAlmacenes[k], NULL);
     }
 
     //destruccion de semaforos
@@ -82,6 +107,9 @@ int main() {
     sem_destroy(&mutexCintaInterfaz);
     sem_destroy(&semCinta);
     sem_destroy(&semMostrador);
+    for(int i=0;i<MAX_ALMACEN;i++){
+        sem_destroy(&mutexAlmacenes[i]);
+    }
 
     //cerrando archivos
     fclose(fileMostrador);
@@ -150,14 +178,14 @@ void *cinta(void *args){
             while ((indice < MAX_ALMACEN) && (!almacenado)){
                 if(compararPais(equipaje.primero->info.pais,&almacenes[indice])){
                     almacenado = 1;
-                    sem_wait(&mutexAlmacen);
+                    sem_wait(&mutexAlmacenes[indice]);
 
                     equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
-                    almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
+                    almacenado = almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
                     incrementar(indice,almacenInterfaz);
                     mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,3,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
                     registrar(indice,3,equipaje.primero->info,fileAlmacen);
-                    sem_post(&mutexAlmacen);
+                    sem_post(&mutexAlmacenes[indice]);
                 }
                 indice++;
             }
@@ -178,6 +206,24 @@ void *cinta(void *args){
         sem_post(&mutexMostrador);
     }
 }
+
+void *almacen(void *args){
+    int id = *((int *)args);
+    Cola equipajes;
+    while (1){
+        sem_wait(&mutexAlmacenes[id]);
+        //CONSUMIR
+        if(almacenes[id].lleno > 0){
+            //printf("DESCARGA DE ALMACEN %i (%i) \n", id, almacenes[id].lleno);
+            descargarAlmacen(&almacenes[id], aviones, mutexAviones);
+        }
+        if(almacenes[id].lleno <= 0){
+            sem_post(&mutexAlmacenes[id]);
+            pthread_exit(NULL);
+        }
+        sem_post(&mutexAlmacenes[id]);
+    }
+}
 void leer_entradas(const char *filename) {
     Equipaje equipaje;
     FILE *file = fopen(filename, "r");
@@ -189,9 +235,24 @@ void leer_entradas(const char *filename) {
     }
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         construtorEquipaje(&equipaje);
-        if (sscanf(buffer, "%s %s %s %f ", equipaje.tipo, equipaje.ciudad, equipaje.pais,&equipaje.peso)) {
-            encolar(&pasajeros, equipaje);
+        if (sscanf(buffer, "%s %s %s %f ", equipaje.tipo, equipaje.ciudad, equipaje.pais,&equipaje.peso)) {            
+            //Solo ir aceptando los de vuelos listos para ser cargados
+            if(existeVuelo(&equipaje)){
+                encolar(&pasajeros, equipaje);
+            }
         }
     }
+    printf("%i", longitud(pasajeros));
     fclose(file);
+}
+int existeVuelo(Equipaje *e){
+    int i;
+    for(i=0;i<20;i++){
+        if((strcmp(e->ciudad,aviones[i].ciudad) == 0) && (strcmp(e->pais,aviones[i].pais) == 0)){
+            e->idVuelo = i;
+            //printf("El vuelo de (%s, %s) si existe\n", e->ciudad, e->pais);
+            return 1;
+        }
+    }
+    return 0;
 }
