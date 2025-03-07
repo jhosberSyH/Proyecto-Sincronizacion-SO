@@ -23,7 +23,7 @@ void *almacen(void *args);
 void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
 
-sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
+sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN];
 Avion aviones[MAX_AVIONES];
@@ -56,10 +56,12 @@ int main() {
     sem_init(&mutexAlmacen,1);
     sem_init(&mutexMostrador,1);
     sem_init(&mutexCintaInterfaz,1);
-    sem_init(&semCinta,1);
     sem_init(&semMostrador,1);
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_init(&mutexAlmacenes[i],1);
+    }
+    for(int i=0;i<MAX_CINTAS;i++){
+        sem_init(&semCinta[i],1);
     }
     for(int i=0;i<MAX_AVIONES;i++){
         sem_init(&mutexAviones[i],1);
@@ -111,12 +113,16 @@ int main() {
     sem_destroy(&mutexAlmacen);
     sem_destroy(&mutexMostrador);
     sem_destroy(&mutexCintaInterfaz);
-    sem_destroy(&semCinta);
     sem_destroy(&semMostrador);
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_destroy(&mutexAlmacenes[i]);
     }
-
+    for(int i=0;i<MAX_CINTAS;i++){
+        sem_destroy(&semCinta[i]);
+    }
+    for(int i=0;i<MAX_AVIONES;i++){
+        sem_destroy(&mutexAviones[i]);
+    }
     //cerrando archivos
     fclose(fileMostrador);
     fclose(fileCinta);
@@ -171,7 +177,7 @@ void *cinta(void *args){
     int indice = 0,almacenado = 0,aux = 0;
     crear(&vacia);
     while (1){
-        sem_wait(&semCinta);
+        sem_wait(&semCinta[id]);
         sem_wait(&mutexMostrador);
 
         equipaje = cintas[id];
@@ -208,7 +214,7 @@ void *cinta(void *args){
             desencolar(&equipaje);
         }
 
-        sem_post(&semCinta);
+        sem_post(&semCinta[id]);
         sem_wait(&mutexMostrador);
 
         equipaje = cintas[id];
