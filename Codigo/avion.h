@@ -37,7 +37,7 @@ void crearAviones(Avion aviones[MAX_AVIONES], int *cantidadAviones){
             crear(&a.equipajeSD);
             crear(&a.equipajes);
             aviones[i] = a;
-            //printf("AVION: %i %s %s %s %s %i\n", aviones[i].id,aviones[i].codigoVuelo,aviones[i].nombre,aviones[i].ciudad,aviones[i].pais, aviones[i].capacidad);
+            //printf("AVION: %i %s %s %s %s %f\n", aviones[i].id,aviones[i].codigoVuelo,aviones[i].nombre,aviones[i].ciudad,aviones[i].pais, aviones[i].capacidad);
             i++;
             *cantidadAviones = *cantidadAviones + 1;
         }

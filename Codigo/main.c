@@ -31,12 +31,12 @@ int banderaFinMostrador = 1,nroEquipaje = 0;
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
 int buscarInterfaz[5];
 FILE *fileMostrador,*fileCinta,*fileAlmacen;
+int cantAviones = 0; //Cantidad de aviones en el aeropuerto
 
 
 int main() {
     int i,t,w,p; //variables para bucles
     int op_menu; //opcion del menu seleccionada
-    int cantAviones = 0; //Cantidad de aviones en el aeropuerto
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
     pthread_t hilosAlmacenes[MAX_ALMACEN];
@@ -266,7 +266,7 @@ void leer_entradas(const char *filename) {
 }
 int existeVuelo(Equipaje *e){
     int i;
-    for(i=0;i<20;i++){
+    for(i=0;i<cantAviones;i++){
         if((strcmp(e->ciudad,aviones[i].ciudad) == 0) && (strcmp(e->pais,aviones[i].pais) == 0)){
             e->idVuelo = i;
             //printf("El vuelo de (%s, %s) si existe\n", e->ciudad, e->pais);

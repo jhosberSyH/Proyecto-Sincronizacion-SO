@@ -118,7 +118,6 @@ void verColasAlmacenes(Almacen almacen[]){
         fprintf(finalAlmacen,"Equipaje especial: %i\n", longitud(almacen[i].equipajeEsp));
         fprintf(finalAlmacen,"Equipaje facturado: %i\n", longitud(almacen[i].equipajes));
         fprintf(finalAlmacen,"Equipaje sobredimensionado: %i\n", longitud(almacen[i].equipajeSD));
-        printf("IMPRIMIENDO");
     }
 }
 #endif
