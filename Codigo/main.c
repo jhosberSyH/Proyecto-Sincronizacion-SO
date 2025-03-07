@@ -42,11 +42,11 @@ int main() {
     pthread_t hilosAlmacenes[MAX_ALMACEN];
 
     //creando archivos de escritura
-    almacenLog = fopen("../pruebas/logAlmacen.txt", "w");
-    avionesLog = fopen("../pruebas/finalAviones.txt", "w");
-    fileMostrador = fopen("../pruebas/Resultados/mostrador.txt", "w");
-    fileCinta = fopen("../pruebas/Resultados/cinta.txt", "w");
-    fileAlmacen = fopen("../pruebas/Resultados/almacen.txt", "w");
+    almacenLog = fopen("../salidas/logAlmacen.txt", "w");
+    avionesLog = fopen("../salidas/finalAviones.txt", "w");
+    fileMostrador = fopen("../salidas/mostrador.txt", "w");
+    fileCinta = fopen("../salidas/cinta.txt", "w");
+    fileAlmacen = fopen("../salidas/almacen.txt", "w");
     if((fileMostrador == NULL) || (fileCinta == NULL) || (fileAlmacen == NULL)) {
         perror("Error Creando los archivos\n");
         exit(EXIT_FAILURE);

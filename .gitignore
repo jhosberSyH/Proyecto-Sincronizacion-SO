@@ -1,3 +1,5 @@
-finalAlmacen.txt
-finalAviones.txt
-logAlmacen.txt
+#No se guardan las salidas
+salidas/
+#No se guarda en github el ejecutable ni los .o
+.o
+RUN
