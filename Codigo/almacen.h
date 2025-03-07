@@ -17,6 +17,7 @@ typedef struct {
 } Almacen;
 
 FILE *almacenLog;
+FILE *finalAlmacen;
 
 void constructorAlmacen(Almacen almacen[]);
 int almacenar(Almacen *almacen,Equipaje equipaje);
@@ -113,10 +114,11 @@ int compararPais(char pais[],Almacen *almacen){
 void verColasAlmacenes(Almacen almacen[]){
     int i;
     for (i = 0; i < MAX_ALMACEN; i++){
-        fprintf(almacenLog,"\nALMACEN NUMERO %i\n", i);
-        fprintf(almacenLog,"Equipaje especial: %i\n", longitud(almacen[i].equipajeEsp));
-        fprintf(almacenLog,"Equipaje facturado: %i\n", longitud(almacen[i].equipajes));
-        fprintf(almacenLog,"Equipaje sobredimensionado: %i\n", longitud(almacen[i].equipajeSD));
+        fprintf(finalAlmacen,"\nALMACEN NUMERO %i\n", i);
+        fprintf(finalAlmacen,"Equipaje especial: %i\n", longitud(almacen[i].equipajeEsp));
+        fprintf(finalAlmacen,"Equipaje facturado: %i\n", longitud(almacen[i].equipajes));
+        fprintf(finalAlmacen,"Equipaje sobredimensionado: %i\n", longitud(almacen[i].equipajeSD));
+        printf("IMPRIMIENDO");
     }
 }
 #endif

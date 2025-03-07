@@ -47,6 +47,7 @@ int main() {
     fileMostrador = fopen("../salidas/mostrador.txt", "w");
     fileCinta = fopen("../salidas/cinta.txt", "w");
     fileAlmacen = fopen("../salidas/almacen.txt", "w");
+    finalAlmacen = fopen ("../salidas/finalAlmacen.txt", "w");
     if((fileMostrador == NULL) || (fileCinta == NULL) || (fileAlmacen == NULL)) {
         perror("Error Creando los archivos\n");
         exit(EXIT_FAILURE);
@@ -116,6 +117,9 @@ int main() {
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_destroy(&mutexAlmacenes[i]);
     }
+    //Escribiendo estado final de aviones y almacenes
+    verAviones(aviones, cantAviones);
+    verColasAlmacenes(almacenes);
 
     //cerrando archivos
     fclose(fileMostrador);
@@ -123,6 +127,7 @@ int main() {
     fclose(fileAlmacen);
     fclose(almacenLog);
     fclose(avionesLog);
+    fclose(finalAlmacen);
 
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
