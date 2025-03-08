@@ -4,7 +4,6 @@
 #include "avion.h"
 #define MAX_ALMACEN 250
 #define MAX_CAPACIDAD_ALMACEN 1000
-#define MAX_AVIONES 100
 
 typedef struct {
 	int id;

@@ -1,36 +1,200 @@
-000000 Empresa4 Madrid EspaÃ±a 1000
-000001 Empresa1 Nueva_York EE.UU. 750
-000010 Empresa2 Tokio JapÃ³n 1000
-000011 Empresa1 Paris Francia 1275
-000100 Empresa2 Buenos_Aires Argentina 1000
-000101 Empresa1 Lima PerÃº 1000
-000110 Empresa1 Berlin Alemania 350
-000111 Empresa1 Toronto CanadÃ¡ 1000
-001000 Empresa2 Roma Italia 2000
-001001 Empresa1 Londres Reino_Unido 1500
-001010 Empresa3 Sydney Australia 1000
-001011 Empresa4 MoscÃº Rusia 500
-001100 Empresa2 Dubai Emiratos_Ãrabes 1000
-001101 Empresa3 Los_Angeles EE.UU. 1250
-001110 Empresa1 Mexico_City MÃ©xico 1000
-001111 Empresa1 Hong_Kong China 1000
-010001 Empresa2 Chicago EE.UU.1000
-010010 Empresa3 Beijing China 1050
-010011 Empresa1 Amsterdam PaÃ­ses_Bajos 1200
-010100 Empresa4 Seul Corea_del_Sur 1005
-010101 Empresa1 Estambul TurquÃ­a 850
-010110 Empresa1 Sao_Paulo Brasil 1000
-010111 Empresa1 Vancouver CanadÃ¡ 1200
-011000 Empresa1 Bangkok Tailandia 1100
-011001 Empresa3 Athenas Grecia 865
-011010 Empresa1 Manila Filipinas 900
-011011 Empresa1 Zurich Suiza 1250
-011100 Empresa7 Frankfurt Alemania 1100
-011101 Empresa7 Cairo Egipto 1200
-011110 Empresa4 Mumbai India 900
-011111 Empresa6 Lisbon Portugal 850
-100000 Empresa4 Jakarta Indonesia 1200
-100001 Empresa1 Singapore Singapur 1100
-100010 Empresa3 Johannesburg SudÃ¡frica 900
-100011 Empresa3 Vienna Austria 900
-100100 Empresa1 Montreal CanadÃ¡ 850
+VUE1116 SemaforosGlobal Londres Reino_Unido 7600 Despegue
+VUE8314 20Puntos Bogota Colombia 3000 Despegue
+VUE1184 PCBAirLine Chicago EE.UU. 3450 Conexion
+VUE4080 FlyHigh Milan Italia 3100 Conexion
+VUE9168 SemaforosGlobal Bangkok Tailandia 8500 Despegue
+VUE5346 PCBAirLine Maracaibo Venezuela 5500 Conexion
+VUE4470 FIFOLines Roma Italia 7950 Despegue
+VUE3820 20Puntos Maracaibo Venezuela 3800 Despegue
+VUE6979 AirGlobal Madeira Portugal 7500 Despegue
+VUE4734 SemaforosGlobal Maracaibo Venezuela 5650 Despegue
+VUE7299 AirGlobal Munich Alemania 6300 Despegue
+VUE1927 20Puntos Sydney Australia 6400 Conexion
+VUE2604 PCBAirLine Manchester Reino_Unido 6550 Despegue
+VUE6597 PCBAirLine Amsterdam Paises Bajos 8250 Despegue
+VUE9371 20Puntos Berlin Alemania 3050 Conexion
+VUE5151 AeroExpress Madeira Portugal 7850 Despegue
+VUE6266 AeroExpress Los_Angeles EE.UU. 5650 Conexion
+VUE3363 SkyLines Bangkok Tailandia 3700 Conexion
+VUE4608 20Puntos Roma Italia 8800 Conexion
+VUE8562 SemaforosGlobal Roma Italia 7100 Despegue
+VUE9211 FIFOLines Amsterdam Paises Bajos 6950 Conexion
+VUE8318 FIFOLines Maracaibo Venezuela 3800 Conexion
+VUE7963 FIFOLines Atenas Grecia 5950 Despegue
+VUE3253 FlyHigh Caracas Venezuela 6550 Conexion
+VUE4352 20Puntos Barcelona Venezuela 5350 Conexion
+VUE8002 SemaforosGlobal Roma Italia 5350 Conexion
+VUE1241 AirGlobal Margarita Venezuela 8400 Despegue
+VUE9990 AirGlobal Sevilla España 7400 Despegue
+VUE2745 FIFOLines Manchester Reino_Unido 7650 Despegue
+VUE4985 FlyHigh Toronto Canada 4100 Conexion
+VUE6843 PCBAirLine Buenos_Aires Argentina 6050 Despegue
+VUE1751 FIFOLines Toronto Canada 3650 Despegue
+VUE1829 PCBAirLine Londres Reino_Unido 5150 Conexion
+VUE3111 SemaforosGlobal Berlin Alemania 3550 Conexion
+VUE4191 20Puntos Beijing China 6700 Conexion
+VUE6233 AirGlobal Barcelona España 7250 Despegue
+VUE6224 AeroExpress Munich Alemania 3400 Despegue
+VUE8550 SemaforosGlobal Londres Reino_Unido 3100 Conexion
+VUE1239 PCBAirLine Lima Peru 5750 Despegue
+VUE4695 AeroExpress San_Cristobal Venezuela 8350 Conexion
+VUE4925 AirGlobal Nueva_York EE.UU. 8000 Despegue
+VUE3645 PCBAirLine Paris Francia 6850 Despegue
+VUE6856 FlyHigh Bogota Colombia 3250 Conexion
+VUE6612 FlyHigh Bogota Colombia 7200 Despegue
+VUE6186 FIFOLines Milan Italia 4550 Conexion
+VUE6063 AirGlobal Munich Alemania 3250 Conexion
+VUE1506 PCBAirLine Buenos_Aires Argentina 3150 Despegue
+VUE4519 FlyHigh Buenos_Aires Argentina 8550 Conexion
+VUE5339 20Puntos Berlin Alemania 3750 Conexion
+VUE7601 FIFOLines Berlin Alemania 8200 Conexion
+VUE8173 20Puntos Atenas Grecia 8100 Despegue
+VUE1640 AeroExpress Caracas Venezuela 6050 Despegue
+VUE8806 SemaforosGlobal Amsterdam Paises Bajos 4700 Conexion
+VUE5470 PCBAirLine Los_Angeles EE.UU. 4800 Conexion
+VUE8916 AeroExpress Chicago EE.UU. 5400 Despegue
+VUE9688 20Puntos Caracas Venezuela 8600 Conexion
+VUE4406 20Puntos Maracaibo Venezuela 8050 Conexion
+VUE6243 20Puntos Toronto Canada 8800 Conexion
+VUE3044 FIFOLines Sydney Australia 8500 Despegue
+VUE4723 FIFOLines Madrid España 6300 Despegue
+VUE2699 AeroExpress Sevilla España 3600 Conexion
+VUE9077 SemaforosGlobal Lima Peru 7700 Conexion
+VUE3352 AirGlobal Bogota Colombia 4400 Conexion
+VUE5200 20Puntos Manchester Reino_Unido 7200 Conexion
+VUE2936 AeroExpress Milan Italia 6650 Conexion
+VUE8664 FIFOLines Buenos_Aires Argentina 4400 Despegue
+VUE2513 PCBAirLine Toronto Canada 5900 Conexion
+VUE5592 20Puntos Madrid España 5000 Conexion
+VUE5989 FIFOLines Margarita Venezuela 4350 Despegue
+VUE3366 SkyLines Berlin Alemania 6650 Conexion
+VUE6255 AirGlobal Chicago EE.UU. 8800 Despegue
+VUE5804 FIFOLines Madeira Portugal 4200 Conexion
+VUE4128 SkyLines Paris Francia 4100 Despegue
+VUE2224 AeroExpress Chicago EE.UU. 8500 Conexion
+VUE8714 20Puntos Lima Peru 8800 Despegue
+VUE6516 AeroExpress Munich Alemania 5400 Despegue
+VUE5916 20Puntos Barcelona Venezuela 6100 Conexion
+VUE5577 20Puntos Atenas Grecia 7800 Despegue
+VUE4751 20Puntos Maracaibo Venezuela 4500 Conexion
+VUE2067 SemaforosGlobal Caracas Venezuela 5750 Conexion
+VUE2185 FlyHigh Caracas Venezuela 4450 Conexion
+VUE4391 SkyLines Caracas Venezuela 5350 Despegue
+VUE7689 FlyHigh Amsterdam Paises Bajos 7600 Despegue
+VUE7422 SkyLines Valencia Venezuela 8350 Despegue
+VUE2918 20Puntos Tokio Japon 5550 Conexion
+VUE3089 20Puntos Berlin Alemania 7300 Conexion
+VUE8922 SemaforosGlobal Amsterdam Paises Bajos 3750 Despegue
+VUE5553 FlyHigh Bangkok Tailandia 5250 Despegue
+VUE9207 PCBAirLine Valencia Venezuela 8100 Conexion
+VUE9458 AirGlobal Bogota Colombia 7250 Despegue
+VUE4903 PCBAirLine Estambul Turquia 7900 Despegue
+VUE7746 PCBAirLine Sevilla España 3050 Despegue
+VUE5369 FlyHigh Milan Italia 5950 Despegue
+VUE6437 PCBAirLine Manchester Reino_Unido 4600 Despegue
+VUE1669 SkyLines Caracas Venezuela 7000 Conexion
+VUE1245 AeroExpress Nueva_York EE.UU. 3050 Conexion
+VUE4711 FIFOLines Los_Angeles EE.UU. 5800 Despegue
+VUE3899 AeroExpress Buenos_Aires Argentina 7000 Conexion
+VUE8926 FIFOLines Estambul Turquia 5350 Conexion
+VUE5276 AeroExpress Barcelona España 5650 Conexion
+VUE9146 SemaforosGlobal Buenos_Aires Argentina 6300 Despegue
+VUE1924 SkyLines San_Cristobal Venezuela 5550 Conexion
+VUE1136 SkyLines Valencia Venezuela 4050 Conexion
+VUE2951 SemaforosGlobal Bangkok Tailandia 3100 Despegue
+VUE6591 SemaforosGlobal Sevilla España 8150 Conexion
+VUE7992 20Puntos Sevilla España 5300 Conexion
+VUE3987 FIFOLines Sydney Australia 7600 Despegue
+VUE2114 FlyHigh Los_Angeles EE.UU. 7200 Conexion
+VUE7042 FIFOLines Madeira Portugal 8650 Despegue
+VUE3738 PCBAirLine Sevilla España 7750 Despegue
+VUE1797 SemaforosGlobal Munich Alemania 5800 Conexion
+VUE1677 FIFOLines Munich Alemania 6750 Conexion
+VUE4303 SkyLines Bangkok Tailandia 5700 Despegue
+VUE4898 SemaforosGlobal Barcelona Venezuela 5950 Despegue
+VUE9091 FIFOLines Roma Italia 6850 Conexion
+VUE8701 SemaforosGlobal San_Cristobal Venezuela 7750 Conexion
+VUE1426 SemaforosGlobal Atenas Grecia 7900 Conexion
+VUE9209 FlyHigh Munich Alemania 3100 Despegue
+VUE3214 SkyLines Miami EE.UU. 7850 Despegue
+VUE5672 SemaforosGlobal Munich Alemania 3450 Conexion
+VUE1983 FlyHigh Los_Angeles EE.UU. 7050 Conexion
+VUE8028 20Puntos Tokio Japon 4650 Despegue
+VUE6695 AeroExpress Madeira Portugal 5100 Despegue
+VUE1275 AirGlobal Sydney Australia 5850 Despegue
+VUE3884 FlyHigh Toronto Canada 4100 Conexion
+VUE9265 SkyLines Valencia Venezuela 6300 Despegue
+VUE1430 FIFOLines Madeira Portugal 4750 Despegue
+VUE2043 SkyLines Lima Peru 8200 Conexion
+VUE4609 FlyHigh Berlin Alemania 7400 Despegue
+VUE6711 FlyHigh Roma Italia 5550 Despegue
+VUE3212 PCBAirLine Margarita Venezuela 6750 Conexion
+VUE1000 20Puntos Sevilla España 7200 Conexion
+VUE9406 20Puntos Manchester Reino_Unido 3800 Conexion
+VUE9433 SemaforosGlobal Madrid España 3900 Despegue
+VUE1413 SemaforosGlobal Lima Peru 8350 Conexion
+VUE9254 PCBAirLine Manchester Reino_Unido 5600 Conexion
+VUE7241 PCBAirLine Miami EE.UU. 8350 Conexion
+VUE9287 FIFOLines Paris Francia 7300 Conexion
+VUE1157 AirGlobal Atenas Grecia 4500 Despegue
+VUE1673 SemaforosGlobal Valencia Venezuela 4050 Despegue
+VUE4945 SkyLines Milan Italia 7050 Despegue
+VUE9533 FIFOLines Barcelona España 7200 Conexion
+VUE2145 FlyHigh Estambul Turquia 6550 Conexion
+VUE2931 AeroExpress Londres Reino_Unido 5550 Conexion
+VUE6416 AeroExpress Miami EE.UU. 8000 Despegue
+VUE8795 FIFOLines Munich Alemania 5450 Conexion
+VUE6359 SkyLines Buenos_Aires Argentina 4600 Despegue
+VUE6633 FlyHigh Atenas Grecia 3950 Conexion
+VUE7365 FlyHigh Maracaibo Venezuela 4250 Despegue
+VUE4112 SkyLines Lima Peru 6200 Despegue
+VUE7481 AirGlobal Sevilla España 5950 Conexion
+VUE1679 AirGlobal Lima Peru 3750 Conexion
+VUE6918 AeroExpress Caracas Venezuela 7650 Despegue
+VUE1894 SemaforosGlobal Berlin Alemania 5350 Conexion
+VUE1626 FIFOLines Bogota Colombia 3300 Despegue
+VUE5992 FlyHigh Estambul Turquia 5300 Conexion
+VUE2099 FlyHigh Nueva_York EE.UU. 7400 Conexion
+VUE2092 AirGlobal Valencia Venezuela 6150 Conexion
+VUE9221 20Puntos Beijing China 4350 Despegue
+VUE8324 AeroExpress San_Cristobal Venezuela 8150 Despegue
+VUE7373 SemaforosGlobal Atenas Grecia 7250 Despegue
+VUE3461 FlyHigh Sydney Australia 5300 Despegue
+VUE6503 FIFOLines Miami EE.UU. 5100 Conexion
+VUE8274 SemaforosGlobal Los_Angeles EE.UU. 6100 Conexion
+VUE8091 FlyHigh Munich Alemania 7900 Conexion
+VUE1850 SkyLines San_Cristobal Venezuela 7350 Conexion
+VUE3658 PCBAirLine Buenos_Aires Argentina 4200 Despegue
+VUE6347 AirGlobal Chicago EE.UU. 7150 Conexion
+VUE5780 AeroExpress Tokio Japon 4350 Conexion
+VUE8079 FlyHigh Barcelona España 4250 Conexion
+VUE1249 20Puntos Paris Francia 7050 Conexion
+VUE6318 SkyLines Lima Peru 6100 Conexion
+VUE7873 20Puntos Estambul Turquia 4100 Despegue
+VUE4113 FlyHigh Bangkok Tailandia 4450 Despegue
+VUE7065 20Puntos Londres Reino_Unido 3950 Despegue
+VUE8325 FlyHigh Amsterdam Paises Bajos 7700 Conexion
+VUE1422 AirGlobal Buenos_Aires Argentina 3050 Conexion
+VUE3148 AirGlobal Barcelona España 6100 Conexion
+VUE4505 SkyLines Caracas Venezuela 4350 Conexion
+VUE7909 AeroExpress San_Cristobal Venezuela 7550 Despegue
+VUE3440 PCBAirLine Amsterdam Paises Bajos 8250 Conexion
+VUE3329 PCBAirLine Nueva_York EE.UU. 8550 Despegue
+VUE3494 20Puntos Bogota Colombia 3350 Despegue
+VUE2615 AeroExpress Madeira Portugal 6150 Despegue
+VUE4475 SkyLines Londres Reino_Unido 8150 Despegue
+VUE3437 FlyHigh Londres Reino_Unido 5450 Despegue
+VUE7688 FlyHigh Atenas Grecia 5350 Despegue
+VUE7808 FIFOLines Barcelona Venezuela 7550 Conexion
+VUE3846 SemaforosGlobal Caracas Venezuela 3000 Conexion
+VUE9023 AirGlobal Caracas Venezuela 8350 Despegue
+VUE5833 FIFOLines Atenas Grecia 6500 Despegue
+VUE9706 FIFOLines Berlin Alemania 5950 Conexion
+VUE1480 20Puntos Lima Peru 5700 Conexion
+VUE2080 SemaforosGlobal Barcelona Venezuela 5000 Conexion
+VUE9172 AirGlobal Bangkok Tailandia 8500 Conexion
+VUE8508 PCBAirLine Madrid España 7200 Conexion
+VUE3332 SkyLines Barcelona Venezuela 5950 Conexion
+VUE7991 20Puntos Buenos_Aires Argentina 4450 Conexion
+VUE1984 FlyHigh Bogota Colombia 8200 Conexion
+VUE5761 20Puntos Sydney Australia 8300 Despegue

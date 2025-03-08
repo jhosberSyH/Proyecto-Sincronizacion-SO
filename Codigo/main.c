@@ -7,9 +7,7 @@
 
 #define MAX_MOSTRADORES 5000 // numero de mostradores
 #define MAX_CINTAS 500
-#define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
-#define MAX_AVIONES 100
 #define ETAPA_MOSTRADOR 1
 #define ETAPA_CINTA 2
 #define ETAPA_ALMACEN 3
@@ -77,9 +75,9 @@ int main() {
 
     //lectura de archivo
     crearAviones(aviones, &cantAviones);
-    leer_entradas("../pruebas/text.txt");
+    leer_entradas("../pruebas/informacion_equipajes.txt");
     printf("\t===1 Entrada leida===\n");
-    
+
     //creacion de hilos
     for (i = 0; i < MAX_MOSTRADORES; i++) {
         int *arg = malloc(sizeof(*arg));  
@@ -254,7 +252,7 @@ void leer_entradas(const char *filename) {
     }
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         construtorEquipaje(&equipaje);
-        if (sscanf(buffer, "%s %s %s %f ", equipaje.tipo, equipaje.ciudad, equipaje.pais,&equipaje.peso)) {            
+        if (sscanf(buffer, "%s %s %s %s %f %s", equipaje.codVuelo, equipaje.tipo, equipaje.ciudad, equipaje.pais,&equipaje.peso, equipaje.estado)) {            
             //Solo ir aceptando los de vuelos listos para ser cargados
             if(existeVuelo(&equipaje)){
                 encolar(&pasajeros, equipaje);
@@ -267,8 +265,13 @@ void leer_entradas(const char *filename) {
 int existeVuelo(Equipaje *e){
     int i;
     for(i=0;i<cantAviones;i++){
-        if((strcmp(e->ciudad,aviones[i].ciudad) == 0) && (strcmp(e->pais,aviones[i].pais) == 0)){
+        if((strcmp(e->codVuelo,aviones[i].codigoVuelo) == 0)){
             e->idVuelo = i;
+            //Guardar el equipaje que ya se encuentra en el avión de conexión
+            if((strcmp(e->estado, "Descargar") == 0) || (strcmp(e->estado, "Mantener") == 0)){
+                verificarEquipaje(&aviones[i], e, &mutexAviones[i]);
+                return 0;
+            }
             //printf("El vuelo de (%s, %s) si existe\n", e->ciudad, e->pais);
             return 1;
         }
