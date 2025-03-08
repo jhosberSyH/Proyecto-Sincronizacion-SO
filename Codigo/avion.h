@@ -113,6 +113,7 @@ void verAviones(Avion aviones[MAX_AVIONES], int cantidad){
         fprintf(avionesLog,"\nAVION NUMERO %i (%s)\n", i, aviones[i].estado);
         fprintf(avionesLog,"DESTINO: (%s, %s)\n", aviones[i].ciudad, aviones[i].pais);
         fprintf(avionesLog,"Capacidad inicial: %f\n", aviones[i].capacidadMaxima);
+        fprintf(avionesLog,"Capacidad Usada: %f\n", aviones[i].capacidadMaxima - aviones[i].capacidad);
         fprintf(avionesLog,"Capacidad restante: %f\n", aviones[i].capacidad);
         fprintf(avionesLog,"Equipaje Especial: %i\n", longitud(aviones[i].equipajeEsp));
         fprintf(avionesLog,"Equipaje Facturado: %i\n", longitud(aviones[i].equipajes));
