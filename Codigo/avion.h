@@ -27,6 +27,9 @@ typedef struct {
     Cola equipajeSD;  //Equipaje sobredimensionado (PRIORIDAD BAJA)
 } Avion;
 
+int buscarEquipajeFacturado(Avion *avion, Equipaje *e);
+int buscarEquipajeEspecial(Avion *avion, Equipaje *e);
+int buscarEquipajeSobredimensionado(Avion *avion, Equipaje *e);
 
 FILE *avionesLog;
 
@@ -106,6 +109,76 @@ int verificarEquipaje(Avion *avion, Equipaje *e, sem_t *semAvion){
     sem_post(semAvion);
     return estado;
 }
+
+
+int descargarEquipaje(Avion *avion, Equipaje *e){
+    int encontrado = 0;
+    int i = 0;
+    //printf("1: \n");
+    if(buscarEquipajeEspecial(avion, e)){
+        encontrado = 1;
+    }else{
+        //printf("2: \n");
+        if(buscarEquipajeFacturado(avion, e)){
+            encontrado = 1;
+        }else{
+            //printf("3: \n");
+            encontrado = buscarEquipajeSobredimensionado(avion,e);
+        }
+    }
+    if(encontrado){
+        avion->capacidad += e->peso;
+    }
+    return encontrado;
+}
+
+int buscarEquipajeEspecial(Avion *avion, Equipaje *e){
+    int encontrado = 0;
+    int i = 0;
+    while(((encontrado == 0) && (longitud(avion->equipajeEsp) > 0)) && (i<longitud(avion->equipajeEsp)) ){
+        if(strcmp(primero(avion->equipajeEsp).estado, "Descargar") == 0){
+            encontrado = 1;
+            *e = primero(avion->equipajeEsp);
+        }else{
+            encolar(&avion->equipajeEsp, primero(avion->equipajeEsp));
+        }
+        desencolar(&avion->equipajeEsp);
+        i++;
+    }
+    return encontrado;
+}
+int buscarEquipajeFacturado(Avion *avion, Equipaje *e){
+    int encontrado = 0;
+    int i = 0;
+    while(((encontrado == 0) && (longitud(avion->equipajes) > 0)) && (i<longitud(avion->equipajes)) ){
+        if(strcmp(primero(avion->equipajes).estado, "Descargar") == 0){
+            encontrado = 1;
+            *e = primero(avion->equipajes);
+        }else{
+            encolar(&avion->equipajes, primero(avion->equipajes));
+        }
+        desencolar(&avion->equipajes);
+        i++;
+    }
+    return encontrado;
+}
+
+int buscarEquipajeSobredimensionado(Avion *avion, Equipaje *e){
+    int encontrado = 0;
+    int i = 0;
+    while(((encontrado == 0) && (longitud(avion->equipajeSD) > 0)) && (i<longitud(avion->equipajeSD)) ){
+        if(strcmp(primero(avion->equipajeSD).estado, "Descargar") == 0){
+            encontrado = 1;
+            *e = primero(avion->equipajeSD);
+        }else{
+            encolar(&avion->equipajeSD, primero(avion->equipajeSD));
+        }
+        desencolar(&avion->equipajeSD);
+        i++;
+    }
+    return encontrado;
+}
+
 void verAviones(Avion aviones[MAX_AVIONES], int cantidad){
     int i;
 

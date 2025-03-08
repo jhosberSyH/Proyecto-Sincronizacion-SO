@@ -18,10 +18,12 @@
 void *mostrador(void *args);
 void *cinta(void *args);
 void *almacen(void *args);
+void *descargadorAvion(void *args);
 void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
 
 sem_t semMostrador,mutexMostrador,semCinta,mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
+sem_t semTerminal;
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN];
 Avion aviones[MAX_AVIONES];
@@ -30,6 +32,7 @@ int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz
 int buscarInterfaz[5];
 FILE *fileMostrador,*fileCinta,*fileAlmacen;
 int cantAviones = 0; //Cantidad de aviones en el aeropuerto
+Cola terminal;
 
 
 int main() {
@@ -38,6 +41,7 @@ int main() {
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
     pthread_t hilosAlmacenes[MAX_ALMACEN];
+    pthread_t hilosAviones[MAX_AVIONES];
 
     //creando archivos de escritura
     almacenLog = fopen("../salidas/logAlmacen.txt", "w");
@@ -57,6 +61,7 @@ int main() {
     sem_init(&mutexCintaInterfaz,1);
     sem_init(&semCinta,1);
     sem_init(&semMostrador,1);
+    sem_init(&semTerminal, 1);
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_init(&mutexAlmacenes[i],1);
     }
@@ -71,6 +76,7 @@ int main() {
 
     //creacion de colas y almacenes
     crear(&pasajeros);
+    crear(&terminal);
     constructorAlmacen(almacenes);
 
     //lectura de archivo
@@ -93,8 +99,12 @@ int main() {
     for (int j = 0; j < MAX_ALMACEN; j++){
         int *arg = malloc(sizeof(*arg));  
         *arg = j; 
-        pthread_create(&hilosAlmacenes[j],NULL,almacen,arg);
-        
+        pthread_create(&hilosAlmacenes[j],NULL,almacen,arg); 
+    }
+    for (int j = 0; j < MAX_AVIONES; j++){
+        int *arg = malloc(sizeof(*arg));  
+        *arg = j; 
+        pthread_create(&hilosAviones[j],NULL,descargadorAvion, arg); 
     }
     for (p = 0; p < MAX_MOSTRADORES; p++){
         pthread_join(mostradores[p],NULL);
@@ -105,6 +115,9 @@ int main() {
     for(int k=0; k< MAX_ALMACEN;k++){
         pthread_join(hilosAlmacenes[k], NULL);
     }
+    for(int k=0; k< MAX_AVIONES;k++){
+        pthread_join(hilosAviones[k], NULL);
+    }
 
     //destruccion de semaforos
     sem_destroy(&mutexAlmacen);
@@ -112,13 +125,21 @@ int main() {
     sem_destroy(&mutexCintaInterfaz);
     sem_destroy(&semCinta);
     sem_destroy(&semMostrador);
+    sem_destroy(&semTerminal);
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_destroy(&mutexAlmacenes[i]);
     }
     //Escribiendo estado final de aviones y almacenes
     verAviones(aviones, cantAviones);
     verColasAlmacenes(almacenes);
-
+    //VER TERMINAL DE LLEGADA
+    /*Equipaje e;
+    while(esVacio(terminal) == 0) {
+        printf("Longitud %i\n", longitud(terminal));
+        e = primero(terminal);
+        printf("Equipaje [%s] en la terminal\n", e.estado);
+        desencolar(&terminal);
+    }*/
     //cerrando archivos
     fclose(fileMostrador);
     fclose(fileCinta);
@@ -226,7 +247,6 @@ void *cinta(void *args){
 
 void *almacen(void *args){
     int id = *((int *)args);
-    Cola equipajes;
     while (1){
         sem_wait(&mutexAlmacenes[id]);
         //CONSUMIR
@@ -241,6 +261,30 @@ void *almacen(void *args){
         sem_post(&mutexAlmacenes[id]);
     }
 }
+
+void *descargadorAvion(void *args){
+    int id = *((int *)args);
+    //printf("Descargador %i\n", id);
+    //return;
+    int cargado;
+    while(1){
+        sem_wait(&mutexAviones[id]);
+        Equipaje e;
+        cargado = descargarEquipaje(&aviones[id], &e);
+        if(cargado){
+            sem_wait(&semTerminal);
+            //encolar en terminal
+            encolar(&terminal, e);
+            sem_post(&semTerminal);
+        }else{
+            //printf("Ya se descargo el avión %i (%s)\n", id, aviones[id].estado);
+            sem_post(&mutexAviones[id]);
+            pthread_exit(NULL);
+        }
+        sem_post(&mutexAviones[id]);
+    }
+}
+
 void leer_entradas(const char *filename) {
     Equipaje equipaje;
     FILE *file = fopen(filename, "r");
