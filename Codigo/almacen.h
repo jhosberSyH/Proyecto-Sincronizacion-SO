@@ -43,7 +43,7 @@ void escribirAlmacenado(Almacen almacen, Equipaje e ){
 }
 void escribirNoAlmacenado(Almacen almacen){
     //printf("aca tmb");
-    fprintf(almacenLog, "NO CABE YA\n");
+    //fprintf(almacenLog, "NO CABE YA\n");
 }
 
 int almacenar(Almacen *almacen,Equipaje equipaje){
@@ -68,20 +68,19 @@ int almacenar(Almacen *almacen,Equipaje equipaje){
     escribirAlmacenado(*almacen, equipaje);
     return 1;
 }
-void descargarAlmacen(Almacen *almacen, Avion aviones[MAX_AVIONES], sem_t semAviones[MAX_AVIONES]){
-    Equipaje e;
+void descargarAlmacen(Almacen *almacen, Avion aviones[MAX_AVIONES], sem_t semAviones[MAX_AVIONES], Equipaje *e){
 
     if(almacen->lleno > 0){
         if(esVacio(almacen->equipajeEsp) == 0){
-            e = primero(almacen->equipajeEsp);
+            *e = primero(almacen->equipajeEsp);
             desencolar(&almacen->equipajeEsp);
         }else{
             if(esVacio(almacen->equipajes) == 0){
-                e = primero(almacen->equipajes);
+                *e = primero(almacen->equipajes);
                 desencolar(&almacen->equipajes);
             }else{
                 if(esVacio(almacen->equipajeSD) == 0){
-                    e = primero(almacen->equipajeSD);
+                    *e = primero(almacen->equipajeSD);
                     desencolar(&almacen->equipajeSD);
                 }
             }
@@ -89,10 +88,6 @@ void descargarAlmacen(Almacen *almacen, Avion aviones[MAX_AVIONES], sem_t semAvi
         //FALTA HACER IMPRESIONES DE LOGS
         //CARGAR EQUIPAJE AL AVIÓN
         //printf("SE VA A CARGAR %i, %s\n", e.idVuelo, aviones[e.idVuelo].ciudad);
-        int descarga = cargarEquipaje(&aviones[e.idVuelo], &e, &semAviones[e.idVuelo]);
-        if(descarga == 0){
-            //printf("NO CABE EN EL VUELO el equipaje %i\n", e.id); //SE PIERDE EL EQUIPAJE
-        }
         almacen->lleno -=1;
         almacen->capacidad +=1;
     }

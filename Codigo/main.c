@@ -23,9 +23,9 @@ void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
 
 sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
-sem_t semTerminal;
+sem_t semTerminal, semPerdidos;
 Cola pasajeros,cintas[MAX_CINTAS];
-Almacen almacenes[MAX_ALMACEN];
+Almacen almacenes[MAX_ALMACEN], objetosPerdidos[MAX_ALMACEN];
 Avion aviones[MAX_AVIONES];
 int banderaFinMostrador = 1,nroEquipaje = 0;
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
@@ -61,6 +61,7 @@ int main() {
     sem_init(&mutexCintaInterfaz,1);
     sem_init(&semMostrador,1);
     sem_init(&semTerminal, 1);
+    sem_init(&semPerdidos, 1);
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_init(&mutexAlmacenes[i],1);
     }
@@ -80,6 +81,7 @@ int main() {
     crear(&pasajeros);
     crear(&terminal);
     constructorAlmacen(almacenes);
+    constructorAlmacen(objetosPerdidos);
 
     //lectura de archivo
     crearAviones(aviones, &cantAviones);
@@ -253,12 +255,29 @@ void *cinta(void *args){
 
 void *almacen(void *args){
     int id = *((int *)args);
+    int almacenado = 0,indice = 0;
     while (1){
         sem_wait(&mutexAlmacenes[id]);
         //CONSUMIR
         if(almacenes[id].lleno > 0){
             //printf("DESCARGA DE ALMACEN %i (%i) \n", id, almacenes[id].lleno);
-            descargarAlmacen(&almacenes[id], aviones, mutexAviones);
+            Equipaje tmpEquipaje;
+            tmpEquipaje.id = -1;
+            //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje, esto por cercanía, ya que usar el return causa overflow
+            descargarAlmacen(&almacenes[id], aviones, mutexAviones,&tmpEquipaje);
+            if(tmpEquipaje.id != -1){
+                int descarga = cargarEquipaje(&aviones[tmpEquipaje.idVuelo], &tmpEquipaje, &mutexAviones[tmpEquipaje.idVuelo]);
+                if(descarga == 0){
+                    sem_wait(&semPerdidos);
+                    while ((indice < MAX_ALMACEN) && (!almacenado)){
+                        almacenado = almacenar(&objetosPerdidos[indice],tmpEquipaje);
+                        if(almacenado)
+                            fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
+                        indice++;
+                    }
+                    sem_post(&semPerdidos);
+                }
+            }
         }
         if(almacenes[id].lleno <= 0){
             sem_post(&mutexAlmacenes[id]);
