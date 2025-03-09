@@ -211,9 +211,9 @@ void *mostrador(void *args){
 
 void *cinta(void *args){
     int id = *((int *)args);
-    Cola equipaje,vacia;
-    int indice = 0,almacenado = 0,aux = 0;
-    crear(&vacia);
+    Cola equipaje; //equipajes en la cinta
+    int indice = 0;
+    int almacenado = 0; //bandera para saber si se pudo almacenar el equipaje
     while (1){
        
         while (esVacio(cintas[id]) != 1){
