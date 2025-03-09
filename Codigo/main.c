@@ -163,7 +163,9 @@ int main() {
 void *mostrador(void *args){
     int id = *((int *)args),indice = 0;
     Equipaje aux;
-    while(1){ 
+    while(1){
+        //INICIO SECCION CRITICA
+        //Bloquear acceso a bandera de finalización de los equipajes 
         sem_wait(&semMostrador);
         if(banderaFinMostrador){
             //Bloquear acceso a la cola de equipajes
@@ -181,8 +183,15 @@ void *mostrador(void *args){
             aux = primero(pasajeros);
             desencolar(&pasajeros);
 
-            //Desbloquear acceso a la cola de equipajes
+            //Colocar bandera de finalizacion de equipajes si está vacía
+            if(esVacio(pasajeros)){
+                banderaFinMostrador = 0;
+            }
+            
+            //Desbloquear accesos a equipajes y a la bandera
+            sem_post(&semMostrador);
             sem_post(&mutexMostrador);
+            //FINAL SECCION CRITICA
 
             //PROCESAMIENTO EN EL MOSTRADOR()
 
@@ -195,16 +204,10 @@ void *mostrador(void *args){
             sem_post(&semCinta[indice]);
             //Registrar entrada a la cinta
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
-
-
-            //sem_post(&mutexMostrador);
-        }
-        if (esVacio(pasajeros)){
-            banderaFinMostrador = 0;
-            sem_post(&semMostrador);
-            pthread_exit(NULL);
+        
         }else{
             sem_post(&semMostrador);
+            pthread_exit(NULL);
         }
     }
 }
