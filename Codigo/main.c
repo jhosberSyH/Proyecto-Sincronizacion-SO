@@ -162,28 +162,42 @@ int main() {
 
 void *mostrador(void *args){
     int id = *((int *)args),indice = 0;
+    Equipaje aux;
     while(1){ 
         sem_wait(&semMostrador);
         if(banderaFinMostrador){
-            Cola equipaje;
+            //Bloquear acceso a la cola de equipajes
             sem_wait(&mutexMostrador);
 
             nroEquipaje++;
             pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
+            
+            //Registrar en la interfaz la entrada al mostrador
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,ENTRADA,pasajeros.primero->info); //Mostrar Entrada
             incrementar(id,mostradorInterfaz);
             registrar(id,ETAPA_MOSTRADOR,pasajeros.primero->info,fileMostrador);
-
-            indice = (nroEquipaje - 1) % MAX_CINTAS; //distribucion de cintas por modulo para distribuir equitativamente
-            equipaje = cintas[indice];
-            encolar(&equipaje,primero(pasajeros));
-            cintas[indice] = equipaje;
-
-            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,pasajeros.primero->info); //Mostrar Salida
-            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,ENTRADA,pasajeros.primero->info);
+            
+            //Guardar equipaje en aux y quitarlo de la cola
+            aux = primero(pasajeros);
             desencolar(&pasajeros);
 
+            //Desbloquear acceso a la cola de equipajes
             sem_post(&mutexMostrador);
+
+            //PROCESAMIENTO EN EL MOSTRADOR()
+
+            indice = (nroEquipaje - 1) % MAX_CINTAS; //distribucion de cintas por modulo para distribuir equitativamente
+            //Salida del mostrador
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); //Mostrar Salida
+            //Bloquear cinta para poder encolar el equipaje
+            sem_wait(&semCinta[indice]); 
+            encolar(&cintas[indice],aux);
+            sem_post(&semCinta[indice]);
+            //Registrar entrada a la cinta
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
+
+
+            //sem_post(&mutexMostrador);
         }
         if (esVacio(pasajeros)){
             banderaFinMostrador = 0;
@@ -201,53 +215,54 @@ void *cinta(void *args){
     int indice = 0,almacenado = 0,aux = 0;
     crear(&vacia);
     while (1){
-        sem_wait(&semCinta[id]);
-        sem_wait(&mutexMostrador);
-
-        equipaje = cintas[id];
-        cintas[id] = vacia;
-
-        sem_post(&mutexMostrador);
-
-        while (esVacio(equipaje) != 1){
-
+       
+        while (esVacio(cintas[id]) != 1){
+            //Escribir en la interfaz
             sem_wait(&mutexCintaInterfaz);
 
             incrementar(id,cintaInterfaz);
-            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,SALIDA,equipaje.primero->info);
-            registrar(id,ETAPA_CINTA,equipaje.primero->info,fileCinta);
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,SALIDA,primero(cintas[id]));
+            registrar(id,ETAPA_CINTA,primero(cintas[id]),fileCinta);
 
             sem_post(&mutexCintaInterfaz);
 
+            //Bloquear cinta
+            sem_wait(&semCinta[id]);
+            //Descargar cinta y mover a un almacen
             while ((indice < MAX_ALMACEN) && (!almacenado)){
-                if(compararPais(equipaje.primero->info.pais,&almacenes[indice])){
+                //Buscar almacen con el país destino del equipaje o uno vacío
+                if(compararPais(primero(cintas[id]).pais,&almacenes[indice])){
+                    //Bloquear almacen para poder mover el equipaje a este
                     sem_wait(&mutexAlmacenes[indice]);
-                    equipaje.primero->info.prioridad = traducirPrioridad(equipaje.primero->info.tipo);
-                    almacenado = almacenar(&almacenes[indice],primero(equipaje)); //encola con prioridad  
+                    //Clasificar por prioridad y moverlo al almacen
+                    cintas[id].primero->info.prioridad = traducirPrioridad(primero(cintas[id]).tipo);
+                    almacenado = almacenar(&almacenes[indice],primero(cintas[id]));
+                    //Registrar almacenaje si se pudo realizar la operacion
                     if (almacenado == 1){
                         incrementar(indice,almacenInterfaz);
-                        mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,ENTRADA,equipaje.primero->info); // tinee detalles no funciona al 100% todavia
-                        registrar(indice,ETAPA_ALMACEN,equipaje.primero->info,fileAlmacen);
+                        mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,ENTRADA,primero(cintas[id])); // tinee detalles no funciona al 100% todavia
+                        registrar(indice,ETAPA_ALMACEN,primero(cintas[id]),fileAlmacen);
                     }
+                    //Desbloquear almacen
                     sem_post(&mutexAlmacenes[indice]);
                 }
-                    indice++;
+                indice++;
             }
             indice = 0;
             almacenado = 0;
-            desencolar(&equipaje);
+            desencolar(&cintas[id]);
+            //Liberar cinta
+            sem_post(&semCinta[id]);
         }
 
-        sem_post(&semCinta[id]);
-        sem_wait(&mutexMostrador);
+        sem_wait(&semMostrador);
 
-        equipaje = cintas[id];
-        if((!banderaFinMostrador) && (esVacio(equipaje) == 1)){
-            sem_post(&mutexMostrador);
+        if((!banderaFinMostrador) && (esVacio(cintas[id]) == 1)){
+            sem_post(&semMostrador);
             pthread_exit(NULL);
         }
 
-        sem_post(&mutexMostrador);
+        sem_post(&semMostrador);
     }
 }
 
