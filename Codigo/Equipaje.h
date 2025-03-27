@@ -11,7 +11,9 @@ typedef struct {
     char pais[50];
     char vuelo[10];
     int idVuelo;
+    char codVuelo[10];
     int prioridad;
+    char estado[20];
     char fragilidad[5];
     float peso;
 } Equipaje;

@@ -4,7 +4,6 @@
 #include "avion.h"
 #define MAX_ALMACEN 250
 #define MAX_CAPACIDAD_ALMACEN 1000
-#define MAX_AVIONES 100
 
 typedef struct {
 	int id;
@@ -17,6 +16,7 @@ typedef struct {
 } Almacen;
 
 FILE *almacenLog;
+FILE *finalAlmacen;
 
 void constructorAlmacen(Almacen almacen[]);
 int almacenar(Almacen *almacen,Equipaje equipaje);
@@ -43,7 +43,7 @@ void escribirAlmacenado(Almacen almacen, Equipaje e ){
 }
 void escribirNoAlmacenado(Almacen almacen){
     //printf("aca tmb");
-    fprintf(almacenLog, "NO CABE YA\n");
+    //fprintf(almacenLog, "NO CABE YA\n");
 }
 
 int almacenar(Almacen *almacen,Equipaje equipaje){
@@ -68,20 +68,19 @@ int almacenar(Almacen *almacen,Equipaje equipaje){
     escribirAlmacenado(*almacen, equipaje);
     return 1;
 }
-void descargarAlmacen(Almacen *almacen, Avion aviones[MAX_AVIONES], sem_t semAviones[MAX_AVIONES]){
-    Equipaje e;
+void descargarAlmacen(Almacen *almacen, Avion aviones[MAX_AVIONES], sem_t semAviones[MAX_AVIONES], Equipaje *e){
 
     if(almacen->lleno > 0){
         if(esVacio(almacen->equipajeEsp) == 0){
-            e = primero(almacen->equipajeEsp);
+            *e = primero(almacen->equipajeEsp);
             desencolar(&almacen->equipajeEsp);
         }else{
             if(esVacio(almacen->equipajes) == 0){
-                e = primero(almacen->equipajes);
+                *e = primero(almacen->equipajes);
                 desencolar(&almacen->equipajes);
             }else{
                 if(esVacio(almacen->equipajeSD) == 0){
-                    e = primero(almacen->equipajeSD);
+                    *e = primero(almacen->equipajeSD);
                     desencolar(&almacen->equipajeSD);
                 }
             }
@@ -89,10 +88,6 @@ void descargarAlmacen(Almacen *almacen, Avion aviones[MAX_AVIONES], sem_t semAvi
         //FALTA HACER IMPRESIONES DE LOGS
         //CARGAR EQUIPAJE AL AVIÓN
         //printf("SE VA A CARGAR %i, %s\n", e.idVuelo, aviones[e.idVuelo].ciudad);
-        int descarga = cargarEquipaje(&aviones[e.idVuelo], &e, &semAviones[e.idVuelo]);
-        if(descarga == 0){
-            //printf("NO CABE EN EL VUELO el equipaje %i\n", e.id); //SE PIERDE EL EQUIPAJE
-        }
         almacen->lleno -=1;
         almacen->capacidad +=1;
     }
@@ -113,10 +108,10 @@ int compararPais(char pais[],Almacen *almacen){
 void verColasAlmacenes(Almacen almacen[]){
     int i;
     for (i = 0; i < MAX_ALMACEN; i++){
-        fprintf(almacenLog,"\nALMACEN NUMERO %i\n", i);
-        fprintf(almacenLog,"Equipaje especial: %i\n", longitud(almacen[i].equipajeEsp));
-        fprintf(almacenLog,"Equipaje facturado: %i\n", longitud(almacen[i].equipajes));
-        fprintf(almacenLog,"Equipaje sobredimensionado: %i\n", longitud(almacen[i].equipajeSD));
+        fprintf(finalAlmacen,"\nALMACEN NUMERO %i\n", i);
+        fprintf(finalAlmacen,"Equipaje especial: %i\n", longitud(almacen[i].equipajeEsp));
+        fprintf(finalAlmacen,"Equipaje facturado: %i\n", longitud(almacen[i].equipajes));
+        fprintf(finalAlmacen,"Equipaje sobredimensionado: %i\n", longitud(almacen[i].equipajeSD));
     }
 }
 #endif
