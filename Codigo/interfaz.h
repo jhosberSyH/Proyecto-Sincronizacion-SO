@@ -18,7 +18,7 @@ void usuario(int *requisito,int valores[]);
 void menu(int *requisito);
 int validarNumero(char num[]);
 int opcion_valida(char num[]);
-void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]);
+void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[], int objetosPerdidos[]);
 void incrementar(int id,int valores[]);
 void inicializarInt(int n,int valores[]);
 void mostrarInformacion(int id,int valores[],int n);
@@ -102,7 +102,7 @@ int validarNumero(char num[]){
 }
 
 //Muestra todas las repuesta que tienen que esperar a que termine el programa
-void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[]){
+void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[], int objetosPerdidos[]){
     switch (requisito){
     case 1:
         mostrarInformacion(1,mostradores,MAX_MOSTRADORES);
@@ -114,11 +114,13 @@ void respuestasFinal(int requisito,int almacenes[],int cintas[],int mostradores[
     
     case 3:
         mostrarInformacion(3,almacenes,MAX_ALMACEN);
-            break;
+        mostrarInformacion(4,objetosPerdidos,MAX_ALMACEN);
+        break;
     case 4:
         mostrarInformacion(1,mostradores,MAX_MOSTRADORES);
         mostrarInformacion(2,cintas,MAX_CINTAS);
         mostrarInformacion(3,almacenes,MAX_ALMACEN);
+        mostrarInformacion(4,objetosPerdidos,MAX_ALMACEN);
         break;
     default:
         break;
@@ -141,16 +143,27 @@ void inicializarInt(int n,int valores[]){
 //Mustra los resultados de respuestasFinal
 void mostrarInformacion(int id,int valores[],int n){
     int cantidad = 0,total = 0,sinUso = 0,i;
-    char nombrePlural[13],nombre[11];
-    if(id == 1){
-        strcpy(nombrePlural,"Mostradores");
-        strcpy(nombre,"Mostrador");
-    }else if(id == 2){
-        strcpy(nombrePlural,"Cintas");
-        strcpy(nombre,"Cinta");
-    }else{
-        strcpy(nombrePlural,"Almacenes");
-        strcpy(nombre,"Almacen");
+    char nombrePlural[30],nombre[25];
+    switch (id)
+    {
+        case 1:
+            strcpy(nombrePlural,"Mostradores");
+            strcpy(nombre,"Mostrador");
+            break;
+        case 2:
+            strcpy(nombrePlural,"Cintas");
+            strcpy(nombre,"Cinta");
+            break;
+        case 3:
+            strcpy(nombrePlural,"Almacenes");
+            strcpy(nombre,"Almacen");
+            break;
+        case 4:
+            strcpy(nombrePlural,"Almacenes de Perdidos");
+            strcpy(nombre,"Almacen de Perdidos");
+            break;
+        default:
+        break;
     }
     printf("\t+----------------------------------------------------------------+\n");
     for ( i = 0; i < n; i++){

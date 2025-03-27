@@ -28,7 +28,7 @@ Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN], objetosPerdidos[MAX_ALMACEN];
 Avion aviones[MAX_AVIONES];
 int banderaFinMostrador = 1,nroEquipaje = 0;
-int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
+int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
 int buscarInterfaz[5];
 FILE *fileMostrador,*fileCinta,*fileAlmacen;
 int cantAviones = 0; //Cantidad de aviones en el aeropuerto
@@ -76,6 +76,7 @@ int main() {
     inicializarInt(MAX_CINTAS,cintaInterfaz);
     inicializarInt(MAX_MOSTRADORES,mostradorInterfaz);
     inicializarInt(MAX_ALMACEN,almacenInterfaz);
+    inicializarInt(MAX_ALMACEN,perdidosInterfaz);
 
     //creacion de colas y almacenes
     crear(&pasajeros);
@@ -157,7 +158,7 @@ int main() {
     fclose(finalAlmacen);
 
     //verificaciones 
-    respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz);
+    respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz,perdidosInterfaz);
     return 0;
 }
 
@@ -289,8 +290,10 @@ void *almacen(void *args){
                     sem_wait(&semPerdidos);
                     while ((indice < MAX_ALMACEN) && (!almacenado)){
                         almacenado = almacenar(&objetosPerdidos[indice],tmpEquipaje);
-                        if(almacenado)
+                        if(almacenado){
+                            incrementar(indice,perdidosInterfaz);
                             fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
+                        }
                         indice++;
                     }
                     sem_post(&semPerdidos);
