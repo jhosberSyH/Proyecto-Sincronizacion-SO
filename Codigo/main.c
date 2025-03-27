@@ -59,7 +59,6 @@ int main() {
     sem_init(&mutexAlmacen,1);
     sem_init(&mutexMostrador,1);
     sem_init(&mutexCintaInterfaz,1);
-    sem_init(&semCinta,1);
     sem_init(&semMostrador,1);
     sem_init(&semTerminal, 1);
     sem_init(&semPerdidos, 1);
@@ -68,6 +67,9 @@ int main() {
     }
     for(int i=0;i<MAX_AVIONES;i++){
         sem_init(&mutexAviones[i],1);
+    }
+    for(int i=0;i<MAX_CINTAS;i++){
+        sem_init(&semCinta[i],1);
     }
 
     //inicializar listas con 0
@@ -125,7 +127,6 @@ int main() {
     sem_destroy(&mutexAlmacen);
     sem_destroy(&mutexMostrador);
     sem_destroy(&mutexCintaInterfaz);
-    sem_destroy(&semCinta);
     sem_destroy(&semMostrador);
     sem_destroy(&semTerminal);
     for(int i=0;i<MAX_ALMACEN;i++){
