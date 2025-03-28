@@ -14,7 +14,6 @@
 #define ENTRADA 1
 #define SALIDA 2
 
-
 void *mostrador(void *args);
 void *cinta(void *args);
 void *almacen(void *args);
@@ -198,15 +197,24 @@ void *mostrador(void *args){
 
             //PROCESAMIENTO EN EL MOSTRADOR()
 
-            indice = (nroEquipaje - 1) % MAX_CINTAS; //distribucion de cintas por modulo para distribuir equitativamente
-            //Salida del mostrador
-            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); //Mostrar Salida
-            //Bloquear cinta para poder encolar el equipaje
-            sem_wait(&semCinta[indice]); 
-            encolar(&cintas[indice],aux);
-            sem_post(&semCinta[indice]);
-            //Registrar entrada a la cinta
-            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
+            if(strcmp(aux.tipo,"Mano") == 0){
+                //Salida del mostrador
+                aux.prioridad = traducirPrioridad(aux.tipo);
+                cargarEquipaje(&aviones[aux.idVuelo],&aux,&mutexAviones[aux.idVuelo]);
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); //Mostrar Salida
+
+            }else{
+                indice = (nroEquipaje - 1) % MAX_CINTAS; //distribucion de cintas por modulo para distribuir equitativamente
+                //Salida del mostrador
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); //Mostrar Salida
+                //Bloquear cinta para poder encolar el equipaje
+                sem_wait(&semCinta[indice]); 
+                encolar(&cintas[indice],aux);
+                sem_post(&semCinta[indice]);
+                //Registrar entrada a la cinta
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
+            }
+
         
         }else{
             sem_post(&semMostrador);

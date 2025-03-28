@@ -93,13 +93,15 @@ int cargarEquipaje(Avion *avion, Equipaje *e, sem_t *semAvion)
         default:
             break;
         }
-        avion->capacidad -= e->peso;
+        if (e->prioridad != 4)
+        {
+            avion->capacidad -= e->peso;
+        }
         estado = 1;
     }
     sem_post(semAvion);
     return estado;
 }
-
 
 // CARGAR EQUIPAJE QUE YA ESTA EN EL AVIÓN SEGUN LA ENTRADA
 int verificarEquipaje(Avion *avion, Equipaje *e, sem_t *semAvion)
