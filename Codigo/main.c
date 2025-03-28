@@ -3,27 +3,42 @@
 #include "interfaz.h"
 #include "ColaEntero.h"
 #include "avion.h"
+#include <sys/sysinfo.h>
+#include <sys/resource.h>
+#include <time.h>
 
-
-#define MAX_MOSTRADORES 5000 // numero de mostradores
+// Cantidades de hilos
+#define MAX_MOSTRADORES 5000 
 #define MAX_CINTAS 500
+#define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
+
+// Enumerando Etapas Del Proyecto
 #define ETAPA_MOSTRADOR 1
 #define ETAPA_CINTA 2
 #define ETAPA_ALMACEN 3
+
+//Enumenrando Otros
 #define ENTRADA 1
 #define SALIDA 2
+#define TIEMPO 1
 
 
 void *mostrador(void *args);
 void *cinta(void *args);
 void *almacen(void *args);
 void *descargadorAvion(void *args);
+void *supervisor();
 void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
 
-sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
-sem_t semTerminal, semPerdidos;
+//semaforos y mutex
+sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],semTerminal, semPerdidos;
+sem_t mutexSupervisor[5],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
+
+//contadores para saber cuantos hilos hay activos
+int contadorHiloMostrador = 0,contadorHiloCinta = 0,contadorHiloAlmacen = 0;
+
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN], objetosPerdidos[MAX_ALMACEN];
 Avion aviones[MAX_AVIONES];
@@ -42,6 +57,7 @@ int main() {
     pthread_t cintaHilo[MAX_CINTAS];
     pthread_t hilosAlmacenes[MAX_ALMACEN];
     pthread_t hilosAviones[MAX_AVIONES];
+    pthread_t supervisorHilo;
 
     //creando archivos de escritura
     almacenLog = fopen("../salidas/logAlmacen.txt", "w");
@@ -56,6 +72,8 @@ int main() {
     }
     
     usuario(&requisitoInterfaz,buscarInterfaz);
+
+    //inicializar semaforos
     sem_init(&mutexAlmacen,1);
     sem_init(&mutexMostrador,1);
     sem_init(&mutexCintaInterfaz,1);
@@ -90,6 +108,14 @@ int main() {
     printf("\t===1 Entrada leida===\n");
 
     //creacion de hilos
+    if (requisitoInterfaz == 0){
+        pthread_t supervisorHilo;
+        for(int i=0;i<5;i++){
+            sem_init(&mutexSupervisor[i],1);
+        }
+        pthread_create(&supervisorHilo,NULL,supervisor,NULL);
+    }
+    
     for (i = 0; i < MAX_MOSTRADORES; i++) {
         int *arg = malloc(sizeof(*arg));  
         *arg = i; 
@@ -111,6 +137,8 @@ int main() {
         *arg = j; 
         pthread_create(&hilosAviones[j],NULL,descargadorAvion, arg); 
     }
+
+    //espera de hilos
     for (p = 0; p < MAX_MOSTRADORES; p++){
         pthread_join(mostradores[p],NULL);
     }
@@ -125,6 +153,11 @@ int main() {
     }
 
     //destruccion de semaforos
+    if (requisitoInterfaz == 0){
+        for(int i=0;i<5;i++){
+            sem_destroy(&mutexSupervisor[i]);
+        }
+    }
     sem_destroy(&mutexAlmacen);
     sem_destroy(&mutexMostrador);
     sem_destroy(&mutexCintaInterfaz);
@@ -166,9 +199,17 @@ int main() {
 void *mostrador(void *args){
     int id = *((int *)args),indice = 0;
     Equipaje aux;
+    if (requisitoInterfaz == 0){ //activa el Modo Supervisor
+        sem_wait(&mutexSupervisor[ETAPA_MOSTRADOR]);
+        contadorHiloMostrador++;
+        sem_post(&mutexSupervisor[ETAPA_MOSTRADOR]);
+    }
     while(1){
         //INICIO SECCION CRITICA
-        //Bloquear acceso a bandera de finalización de los equipajes 
+        //Bloquear acceso a bandera de finalización de los equipajes
+        if (requisitoInterfaz == 0){ //activar tiempo de espera para el modo supervisor
+            sleep(TIEMPO);
+        }
         sem_wait(&semMostrador);
         if(banderaFinMostrador){
             //Bloquear acceso a la cola de equipajes
@@ -207,9 +248,13 @@ void *mostrador(void *args){
             sem_post(&semCinta[indice]);
             //Registrar entrada a la cinta
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
-        
         }else{
             sem_post(&semMostrador);
+            if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
+                sem_wait(&mutexSupervisor[ETAPA_MOSTRADOR]);
+                contadorHiloMostrador--;
+                sem_post(&mutexSupervisor[ETAPA_MOSTRADOR]);
+            }
             pthread_exit(NULL);
         }
     }
@@ -220,8 +265,12 @@ void *cinta(void *args){
     Cola equipaje; //equipajes en la cinta
     int indice = 0;
     int almacenado = 0; //bandera para saber si se pudo almacenar el equipaje
+    if (requisitoInterfaz == 0){ //activa el Modo Supervisor
+        sem_wait(&mutexSupervisor[ETAPA_CINTA]);
+        contadorHiloCinta++;
+        sem_post(&mutexSupervisor[ETAPA_CINTA]);
+    }
     while (1){
-       
         while (esVacio(cintas[id]) != 1){
             //Escribir en la interfaz
             sem_wait(&mutexCintaInterfaz);
@@ -234,6 +283,9 @@ void *cinta(void *args){
 
             //Bloquear cinta
             sem_wait(&semCinta[id]);
+            if (requisitoInterfaz == 0){ //activar tiempo de espera para el modo supervisor
+                sleep(TIEMPO);
+            }
             //Descargar cinta y mover a un almacen
             while ((indice < MAX_ALMACEN) && (!almacenado)){
                 //Buscar almacen con el país destino del equipaje o uno vacío
@@ -260,11 +312,15 @@ void *cinta(void *args){
             //Liberar cinta
             sem_post(&semCinta[id]);
         }
-
         sem_wait(&semMostrador);
 
         if((!banderaFinMostrador) && (esVacio(cintas[id]) == 1)){
             sem_post(&semMostrador);
+            if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
+                sem_wait(&mutexSupervisor[ETAPA_CINTA]);
+                contadorHiloCinta--;
+                sem_post(&mutexSupervisor[ETAPA_CINTA]);
+            }
             pthread_exit(NULL);
         }
 
@@ -275,8 +331,16 @@ void *cinta(void *args){
 void *almacen(void *args){
     int id = *((int *)args);
     int almacenado = 0,indice = 0;
+    if (requisitoInterfaz == 0){ //activa el Modo Supervisor
+        sem_wait(&mutexSupervisor[ETAPA_ALMACEN]);
+        contadorHiloAlmacen++;
+        sem_post(&mutexSupervisor[ETAPA_ALMACEN]);
+    }
     while (1){
         sem_wait(&mutexAlmacenes[id]);
+        if (requisitoInterfaz == 0){ //activar tiempo de espera para el modo supervisor
+            sleep(TIEMPO);
+        }
         //CONSUMIR
         if(almacenes[id].lleno > 0){
             //printf("DESCARGA DE ALMACEN %i (%i) \n", id, almacenes[id].lleno);
@@ -302,6 +366,12 @@ void *almacen(void *args){
         }
         if(almacenes[id].lleno <= 0){
             sem_post(&mutexAlmacenes[id]);
+            if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
+                printf("mucha esencia ahhhhhhhhh\n");
+                sem_wait(&mutexSupervisor[ETAPA_ALMACEN]);
+                contadorHiloAlmacen--;
+                sem_post(&mutexSupervisor[ETAPA_ALMACEN]);
+            }
             pthread_exit(NULL);
         }
         sem_post(&mutexAlmacenes[id]);
@@ -367,4 +437,64 @@ int existeVuelo(Equipaje *e){
         }
     }
     return 0;
+}
+
+void *supervisor(){
+    int i = 0;
+    FILE *fileSupervisor = fopen("../salidas/supervisor.txt", "w");
+    while (1){
+        struct sysinfo info;
+        struct rusage usado;
+        // Obtener información del sistema
+        if (sysinfo(&info) != 0) {
+            perror("Error al obtener la información del sistema");
+        }
+        if (getrusage(RUSAGE_SELF,&usado) != 0) {
+            perror("Error al obtener la información del sistema");
+        }
+        // Obtener la fecha y hora actual
+        time_t now = time(NULL);
+        char date[26];
+        ctime_r(&now, date);
+
+        unsigned long total = info.totalram * info.mem_unit;
+        unsigned long libre = info.freeram * info.mem_unit;
+        unsigned long uso = total - libre;
+
+        system("clear");
+        for (i = 0; i < 3; i++){
+            sem_wait(&mutexSupervisor[i]);
+        }
+        
+        printf("+--------------------------------------------\n");
+        printf("|\tFecha: %s", date);
+        printf("|\tMemoria Total: %ld Megabytes\n", total/(1024*1024));
+        printf("|\tMemoria Libre: %ld Megabytes\n", libre/(1024*1024));
+        printf("|\tMemoria Usada en General: %ld Megabytes\n", uso/(1024*1024));
+        printf("|\tMemoria Usada por el programa: %ld Megabytes\n", usado.ru_maxrss/1024);
+        printf("|\tHay %d Procesos de los cuales %d son del Proyecto\n",info.procs,(contadorHiloAlmacen+contadorHiloCinta+contadorHiloMostrador) + 2);
+        printf("|\tCantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
+        printf("|\tCantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
+        printf("|\tCantidad de Hilos trabajando en Almacen: %d\n", contadorHiloAlmacen);
+        printf("+--------------------------------------------\n");
+        
+        //lleva el registro
+        fprintf(fileSupervisor, "+--------------------------------------------\n");
+        fprintf(fileSupervisor, "|\tFecha: %s\n", date);
+        fprintf(fileSupervisor, "|\tMemoria Total: %ld Megabytes\n", total/(1024*1024));
+        fprintf(fileSupervisor, "|\tMemoria Libre: %ld Megabytes\n", libre/(1024*1024));
+        fprintf(fileSupervisor, "|\tMemoria Usada: %ld Megabytes\n", uso/(1024*1024));
+        fprintf(fileSupervisor, "|\tHay %d Procesos de los cuales %d son del proyecto\n", info.procs,(contadorHiloAlmacen+contadorHiloCinta+contadorHiloMostrador) + 2);
+        fprintf(fileSupervisor, "|\tCantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
+        fprintf(fileSupervisor, "|\tCantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
+        fprintf(fileSupervisor, "|\tCantidad de Hilos trabajando en Almacen: %d\n", contadorHiloAlmacen);
+        fprintf(fileSupervisor, "+--------------------------------------------\n");
+        
+        for (i = 0; i < 3; i++){
+            sem_post(&mutexSupervisor[i]);
+        }
+        fclose(fileSupervisor);
+        sleep(10); //escribe cada 10 segundos
+        FILE *fileSupervisor = fopen("../salidas/supervisor.txt", "a");
+    }
 }
