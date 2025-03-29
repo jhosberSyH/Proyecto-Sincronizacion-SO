@@ -3,8 +3,8 @@
 #include "interfaz.h"
 #include "ColaEntero.h"
 #include "avion.h"
-#include <sys/sysinfo.h>
-#include <sys/resource.h>
+#include <sys/sysinfo.h> //Obtiene informacion del sistema
+#include <sys/resource.h> //Obtiene informacio del proceso
 #include <time.h>
 
 // Cantidades de hilos
@@ -14,6 +14,7 @@
 #define MAX_EQUIPAJES 120736
 
 // Enumerando Etapas Del Proyecto
+#define MAX_ETAPA 3
 #define ETAPA_MOSTRADOR 1
 #define ETAPA_CINTA 2
 #define ETAPA_ALMACEN 3
@@ -32,28 +33,30 @@ void *supervisor();
 void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
 
-//semaforos y mutex
+//Semaforos y Mutex
 sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],semTerminal, semPerdidos;
 sem_t mutexSupervisor[5],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
 
-//contadores para saber cuantos hilos hay activos
+//Contadores para saber cuantos hilos hay activos
 int contadorHiloMostrador = 0,contadorHiloCinta = 0,contadorHiloAlmacen = 0;
 
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN], objetosPerdidos[MAX_ALMACEN];
 Avion aviones[MAX_AVIONES];
 int banderaFinMostrador = 1,nroEquipaje = 0;
-int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
-int buscarInterfaz[5];
 FILE *fileMostrador,*fileCinta,*fileAlmacen;
 int cantAviones = 0; //Cantidad de aviones en el aeropuerto
 Cola terminal;
-struct timespec start, end;
+
+//variables para Interfaz
+int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
+int buscarInterfaz[5];
+
 
 
 int main() {
     int i,t,w,p; //variables para bucles
-    int op_menu; //opcion del menu seleccionada
+
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
     pthread_t hilosAlmacenes[MAX_ALMACEN];
@@ -67,13 +70,13 @@ int main() {
     fileCinta = fopen("../salidas/cinta.txt", "w");
     fileAlmacen = fopen("../salidas/almacen.txt", "w");
     finalAlmacen = fopen ("../salidas/finalAlmacen.txt", "w");
-    if((fileMostrador == NULL) || (fileCinta == NULL) || (fileAlmacen == NULL)) {
+
+    if((fileMostrador == NULL) || (fileCinta == NULL) || (fileAlmacen == NULL) || (finalAlmacen == NULL) || (avionesLog == NULL) || (almacenLog == NULL)){
         perror("Error Creando los archivos\n");
         exit(EXIT_FAILURE);
     }
     
     usuario(&requisitoInterfaz,buscarInterfaz);
-    
 
     //inicializar semaforos
     sem_init(&mutexAlmacen,1);
@@ -112,7 +115,7 @@ int main() {
     //creacion de hilos
     if (requisitoInterfaz == 0){
         pthread_t supervisorHilo;
-        for(int i=0;i<5;i++){
+        for(int i=0;i < MAX_ETAPA;i++){
             sem_init(&mutexSupervisor[i],1);
         }
         pthread_create(&supervisorHilo,NULL,supervisor,NULL);
@@ -140,7 +143,7 @@ int main() {
         pthread_create(&hilosAviones[j],NULL,descargadorAvion, arg); 
     }
 
-    //espera de hilos
+    //Espera de hilos
     for (p = 0; p < MAX_MOSTRADORES; p++){
         pthread_join(mostradores[p],NULL);
     }
@@ -156,7 +159,7 @@ int main() {
 
     //destruccion de semaforos
     if (requisitoInterfaz == 0){
-        for(int i=0;i<5;i++){
+        for(int i=0; i < MAX_ETAPA;i++){
             sem_destroy(&mutexSupervisor[i]);
         }
     }
@@ -448,66 +451,79 @@ void *supervisor(){
     while (1){
         struct sysinfo info;
         struct rusage usado;
-        double cpu_time, elapsed_time, cpu_usage;
 
-        // Obtener información del sistema
-        if (sysinfo(&info) != 0) {
+        // Obtener información del sistema y del programa
+        if ((sysinfo(&info) != 0) || (getrusage(RUSAGE_SELF,&usado) != 0)) {
             perror("Error al obtener la información del sistema");
         }
-        if (getrusage(RUSAGE_SELF,&usado) != 0) {
-            perror("Error al obtener la información del sistema");
-        }
+
         // Obtener la fecha y hora actual
         time_t now = time(NULL);
         char date[26];
         ctime_r(&now, date);
 
-        // Obtiene el uso de CPU (tiempo de usuario + tiempo de sistema)
-        cpu_time = (usado.ru_utime.tv_sec +  (usado.ru_utime.tv_usec / 1e6) ) + (usado.ru_stime.tv_sec + (usado.ru_stime.tv_usec / 1e6));
+        // Calculos de tiempo
+        double tiempoUsoCpuUsuario = usado.ru_utime.tv_sec + (usado.ru_utime.tv_usec / 1e6) ;
+        double tiempoUsoCpuSistema = usado.ru_stime.tv_sec + (usado.ru_stime.tv_usec / 1e6);
 
-        // Calcula el tiempo real transcurrido (en segundos)
-
-        // Calcula el porcentaje de uso de CPU
+        //Calculos de memoria
         unsigned long total = info.totalram * info.mem_unit;
         unsigned long libre = info.freeram * info.mem_unit;
         unsigned long uso = total - libre;
 
         system("clear");
-        for (i = 0; i < 3; i++){
+
+        for (i = 0; i < MAX_ETAPA; i++){
             sem_wait(&mutexSupervisor[i]);
         }
-        printf("Tiempo de CPU utilizado: %.6f segundos\n", cpu_time);
-        printf("Porcentaje de uso de CPU: %.2f%%\n", cpu_usage);
-        printf("+--------------------------------------------\n");
-        printf("|\tFecha: %s", date);
-        printf("|\tMemoria Total: %ld Megabytes\n", total/(1024*1024));
-        printf("|\tMemoria Libre: %ld Megabytes\n", libre/(1024*1024));
-        printf("|\tMemoria Usada en General: %ld Megabytes\n", uso/(1024*1024));
-        printf("|\tMemoria Usada por el programa: %ld Megabytes\n", usado.ru_maxrss/1024);
-        printf("|\tHay %d Procesos de los cuales %d son del Proyecto\n",info.procs,(contadorHiloAlmacen+contadorHiloCinta+contadorHiloMostrador) + 2);
-        printf("|\tCantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
-        printf("|\tCantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
-        printf("|\tCantidad de Hilos trabajando en Almacen: %d\n", contadorHiloAlmacen);
-        printf("+--------------------------------------------\n");
+
+        //Calculos de Procesos e Hilos
+        int totalProcesos = info.procs;
+        int totalHilos = (contadorHiloAlmacen + contadorHiloCinta + contadorHiloMostrador) + 2; // 2 = hilo principal y hilo supervisor
+
+        printf("\t+------------------------------------------------------+\n");
+        printf("\t|Fecha: %s", date);
+        printf("\t|\tConsumo del CPU\n");
+        printf("\t|Tiempo Usuario: %.6f segundos\n", tiempoUsoCpuUsuario);
+        printf("\t|Tiempo Sistema: %.6f segundos\n", tiempoUsoCpuSistema);
+        printf("\t|Tiempo Total: %.6f segundos\n", tiempoUsoCpuSistema + tiempoUsoCpuUsuario);
+        printf("\t|\tConsumo del Memoria\n");
+        printf("\t|Memoria Total: %ld Megabytes\n", total/(1024*1024));
+        printf("\t|Memoria Libre: %ld Megabytes\n", libre/(1024*1024));
+        printf("\t|Memoria Usada en General: %ld Megabytes\n", uso/(1024*1024));
+        printf("\t|Memoria Usada por el programa: %ld Megabytes\n", usado.ru_maxrss/1024);
+        printf("\t|\tCantidades de Procesos\n");
+        printf("\t|Hay %d Procesos de los cuales %d son del Proyecto\n",totalProcesos,totalHilos);
+        printf("\t|Cantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
+        printf("\t|Cantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
+        printf("\t|Cantidad de Hilos trabajando en Almacen: %d\n", contadorHiloAlmacen);
+        printf("\t+------------------------------------------------------+\n");
         
         //lleva el registro
-        fprintf(fileSupervisor, "+--------------------------------------------\n");
-        fprintf(fileSupervisor, "|\tFecha: %s\n", date);
-        fprintf(fileSupervisor, "|\tMemoria Total: %ld Megabytes\n", total/(1024*1024));
-        fprintf(fileSupervisor, "|\tMemoria Libre: %ld Megabytes\n", libre/(1024*1024));
-        fprintf(fileSupervisor, "|\tMemoria Usada: %ld Megabytes\n", uso/(1024*1024));
-        fprintf(fileSupervisor, "|\tMemoria Usada por el programa: %ld Megabytes\n", usado.ru_maxrss/1024);
-        fprintf(fileSupervisor, "|\tHay %d Procesos de los cuales %d son del proyecto\n", info.procs,(contadorHiloAlmacen+contadorHiloCinta+contadorHiloMostrador) + 2);
-        fprintf(fileSupervisor, "|\tCantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
-        fprintf(fileSupervisor, "|\tCantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
-        fprintf(fileSupervisor, "|\tCantidad de Hilos trabajando en Almacen: %d\n", contadorHiloAlmacen);
-        fprintf(fileSupervisor, "+--------------------------------------------\n");
+        fprintf(fileSupervisor,"\t+------------------------------------------------------+\n");
+        fprintf(fileSupervisor,"\t|Fecha: %s", date);
+        fprintf(fileSupervisor,"\t|\tConsumo del CPU\n");
+        fprintf(fileSupervisor,"\t|Tiempo Usuario: %.6f segundos\n", tiempoUsoCpuUsuario);
+        fprintf(fileSupervisor,"\t|Tiempo Sistema: %.6f segundos\n", tiempoUsoCpuSistema);
+        fprintf(fileSupervisor,"\t|Tiempo Total: %.6f segundos\n", tiempoUsoCpuSistema + tiempoUsoCpuUsuario);
+        fprintf(fileSupervisor,"\t|\tConsumo del Memoria\n");
+        fprintf(fileSupervisor,"\t|Memoria Total: %ld Megabytes\n", total/(1024*1024));
+        fprintf(fileSupervisor,"\t|Memoria Libre: %ld Megabytes\n", libre/(1024*1024));
+        fprintf(fileSupervisor,"\t|Memoria Usada en General: %ld Megabytes\n", uso/(1024*1024));
+        fprintf(fileSupervisor,"\t|Memoria Usada por el programa: %ld Megabytes\n", usado.ru_maxrss/1024);
+        fprintf(fileSupervisor,"\t|\tCantidades de Procesos\n");
+        fprintf(fileSupervisor,"\t|Hay %d Procesos de los cuales %d son del Proyecto\n",totalProcesos,totalHilos);
+        fprintf(fileSupervisor,"\t|Cantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
+        fprintf(fileSupervisor,"\t|Cantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
+        fprintf(fileSupervisor,"\t|Cantidad de Hilos trabajando en Almacen: %d\n", contadorHiloAlmacen);
+        fprintf(fileSupervisor,"\t+------------------------------------------------------+\n");
         
-        for (i = 0; i < 3; i++){
+        for (i = 0; i < MAX_ETAPA; i++){
             sem_post(&mutexSupervisor[i]);
         }
+
         fclose(fileSupervisor);
-        sleep(1); //escribe cada 10 segundos
+        sleep(30); //escribe cada 30 segundos
         FILE *fileSupervisor = fopen("../salidas/supervisor.txt", "a");
     }
 }
