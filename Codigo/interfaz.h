@@ -28,16 +28,28 @@ void registrar(int id, int etapa, Equipaje equipaje, FILE *file);
 void entradaMostrarEspecificacion(int etapa, int hilo, Equipaje equipaje);
 void salidaMostrarEspecificacion(int etapa, int hilo, Equipaje equipaje);
 
-void usuario(int *requisito, int valores[])
-{
-    menu(requisito);
-    if (*requisito > 4)
-    {
+void usuario(int *requisito,int valores[]){
+    char val[20];
+    printf("\n\t\t\tBienvenido\n\n\n");
+    printf("\t+-- Quieres activar el Modo Supervisor --+\n");
+    printf("\t| [1] Si                                    |\n");
+    printf("\t| [2] No                                    |\n");
+    printf("\t+-------------------------------------------+\n");
+    printf("Opcion: ");
+    do{
+        scanf("%s",val);
+    }while(opcion_valida(val) == 0);
+    *requisito = atoi(val);
+    *requisito -= 1;
+    if(*requisito != 0){
+        menu(requisito);
+        if(*requisito > 4){
+            system("clear");
+            especificaciones(*requisito,valores);
+        }
         system("clear");
-        especificaciones(*requisito, valores);
+        printf("\t\tCargando....\n");
     }
-    system("clear");
-    printf("\t\tCargando....\n");
 }
 // Menu para interacturar con el usuario
 void menu(int *requisito)
