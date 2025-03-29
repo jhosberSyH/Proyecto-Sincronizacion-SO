@@ -21,7 +21,7 @@
 //Enumenrando Otros
 #define ENTRADA 1
 #define SALIDA 2
-#define TIEMPO 1
+#define TIEMPO 2
 
 
 void *mostrador(void *args);
@@ -48,6 +48,7 @@ int buscarInterfaz[5];
 FILE *fileMostrador,*fileCinta,*fileAlmacen;
 int cantAviones = 0; //Cantidad de aviones en el aeropuerto
 Cola terminal;
+struct timespec start, end;
 
 
 int main() {
@@ -72,6 +73,7 @@ int main() {
     }
     
     usuario(&requisitoInterfaz,buscarInterfaz);
+    
 
     //inicializar semaforos
     sem_init(&mutexAlmacen,1);
@@ -182,6 +184,7 @@ int main() {
         printf("Equipaje [%s] en la terminal\n", e.estado);
         desencolar(&terminal);
     }*/
+    
     //cerrando archivos
     fclose(fileMostrador);
     fclose(fileCinta);
@@ -445,6 +448,8 @@ void *supervisor(){
     while (1){
         struct sysinfo info;
         struct rusage usado;
+        double cpu_time, elapsed_time, cpu_usage;
+
         // Obtener información del sistema
         if (sysinfo(&info) != 0) {
             perror("Error al obtener la información del sistema");
@@ -457,6 +462,12 @@ void *supervisor(){
         char date[26];
         ctime_r(&now, date);
 
+        // Obtiene el uso de CPU (tiempo de usuario + tiempo de sistema)
+        cpu_time = (usado.ru_utime.tv_sec +  (usado.ru_utime.tv_usec / 1e6) ) + (usado.ru_stime.tv_sec + (usado.ru_stime.tv_usec / 1e6));
+
+        // Calcula el tiempo real transcurrido (en segundos)
+
+        // Calcula el porcentaje de uso de CPU
         unsigned long total = info.totalram * info.mem_unit;
         unsigned long libre = info.freeram * info.mem_unit;
         unsigned long uso = total - libre;
@@ -465,7 +476,8 @@ void *supervisor(){
         for (i = 0; i < 3; i++){
             sem_wait(&mutexSupervisor[i]);
         }
-        
+        printf("Tiempo de CPU utilizado: %.6f segundos\n", cpu_time);
+        printf("Porcentaje de uso de CPU: %.2f%%\n", cpu_usage);
         printf("+--------------------------------------------\n");
         printf("|\tFecha: %s", date);
         printf("|\tMemoria Total: %ld Megabytes\n", total/(1024*1024));
@@ -484,6 +496,7 @@ void *supervisor(){
         fprintf(fileSupervisor, "|\tMemoria Total: %ld Megabytes\n", total/(1024*1024));
         fprintf(fileSupervisor, "|\tMemoria Libre: %ld Megabytes\n", libre/(1024*1024));
         fprintf(fileSupervisor, "|\tMemoria Usada: %ld Megabytes\n", uso/(1024*1024));
+        fprintf(fileSupervisor, "|\tMemoria Usada por el programa: %ld Megabytes\n", usado.ru_maxrss/1024);
         fprintf(fileSupervisor, "|\tHay %d Procesos de los cuales %d son del proyecto\n", info.procs,(contadorHiloAlmacen+contadorHiloCinta+contadorHiloMostrador) + 2);
         fprintf(fileSupervisor, "|\tCantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
         fprintf(fileSupervisor, "|\tCantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
@@ -494,7 +507,7 @@ void *supervisor(){
             sem_post(&mutexSupervisor[i]);
         }
         fclose(fileSupervisor);
-        sleep(10); //escribe cada 10 segundos
+        sleep(1); //escribe cada 10 segundos
         FILE *fileSupervisor = fopen("../salidas/supervisor.txt", "a");
     }
 }
