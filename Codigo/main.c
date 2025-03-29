@@ -18,6 +18,7 @@
 #define ETAPA_MOSTRADOR 1
 #define ETAPA_CINTA 2
 #define ETAPA_ALMACEN 3
+#define TIEMPO_MAXIMO 2
 
 //Enumenrando Otros
 #define ENTRADA 1
@@ -33,7 +34,8 @@ void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
 
 //Semaforos y Mutex
-sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],semTerminal, semPerdidos;
+sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],semTerminal, semPerdidos, semTiempoMostrador;
+sem_t semTiempoCinta, semTiempoAlmacen;
 sem_t mutexSupervisor[5],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
 
 //Contadores para saber cuantos hilos hay activos
@@ -49,7 +51,8 @@ Cola terminal;
 
 //variables para Interfaz
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN_PERDIDOS],requisitoInterfaz = 0;
-int buscarInterfaz[5];
+int buscarInterfaz[5], totalEquipajeMostrador = 0, totalEquipajeCintas = 0, totalEquipajeAlmacen = 0;
+double tiempoEnMostradorTotal = 0, tiempoEnCintaTotal = 0, tiempoEnAlmacenTotal = 0;
 
 
 
@@ -83,6 +86,9 @@ int main() {
     sem_init(&semMostrador,1);
     sem_init(&semTerminal, 1);
     sem_init(&semPerdidos, 1);
+    sem_init(&semTiempoMostrador,1);
+    sem_init(&semTiempoAlmacen,1);
+    sem_init(&semTiempoCinta,1);
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_init(&mutexAlmacenes[i],1);
     }
@@ -195,6 +201,8 @@ int main() {
 
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz,perdidosInterfaz);
+    printf("Tiempo promedio en mostrador: %.10f segundos\nTiempo promedio en cintas: %.10f segundos\nTiempo promedio en Almacen: %.10f\n", (tiempoEnMostradorTotal / totalEquipajeMostrador / CLOCKS_PER_SEC), (tiempoEnCintaTotal / totalEquipajeCintas / CLOCKS_PER_SEC), (tiempoEnAlmacenTotal / totalEquipajeAlmacen / CLOCKS_PER_SEC));
+    printf("Total de equipajes en mostrador: %d\nTotal de equipajes en cintas: %d\nTotal de equipajes en almacen: %d", totalEquipajeMostrador, totalEquipajeCintas, totalEquipajeAlmacen);
     return 0;
 }
 
@@ -202,6 +210,7 @@ int main() {
 void *mostrador(void *args){
     int id = *((int *)args),indice = 0;
     Equipaje aux;
+    clock_t tiempoEnMostrador;
     if (requisitoInterfaz == 0){ //activa el Modo Supervisor
         sem_wait(&mutexSupervisor[ETAPA_MOSTRADOR]);
         contadorHiloMostrador++;
@@ -217,7 +226,7 @@ void *mostrador(void *args){
         if(banderaFinMostrador){
             //Bloquear acceso a la cola de equipajes
             sem_wait(&mutexMostrador);
-
+            tiempoEnMostrador = clock();
             nroEquipaje++;
             pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
             
@@ -241,7 +250,6 @@ void *mostrador(void *args){
             //FINAL SECCION CRITICA
 
             //PROCESAMIENTO EN EL MOSTRADOR()
-
             if(strcmp(aux.tipo,"Mano") == 0){
                 //Salida del mostrador
                 aux.prioridad = traducirPrioridad(aux.tipo);
@@ -259,6 +267,12 @@ void *mostrador(void *args){
                 //Registrar entrada a la cinta
                 mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
             }
+            tiempoEnMostrador = clock() - tiempoEnMostrador;
+            //Seccion critica para el tiempo total en mostrador
+            sem_wait(&semTiempoMostrador);
+            tiempoEnMostradorTotal += (double)tiempoEnMostrador;
+            totalEquipajeMostrador++;
+            sem_post(&semTiempoMostrador);
 
         
         }else{
@@ -278,6 +292,7 @@ void *cinta(void *args){
     Cola equipaje; //equipajes en la cinta
     int indice = 0;
     int almacenado = 0; //bandera para saber si se pudo almacenar el equipaje
+    clock_t tiempoEnCinta;
     if (requisitoInterfaz == 0){ //activa el Modo Supervisor
         sem_wait(&mutexSupervisor[ETAPA_CINTA]);
         contadorHiloCinta++;
@@ -299,6 +314,8 @@ void *cinta(void *args){
             if (requisitoInterfaz == 0){ //activar tiempo de espera para el modo supervisor
                 sleep(TIEMPO);
             }
+            tiempoEnCinta = clock();
+            //sleep(rand() % TIEMPO_MAXIMO);
             //Descargar cinta y mover a un almacen
             while ((indice < MAX_ALMACEN) && (!almacenado)){
                 //Buscar almacen con el país destino del equipaje o uno vacío
@@ -322,7 +339,13 @@ void *cinta(void *args){
             almacenado = 0;
             desencolar(&cintas[id]);
             //Liberar cinta
+            tiempoEnCinta = clock() - tiempoEnCinta;
             sem_post(&semCinta[id]);
+            //Seccion critica para el tiempo total en la cinta
+            sem_wait(&semTiempoCinta);
+            totalEquipajeCintas++;
+            tiempoEnCintaTotal += (double)tiempoEnCinta;
+            sem_post(&semTiempoCinta);
         }
         sem_wait(&semMostrador);
 
@@ -343,6 +366,7 @@ void *cinta(void *args){
 void *almacen(void *args){
     int id = *((int *)args);
     int almacenado = 0,indice = 0;
+    clock_t tiempoEnAlmacen;
     if (requisitoInterfaz == 0){ //activa el Modo Supervisor
         sem_wait(&mutexSupervisor[ETAPA_ALMACEN]);
         contadorHiloAlmacen++;
@@ -358,6 +382,8 @@ void *almacen(void *args){
             //printf("DESCARGA DE ALMACEN %i (%i) \n", id, almacenes[id].lleno);
             Equipaje tmpEquipaje;
             tmpEquipaje.id = -1;
+            tiempoEnAlmacen = clock();
+            //sleep(rand() % TIEMPO_MAXIMO);
             //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje, esto por cercanía, ya que usar el return causa overflow
             descargarAlmacen(&almacenes[id], aviones, mutexAviones,&tmpEquipaje);
             if(tmpEquipaje.id != -1){
@@ -373,6 +399,12 @@ void *almacen(void *args){
                     sem_post(&semPerdidos);
                 }
             }
+            tiempoEnAlmacen = clock() - tiempoEnAlmacen;
+            //SC para el tiempo en almacen
+            sem_wait(&semTiempoAlmacen);
+            totalEquipajeAlmacen++;
+            tiempoEnAlmacenTotal += (double)tiempoEnAlmacen;
+            sem_post(&semTiempoAlmacen);
         }
         if(almacenes[id].lleno <= 0){
             sem_post(&mutexAlmacenes[id]);
