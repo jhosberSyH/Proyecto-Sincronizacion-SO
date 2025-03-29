@@ -23,6 +23,12 @@ typedef struct
     char ciudad[50];
     char pais[50];
 
+    //Banderas de estados
+    int faltaDescargar;
+    int estaLleno;
+
+    Cola enEspera; //Equipajes al lado del avión esperando ser cargados a este
+
     Cola equipajeEsp;  // Equipaje especial (MAXIMA PRIORIDAD)
     Cola equipajes;    // Equipaje facturado (PRIORIDAD MEDIA)
     Cola equipajeSD;   // Equipaje sobredimensionado (PRIORIDAD BAJA)
@@ -54,7 +60,15 @@ void crearAviones(Avion aviones[MAX_AVIONES], int *cantidadAviones)
         {
             a.id = i; // Id del avión
             a.capacidad = a.capacidadMaxima;
+            a.estaLleno = 0;
+            a.faltaDescargar = 0;
+
+            if(strcmp(a.estado, "Conexion") == 0){
+                a.faltaDescargar = 1;
+            }
+
             // Inicializar colas de equipajes
+            crear(&a.enEspera);
             crear(&a.equipajeEsp);
             crear(&a.equipajeSD);
             crear(&a.equipajes);
@@ -70,9 +84,9 @@ void crearAviones(Avion aviones[MAX_AVIONES], int *cantidadAviones)
     }
     fclose(file);
 }
-int cargarEquipaje(Avion *avion, Equipaje *e, sem_t *semAvion)
+int cargarEquipaje(Avion *avion, Equipaje *e)
 {
-    sem_wait(semAvion);
+
     int estado = 0;
     if (e->peso <= avion->capacidad)
     {
@@ -98,8 +112,17 @@ int cargarEquipaje(Avion *avion, Equipaje *e, sem_t *semAvion)
             avion->capacidad -= e->peso;
         }
         estado = 1;
+    }else{
+        //SI ESTA FULL Y NO FALTA DESCARGAR SE INDICA COMO LLENO
+        if((avion->faltaDescargar == 0) && (avion->capacidad < 1.0f)){
+            avion->estaLleno = 1;
+        }else{
+            if(avion->faltaDescargar == 1){
+                estado = 2;
+            }
+        }
     }
-    sem_post(semAvion);
+
     return estado;
 }
 
@@ -160,6 +183,8 @@ int descargarEquipaje(Avion *avion, Equipaje *e)
     if (encontrado)
     {
         avion->capacidad += e->peso;
+    }else{
+        avion->faltaDescargar = 0;
     }
     return encontrado;
 }

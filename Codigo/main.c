@@ -28,6 +28,7 @@ void *mostrador(void *args);
 void *cinta(void *args);
 void *almacen(void *args);
 void *descargadorAvion(void *args);
+void *avion(void *args);
 void *supervisor();
 void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
@@ -46,6 +47,10 @@ int banderaFinMostrador = 1,nroEquipaje = 0;
 FILE *fileMostrador,*fileCinta,*fileAlmacen;
 int cantAviones = 0; //Cantidad de aviones en el aeropuerto
 Cola terminal;
+
+sem_t mutexCantLlenos;
+int asignaciones[MAX_AVIONES] = {0}; //Registra cuantos equipajes faltan por cargar en cada avión
+int cantLlenos = 0;
 
 //variables para Interfaz
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
@@ -84,6 +89,8 @@ int main() {
     sem_init(&semMostrador,1);
     sem_init(&semTerminal, 1);
     sem_init(&semPerdidos, 1);
+    sem_init(&mutexCantLlenos, 1);
+
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_init(&mutexAlmacenes[i],1);
     }
@@ -110,6 +117,11 @@ int main() {
     crearAviones(aviones, &cantAviones);
     leer_entradas("../pruebas/informacion_equipajes.txt");
     printf("\t===1 Entrada leida===\n");
+
+
+    //  for(int i = 0; i < cantAviones; i++){
+    //      printf("ASIGNADO A %i: %i\n", i, asignaciones[i]);
+    //  }
 
     //creacion de hilos
     if (requisitoInterfaz == 0){
@@ -139,7 +151,7 @@ int main() {
     for (int j = 0; j < MAX_AVIONES; j++){
         int *arg = malloc(sizeof(*arg));  
         *arg = j; 
-        pthread_create(&hilosAviones[j],NULL,descargadorAvion, arg); 
+        pthread_create(&hilosAviones[j],NULL,avion, arg); 
     }
 
     //Espera de hilos
@@ -167,6 +179,7 @@ int main() {
     sem_destroy(&mutexCintaInterfaz);
     sem_destroy(&semMostrador);
     sem_destroy(&semTerminal);
+    sem_destroy(&mutexCantLlenos);
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_destroy(&mutexAlmacenes[i]);
     }
@@ -247,7 +260,10 @@ void *mostrador(void *args){
             if(strcmp(aux.tipo,"Mano") == 0){
                 //Salida del mostrador
                 aux.prioridad = traducirPrioridad(aux.tipo);
-                cargarEquipaje(&aviones[aux.idVuelo],&aux,&mutexAviones[aux.idVuelo]);
+                
+                sem_wait(&mutexAviones[aux.idVuelo]);
+                cargarEquipaje(&aviones[aux.idVuelo],&aux);
+                sem_post(&mutexAviones[aux.idVuelo]);
                 mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); //Mostrar Salida
 
             }else{
@@ -364,22 +380,16 @@ void *almacen(void *args){
             //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje, esto por cercanía, ya que usar el return causa overflow
             descargarAlmacen(&almacenes[id], aviones, mutexAviones,&tmpEquipaje);
             if(tmpEquipaje.id != -1){
-                int descarga = cargarEquipaje(&aviones[tmpEquipaje.idVuelo], &tmpEquipaje, &mutexAviones[tmpEquipaje.idVuelo]);
-                if(descarga == 0){
-                    sem_wait(&semPerdidos);
-                    while ((indice < MAX_ALMACEN) && (!almacenado)){
-                        almacenado = almacenar(&objetosPerdidos[indice],tmpEquipaje);
-                        if(almacenado){
-                            incrementar(indice,perdidosInterfaz);
-                            fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
-                        }
-                        indice++;
-                    }
-                    sem_post(&semPerdidos);
-                }
+
+                //MOVER HASTA EL AVION 
+                sem_wait(&mutexAviones[tmpEquipaje.idVuelo]);
+                //Esperar x tiempo
+                encolar(&aviones[tmpEquipaje.idVuelo].enEspera, tmpEquipaje);
+                sem_post(&mutexAviones[tmpEquipaje.idVuelo]);
+
             }
         }
-        if(almacenes[id].lleno <= 0){
+        if(cantLlenos>=cantAviones){
             sem_post(&mutexAlmacenes[id]);
             if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
                 printf("mucha esencia ahhhhhhhhh\n");
@@ -393,7 +403,7 @@ void *almacen(void *args){
     }
 }
 
-void *descargadorAvion(void *args){
+/*void *descargadorAvion(void *args){
     int id = *((int *)args);
     //printf("Descargador %i\n", id);
     //return;
@@ -411,6 +421,76 @@ void *descargadorAvion(void *args){
             //printf("Ya se descargo el avión %i (%s)\n", id, aviones[id].estado);
             sem_post(&mutexAviones[id]);
             pthread_exit(NULL);
+        }
+        sem_post(&mutexAviones[id]);
+    }
+}*/
+void *avion(void *args){
+    int id = *((int *)args);
+    //printf("Descargador %i\n", id);
+    //return;
+    int cargado, noHayMasEquipajes = 0;
+    while(1){
+        sem_wait(&mutexAviones[id]);
+        //SI SON DE CONEXION Y FALTA POR DESCARGAR EQUIPAJES SE DESCARGAN
+        if((strcmp(aviones[id].estado, "Conexion") == 0) && aviones[id].faltaDescargar){
+            Equipaje e;
+            cargado = descargarEquipaje(&aviones[id], &e);
+            if(cargado){
+                sem_wait(&semTerminal);
+                //encolar en terminal
+                encolar(&terminal, e);
+                sem_post(&semTerminal);
+            }
+        }else{
+            //CARGAR EQUIPAJE DEL AVION
+            if(esVacio(aviones[id].enEspera) == 0){
+                Equipaje tmpEquipaje = primero(aviones[id].enEspera);
+                desencolar(&aviones[id].enEspera);
+                int descarga = cargarEquipaje(&aviones[tmpEquipaje.idVuelo], &tmpEquipaje);
+
+                if(descarga == 2){
+                    printf("PASO EL ESTADO 2\n");
+                    encolar(&aviones[id].enEspera, tmpEquipaje);
+                }
+                if(descarga == 0){
+                    //NO SE PUEDE CARGAR, SE LLEVA A PERDIDOS
+                    sem_wait(&semPerdidos);
+                    int indice = 0, almacenado = 0;
+                    while ((indice < MAX_ALMACEN) && (!almacenado)){
+                        almacenado = almacenar(&objetosPerdidos[indice],tmpEquipaje);
+                        if(almacenado){
+                            incrementar(indice,perdidosInterfaz);
+                            fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
+                        }
+                        indice++;
+                    }
+                    sem_post(&semPerdidos);
+
+                    //Eliminar su asignacion a ser cargado (Ya no se puede cargar entonces se resta su asignacion)
+                    asignaciones[tmpEquipaje.idVuelo] = asignaciones[tmpEquipaje.idVuelo] - 1 ;
+                    if(asignaciones[tmpEquipaje.idVuelo] <= 0){
+                        noHayMasEquipajes = 1;
+                    }
+                    
+                }else{
+                    //SI SE CARGO
+                    asignaciones[tmpEquipaje.idVuelo] = asignaciones[tmpEquipaje.idVuelo] - 1 ;
+                    if(asignaciones[tmpEquipaje.idVuelo] <= 0){
+                        noHayMasEquipajes = 1;
+                    }
+                }
+                //Verificar si estaLleno
+                if(aviones[id].estaLleno || noHayMasEquipajes){
+                    sem_post(&mutexAviones[id]);
+                    sem_wait(&mutexCantLlenos);
+                    cantLlenos++;
+                    //printf("-> %i, ", cantLlenos);
+                    sem_post(&mutexCantLlenos);
+                    pthread_exit(NULL);
+                } 
+            }
+
         }
         sem_post(&mutexAviones[id]);
     }
@@ -446,6 +526,11 @@ int existeVuelo(Equipaje *e){
             if((strcmp(e->estado, "Descargar") == 0) || (strcmp(e->estado, "Mantener") == 0)){
                 verificarEquipaje(&aviones[i], e, &mutexAviones[i]);
                 return 0;
+            }else{
+                //Si no es equipaje de mano se registra como asignado para cargarse en el avión
+                if(strcmp(e->tipo, "Mano") != 0){
+                    asignaciones[i] = asignaciones[i] + 1;
+                }
             }
             //printf("El vuelo de (%s, %s) si existe\n", e->ciudad, e->pais);
             return 1;
