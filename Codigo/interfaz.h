@@ -11,6 +11,7 @@
 #define MAX_MOSTRADORES 5000
 #define MAX_CINTAS 500
 #define MAX_ALMACEN 250
+#define MAX_ALMACEN_PERDIDOS 1
 #define MAX_EQUIPAJES 120736
 #define MAX_BUSQUEDA 3
 
@@ -138,13 +139,13 @@ void respuestasFinal(int requisito, int almacenes[], int cintas[], int mostrador
 
     case 3:
         mostrarInformacion(3, almacenes, MAX_ALMACEN);
-        mostrarInformacion(4, objetosPerdidos, MAX_ALMACEN);
+        mostrarInformacion(4, objetosPerdidos, MAX_ALMACEN_PERDIDOS);
         break;
     case 4:
         mostrarInformacion(1, mostradores, MAX_MOSTRADORES);
         mostrarInformacion(2, cintas, MAX_CINTAS);
         mostrarInformacion(3, almacenes, MAX_ALMACEN);
-        mostrarInformacion(4, objetosPerdidos, MAX_ALMACEN);
+        mostrarInformacion(4, objetosPerdidos, MAX_ALMACEN_PERDIDOS);
         break;
     }
 }

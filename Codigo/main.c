@@ -40,15 +40,15 @@ sem_t mutexSupervisor[5],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALM
 int contadorHiloMostrador = 0,contadorHiloCinta = 0,contadorHiloAlmacen = 0;
 
 Cola pasajeros,cintas[MAX_CINTAS];
-Almacen almacenes[MAX_ALMACEN], objetosPerdidos[MAX_ALMACEN];
+Almacen almacenes[MAX_ALMACEN], objetosPerdidos;
 Avion aviones[MAX_AVIONES];
 int banderaFinMostrador = 1,nroEquipaje = 0;
-FILE *fileMostrador,*fileCinta,*fileAlmacen;
+FILE *fileMostrador,*fileCinta;
 int cantAviones = 0; //Cantidad de aviones en el aeropuerto
 Cola terminal;
 
 //variables para Interfaz
-int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN],requisitoInterfaz = 0;
+int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN_PERDIDOS],requisitoInterfaz = 0;
 int buscarInterfaz[5];
 
 
@@ -67,10 +67,9 @@ int main() {
     avionesLog = fopen("../salidas/finalAviones.txt", "w");
     fileMostrador = fopen("../salidas/mostrador.txt", "w");
     fileCinta = fopen("../salidas/cinta.txt", "w");
-    fileAlmacen = fopen("../salidas/almacen.txt", "w");
     finalAlmacen = fopen ("../salidas/finalAlmacen.txt", "w");
 
-    if((fileMostrador == NULL) || (fileCinta == NULL) || (fileAlmacen == NULL) || (finalAlmacen == NULL) || (avionesLog == NULL) || (almacenLog == NULL)){
+    if((fileMostrador == NULL) || (fileCinta == NULL) || (finalAlmacen == NULL) || (avionesLog == NULL) || (almacenLog == NULL)){
         perror("Error Creando los archivos\n");
         exit(EXIT_FAILURE);
     }
@@ -98,13 +97,13 @@ int main() {
     inicializarInt(MAX_CINTAS,cintaInterfaz);
     inicializarInt(MAX_MOSTRADORES,mostradorInterfaz);
     inicializarInt(MAX_ALMACEN,almacenInterfaz);
-    inicializarInt(MAX_ALMACEN,perdidosInterfaz);
+    inicializarInt(MAX_ALMACEN_PERDIDOS,perdidosInterfaz);
 
     //creacion de colas y almacenes
     crear(&pasajeros);
     crear(&terminal);
     constructorAlmacen(almacenes);
-    constructorAlmacen(objetosPerdidos);
+    constructorAlmacenPerdidos(&objetosPerdidos);
 
     //lectura de archivo
     crearAviones(aviones, &cantAviones);
@@ -190,7 +189,6 @@ int main() {
     //cerrando archivos
     fclose(fileMostrador);
     fclose(fileCinta);
-    fclose(fileAlmacen);
     fclose(almacenLog);
     fclose(avionesLog);
     fclose(finalAlmacen);
@@ -314,7 +312,6 @@ void *cinta(void *args){
                     if (almacenado == 1){
                         incrementar(indice,almacenInterfaz);
                         mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,ENTRADA,primero(cintas[id])); // tinee detalles no funciona al 100% todavia
-                        registrar(indice,ETAPA_ALMACEN,primero(cintas[id]),fileAlmacen);
                     }
                     //Desbloquear almacen
                     sem_post(&mutexAlmacenes[indice]);
@@ -367,13 +364,11 @@ void *almacen(void *args){
                 int descarga = cargarEquipaje(&aviones[tmpEquipaje.idVuelo], &tmpEquipaje, &mutexAviones[tmpEquipaje.idVuelo]);
                 if(descarga == 0){
                     sem_wait(&semPerdidos);
-                    while ((indice < MAX_ALMACEN) && (!almacenado)){
-                        almacenado = almacenar(&objetosPerdidos[indice],tmpEquipaje);
-                        if(almacenado){
-                            incrementar(indice,perdidosInterfaz);
-                            fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
-                        }
-                        indice++;
+                    almacenado = almacenar(&objetosPerdidos,tmpEquipaje);
+                    printf("%d",almacenado);
+                    if(almacenado){
+                        incrementar(indice,perdidosInterfaz);
+                        fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos \n", tmpEquipaje.id);
                     }
                     sem_post(&semPerdidos);
                 }

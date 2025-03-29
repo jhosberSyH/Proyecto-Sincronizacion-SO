@@ -13,6 +13,7 @@ typedef struct {
     Cola equipajes;   //Equipaje facturado (PRIORIDAD MEDIA)
     Cola equipajeSD;  //Equipaje sobredimensionado (PRIORIDAD BAJA)
     int lleno;  //Espacios del almacén llenos
+    int esPerdido; //Bandera para saber si el equipaje es perdido
 } Almacen;
 
 FILE *almacenLog;
@@ -30,6 +31,7 @@ void constructorAlmacen(Almacen almacen[]){
         almacen[i].id = i;
         almacen[i].capacidad = MAX_CAPACIDAD_ALMACEN;
         almacen[i].lleno = 0;
+        almacen[i].esPerdido = 0;
         //INICIALIZAR COLAS DE EQUIPAJES
         crear(&almacen[i].equipajeEsp);
         crear(&almacen[i].equipajes);
@@ -37,9 +39,20 @@ void constructorAlmacen(Almacen almacen[]){
     }    
 }
 
+void constructorAlmacenPerdidos(Almacen *almacen){
+    almacen->id = 1;
+    almacen->capacidad = MAX_CAPACIDAD_ALMACEN;
+    almacen->lleno = 0;
+    almacen->esPerdido = 1;
+    //INICIALIZAR COLAS DE EQUIPAJES
+    crear(&almacen->equipajeEsp);
+    crear(&almacen->equipajes);
+    crear(&almacen->equipajeSD);
+}
+
 void escribirAlmacenado(Almacen almacen, Equipaje e ){
     //printf("aca");
-    fprintf(almacenLog, "Equipaje %i (%s,%s) en el almacén  %i (Prioridad %i)\n", e.id, e.ciudad, e.pais, almacen.id, e.prioridad);
+    fprintf(almacenLog, "El Equipaje %s número %i con peso %.2f y destino (%s,%s) en el almacén  %i (Prioridad %i)\n",e.tipo, e.id, e.peso, e.ciudad, e.pais, almacen.id, e.prioridad);
 }
 void escribirNoAlmacenado(Almacen almacen){
     //printf("aca tmb");
@@ -63,7 +76,9 @@ int almacenar(Almacen *almacen,Equipaje equipaje){
         }
     }
     //encolarPrioridad(&almacen->equipajes,equipaje);
-    almacen->capacidad -= 1;
+    if(!almacen->esPerdido){
+        almacen->capacidad -= 1;
+    }
     almacen->lleno += 1;
     escribirAlmacenado(*almacen, equipaje);
     return 1;
