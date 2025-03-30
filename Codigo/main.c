@@ -52,8 +52,8 @@ FILE *fileMostrador,*fileCinta, *finalLlegada;
 int cantAviones = 0; //Cantidad de aviones en el aeropuerto
 Cola terminal;
 
-sem_t mutexCantLlenos, mutexAsig;
-int asignaciones[MAX_AVIONES] = {0}; //Registra cuantos equipajes faltan por cargar en cada avión
+sem_t mutexCantLlenos, mutexAsig, nuevos[MAX_AVIONES];
+int asignaciones[MAX_AVIONES] = {0}, avionesLlenos[MAX_AVIONES] = {0}; //Registra cuantos equipajes faltan por cargar en cada avión
 int cantLlenos = 0;
 int perdidos = 0;
 int retirados = 0;
@@ -104,13 +104,14 @@ int main() {
     sem_init(&semTiempoCinta,1);
     sem_init(&semTiempoAvion,1);
     sem_init(&mutexCantLlenos, 1);
-    sem_init(&mutexAsig, 1);
-
+    sem_init(&mutexAsig,1);
+    
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_init(&mutexAlmacenes[i],1);
     }
     for(int i=0;i<MAX_AVIONES;i++){
         sem_init(&mutexAviones[i],1);
+        sem_init(&nuevos[i], 1);
     }
     for(int i=0;i<MAX_CINTAS;i++){
         sem_init(&semCinta[i],1);
@@ -205,6 +206,7 @@ int main() {
     sem_destroy(&semTerminal);
     sem_destroy(&mutexCantLlenos);
     sem_destroy(&mutexAsig);
+    //sem_destroy(&mutexAsig);
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_destroy(&mutexAlmacenes[i]);
     }
@@ -213,6 +215,7 @@ int main() {
     }
     for(int i=0;i<MAX_AVIONES;i++){
         sem_destroy(&mutexAviones[i]);
+        sem_destroy(&nuevos[i]);
     }    //Escribiendo estado final de aviones y almacenes
     verAviones(aviones, cantAviones);
     verColasAlmacenes(almacenes);
@@ -429,23 +432,67 @@ void *almacen(void *args){
             tmpEquipaje.id = -1;
             //sleep(rand() % TIEMPO_MAXIMO);
             //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje, esto por cercanía, ya que usar el return causa overflow
-            descargarAlmacen(&almacenes[id], aviones, mutexAviones,&tmpEquipaje);
-            if(tmpEquipaje.id != -1){
+            sem_wait(&mutexAsig);
+            int e = descargarAlmacen(&almacenes[id], avionesLlenos, &tmpEquipaje);
+            sem_post(&mutexAsig);
 
+
+            if(e==1){
                 //MOVER HASTA EL AVION 
                 sem_wait(&mutexAviones[tmpEquipaje.idVuelo]);
+                //sem_wait(&mutexAsig);
+                //printf("aaa-");
+                //sem_post(&mutexAsig);
                 //Esperar x tiempo
                 encolar(&aviones[tmpEquipaje.idVuelo].enEspera, tmpEquipaje);
+                //AVISAR DE QUE SE MOVIO UN EQUIPAJE AL AVION
+                sem_post(&nuevos[tmpEquipaje.idVuelo]);
                 sem_post(&mutexAviones[tmpEquipaje.idVuelo]);
-
+            }else{
+                //ALMACEN VACIO
+                //sem_wait(&mutexAsig);
+                //printf("aaa-");
+                //printf("\nVACIO");
+                //sem_post(&mutexAsig);
+                //sleep(5);
             }
+            
+            
             tiempoEnAlmacen = clock() - tiempoEnAlmacen;
             //SC para el tiempo en almacen
             sem_wait(&semTiempoAlmacen);
             totalEquipajeAlmacen++;
             sem_post(&semTiempoAlmacen);
+        }else{
+            //ESPERAR QUE HAYA ELEMENTOS O SE LLENEN LOS AVIONES
+            sem_post(&mutexAlmacenes[id]);
+            sleep(5);
+            sem_wait(&mutexAlmacenes[id]);
+
+            while((cantLlenos<cantAviones) && (almacenes[id].lleno <= 0)){
+                sem_post(&mutexAlmacenes[id]);
+                sleep(5);
+                sem_wait(&mutexAlmacenes[id]);
+
+            }
         }
         if(cantLlenos>=cantAviones){
+            //REGISTRAR PERDIDOS
+            while(esVacio(almacenes[id].perdidos) == 0){
+                sem_wait(&semPerdidos);
+                perdidos++;
+                Equipaje tmpEquipaje = primero(almacenes[id].perdidos);
+                desencolar(&almacenes[id].perdidos);
+                int indice = 0, almacenado = 0;
+                almacenado = almacenar(&objetosPerdidos,tmpEquipaje);
+                if(almacenado){
+                    incrementar(indice,perdidosInterfaz);
+                    fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
+                }
+                sem_post(&semPerdidos);
+            }
+
+
             sem_post(&mutexAlmacenes[id]);
             if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
                 printf("mucha esencia ahhhhhhhhh\n");
@@ -491,7 +538,6 @@ void *avion(void *args){
     //return;
     clock_t tiempoEnAvion = clock();
     int cargado, noHayMasEquipajes = 0;
-    Equipaje tmpEquipaje;
     while(1){
         sem_wait(&mutexAviones[id]);
         //SI SON DE CONEXION Y FALTA POR DESCARGAR EQUIPAJES SE DESCARGAN
@@ -507,7 +553,8 @@ void *avion(void *args){
         }else{
             //CARGAR EQUIPAJE DEL AVION
             if(esVacio(aviones[id].enEspera) == 0){
-                tmpEquipaje = primero(aviones[id].enEspera);
+                //printf("Porfin %i", id);
+                Equipaje tmpEquipaje = primero(aviones[id].enEspera);
                 desencolar(&aviones[id].enEspera);
                 int descarga = cargarEquipaje(&aviones[tmpEquipaje.idVuelo], &tmpEquipaje);
                 sem_wait(&semTiempoAvion);
@@ -528,38 +575,46 @@ void *avion(void *args){
                         fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
                     }
                     sem_post(&semPerdidos);
-                    sem_wait(&mutexAsig);
-                    //Eliminar su asignacion a ser cargado (Ya no se puede cargar entonces se resta su asignacion)
-                    asignaciones[tmpEquipaje.idVuelo] = asignaciones[tmpEquipaje.idVuelo] - 1 ;
-                    if(asignaciones[tmpEquipaje.idVuelo] <= 0){
-                        noHayMasEquipajes = 1;
-                        printf("hola\n\n");
-                    }
-                    sem_post(&mutexAsig);
+
                     
-                }else{
-                    //SI SE CARGO
-                    sem_wait(&mutexAsig);
-                    asignaciones[tmpEquipaje.idVuelo] = asignaciones[tmpEquipaje.idVuelo] - 1 ;
-                    if(asignaciones[tmpEquipaje.idVuelo] <= 0){
-                        noHayMasEquipajes = 1;
-                        printf("adios\n\n");
-                    }
+                }
+
+                //RESTAR ASIGNACION
+                sem_wait(&mutexAsig);
+                asignaciones[id] = asignaciones[id] - 1 ;
+                if(aviones[id].estaLleno || (asignaciones[id] <= 0)){
+                    noHayMasEquipajes = 1;
+                    //printf("adios ->");
+                }
+                
+                sem_post(&mutexAsig);
+            }else{
+                sem_wait(&mutexAsig);
+                if(aviones[id].estaLleno || (asignaciones[id] <= 0)){
+                    noHayMasEquipajes = 1;
                     sem_post(&mutexAsig);
+                }else{
+                    //Esperar a nuevos elementos en la cola
+                    sem_post(&mutexAsig);
+                    sem_post(&mutexAviones[id]);
+                    sem_wait(&nuevos[id]);
+                    sem_wait(&mutexAviones[id]);
+                    while(esVacio(aviones[id].enEspera)){
+                        sem_post(&mutexAviones[id]);
+                        sem_wait(&nuevos[id]);
+                        sem_wait(&mutexAviones[id]);
+                    }
+
                 }
             }
-            sem_wait(&mutexAsig);
-            asignaciones[id] = asignaciones[id] - 1;
-            if(asignaciones[id] <= 0){
-                noHayMasEquipajes = 1;
-            }
-            sem_post(&mutexAsig);
             
         }
         //Verificar si estaLleno
         if(noHayMasEquipajes){
-            sem_post(&mutexAviones[id]);
-            //PONER TODOS LOS QUE ESTABAN EN ESPPERA COMO PERDIDOS
+            sem_wait(&mutexAsig);
+            avionesLlenos[id] = 1;
+            sem_post(&mutexAsig);
+            //PONER TODOS LOS QUE ESTABAN EN ESPERA COMO PERDIDOS
             while(esVacio(aviones[id].enEspera) == 0){
                 sem_wait(&semPerdidos);
                 perdidos++; //variable para ver cuantos son en total
@@ -572,9 +627,13 @@ void *avion(void *args){
                 sem_post(&semPerdidos);
                 desencolar(&aviones[id].enEspera);
             }
+            //printf("%i\n", id);
+            sem_post(&mutexAviones[id]);
             sem_wait(&mutexCantLlenos);
             cantLlenos++;
-            //printf("-> %i, ", cantLlenos);
+            if((cantLlenos % 10) == 0){
+                printf("LLENOS -> %i\n", cantLlenos);
+            }
             sem_post(&mutexCantLlenos);
             sem_wait(&semTiempoAvion);
             tiempoEnAvion = clock() - tiempoEnAvion;
