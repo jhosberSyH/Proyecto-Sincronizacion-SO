@@ -14,7 +14,7 @@
 #define MAX_EQUIPAJES 120736
 
 // Enumerando Etapas Del Proyecto
-#define MAX_ETAPA 3
+#define MAX_ETAPA 6
 #define ETAPA_MOSTRADOR 1
 #define ETAPA_CINTA 2
 #define ETAPA_ALMACEN 3
@@ -44,7 +44,7 @@ sem_t semTiempoCinta, semTiempoAlmacen, semTiempoAvion;
 sem_t mutexSupervisor[5],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
 
 //Contadores para saber cuantos hilos hay activos
-int contadorHiloMostrador = 0,contadorHiloCinta = 0,contadorHiloAlmacen = 0;
+int contadorHiloMostrador = 0,contadorHiloCinta = 0,contadorHiloAlmacen = 0,contadorHiloAvion = 0,contadorHiloTerminal = 0;
 
 Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN], objetosPerdidos;
@@ -267,7 +267,7 @@ void *mostrador(void *args){
         //INICIO SECCION CRITICA
         //Bloquear acceso a bandera de finalización de los equipajes
         if (requisitoInterfaz == 0){ //activar tiempo de espera para el modo supervisor
-            sleep(TIEMPO);
+            //sleep(TIEMPO);
         }
         sem_wait(&semMostrador);
         if(banderaFinMostrador){
@@ -362,7 +362,7 @@ void *cinta(void *args){
             //Bloquear cinta
             sem_wait(&semCinta[id]);
             if (requisitoInterfaz == 0){ //activar tiempo de espera para el modo supervisor
-                sleep(TIEMPO);
+                //sleep(TIEMPO);
             }
             //sleep(rand() % TIEMPO_MAXIMO);
             //Descargar cinta y mover a un almacen
@@ -426,7 +426,7 @@ void *almacen(void *args){
     while (1){
         sem_wait(&mutexAlmacenes[id]);
         if (requisitoInterfaz == 0){ //activar tiempo de espera para el modo supervisor
-            sleep(TIEMPO);
+            //sleep(TIEMPO);
         }
         //CONSUMIR
         if(almacenes[id].lleno > 0){
@@ -541,6 +541,11 @@ void *avion(void *args){
     //return;
     clock_t tiempoEnAvion = clock();
     int cargado, noHayMasEquipajes = 0;
+    if (requisitoInterfaz == 0){ //activa el Modo Supervisor
+        sem_wait(&mutexSupervisor[ETAPA_AVION]);
+        contadorHiloAvion++;
+        sem_post(&mutexSupervisor[ETAPA_AVION]);
+    }
     while(1){
         sem_wait(&mutexAviones[id]);
         //SI SON DE CONEXION Y FALTA POR DESCARGAR EQUIPAJES SE DESCARGAN
@@ -646,6 +651,11 @@ void *avion(void *args){
             tiempoEnAvion = clock() - tiempoEnAvion;
             tiempoEnAvionTotal += (double)tiempoEnAvion;
             sem_post(&semTiempoAvion);
+            if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
+                sem_wait(&mutexSupervisor[ETAPA_AVION]);
+                contadorHiloAvion--;
+                sem_post(&mutexSupervisor[ETAPA_AVION]);
+            }
             pthread_exit(NULL);
         } 
         sem_post(&mutexAviones[id]);
@@ -655,6 +665,11 @@ void *avion(void *args){
 void *terminalLlegada(void *args){ 
     int id = *((int *)args);
     Equipaje e;
+    if (requisitoInterfaz == 0){ //activa el Modo Supervisor
+        sem_wait(&mutexSupervisor[ETAPA_TERMINAL]);
+        contadorHiloTerminal++;
+        sem_post(&mutexSupervisor[ETAPA_TERMINAL]);
+    }
     while(1){
         sem_wait(&semTerminal);
         if(esVacio(terminal) == 0){
@@ -662,7 +677,6 @@ void *terminalLlegada(void *args){
             desencolar(&terminal);
             // Generar un número aleatorio entre 0 y 1
             int resultado = rand() % 5;
-
             if (resultado == 0) {
                 // El equipaje se pierde
                 fprintf(finalLlegada, "Equipaje %i perdido en la terminal\n", e.id);
@@ -685,8 +699,15 @@ void *terminalLlegada(void *args){
 
             //Mostrar salida
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e); //Mostrar Salida
-        }else{
+        }
+        if(cantLlenos>=cantAviones){
             sem_post(&semTerminal);
+            if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
+                printf("el hilo %d de la terminal se elimino\n",id);
+                sem_wait(&mutexSupervisor[ETAPA_TERMINAL]);
+                contadorHiloTerminal--;
+                sem_post(&mutexSupervisor[ETAPA_TERMINAL]);
+            }
             pthread_exit(NULL);
         }
         sem_post(&semTerminal);
@@ -773,7 +794,7 @@ void *supervisor(){
 
         //Calculos de Procesos e Hilos
         int totalProcesos = info.procs;
-        int totalHilos = (contadorHiloAlmacen + contadorHiloCinta + contadorHiloMostrador) + 2; // 2 = hilo principal y hilo supervisor
+        int totalHilos = (contadorHiloAlmacen + contadorHiloCinta + contadorHiloMostrador + contadorHiloAvion + contadorHiloTerminal) + 2; // 2 = hilo principal y hilo supervisor
 
         printf("\t+------------------------------------------------------+\n");
         printf("\t|Fecha: %s", date);
@@ -791,6 +812,8 @@ void *supervisor(){
         printf("\t|Cantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
         printf("\t|Cantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
         printf("\t|Cantidad de Hilos trabajando en Almacen: %d\n", contadorHiloAlmacen);
+        printf("\t|Cantidad de Hilos trabajando en Avion: %d\n", contadorHiloAvion);
+        printf("\t|Cantidad de Hilos trabajando en Terminal: %d\n", contadorHiloTerminal);
         printf("\t+------------------------------------------------------+\n");
         
         //lleva el registro
@@ -810,6 +833,8 @@ void *supervisor(){
         fprintf(fileSupervisor,"\t|Cantidad de Hilos trabajando en Mostrador: %d\n", contadorHiloMostrador);
         fprintf(fileSupervisor,"\t|Cantidad de Hilos trabajando en Cinta: %d\n", contadorHiloCinta);
         fprintf(fileSupervisor,"\t|Cantidad de Hilos trabajando en Almacen: %d\n", contadorHiloAlmacen);
+        fprintf(fileSupervisor,"\t|Cantidad de Hilos trabajando en Avion: %d\n", contadorHiloAvion);
+        fprintf(fileSupervisor,"\t|Cantidad de Hilos trabajando en Terminal: %d\n", contadorHiloTerminal);
         fprintf(fileSupervisor,"\t+------------------------------------------------------+\n");
         
         for (i = 0; i < MAX_ETAPA + 1; i++){
