@@ -18,6 +18,7 @@
 #define ETAPA_MOSTRADOR 1
 #define ETAPA_CINTA 2
 #define ETAPA_ALMACEN 3
+#define ETAPA_TERMINAL 4
 #define TIEMPO_MAXIMO 2
 
 //Enumenrando Otros
@@ -30,6 +31,7 @@ void *cinta(void *args);
 void *almacen(void *args);
 void *descargadorAvion(void *args);
 void *avion(void *args);
+void *terminalLlegada(void *args);
 void *supervisor();
 void leer_entradas(const char *filename);
 int existeVuelo(Equipaje *e);
@@ -46,7 +48,7 @@ Cola pasajeros,cintas[MAX_CINTAS];
 Almacen almacenes[MAX_ALMACEN], objetosPerdidos;
 Avion aviones[MAX_AVIONES];
 int banderaFinMostrador = 1,nroEquipaje = 0;
-FILE *fileMostrador,*fileCinta;
+FILE *fileMostrador,*fileCinta, *finalLlegada;
 int cantAviones = 0; //Cantidad de aviones en el aeropuerto
 Cola terminal;
 
@@ -54,6 +56,7 @@ sem_t mutexCantLlenos, mutexAsig;
 int asignaciones[MAX_AVIONES] = {0}; //Registra cuantos equipajes faltan por cargar en cada avión
 int cantLlenos = 0;
 int perdidos = 0;
+int retirados = 0;
 int mano = 0;
 
 //variables para Interfaz
@@ -70,6 +73,7 @@ int main() {
     pthread_t cintaHilo[MAX_CINTAS];
     pthread_t hilosAlmacenes[MAX_ALMACEN];
     pthread_t hilosAviones[MAX_AVIONES];
+    pthread_t hilosTermialLlegada[MAX_AVIONES];
     pthread_t supervisorHilo;
 
     //creando archivos de escritura
@@ -78,8 +82,9 @@ int main() {
     fileMostrador = fopen("../salidas/mostrador.txt", "w");
     fileCinta = fopen("../salidas/cinta.txt", "w");
     finalAlmacen = fopen ("../salidas/finalAlmacen.txt", "w");
+    finalLlegada = fopen ("../salidas/finalLlegada.txt", "w");
 
-    if((fileMostrador == NULL) || (fileCinta == NULL) || (finalAlmacen == NULL) || (avionesLog == NULL) || (almacenLog == NULL)){
+    if((fileMostrador == NULL) || (fileCinta == NULL) || (finalAlmacen == NULL) || (avionesLog == NULL) || (almacenLog == NULL) || (finalLlegada == NULL)){
         perror("Error Creando los archivos\n");
         exit(EXIT_FAILURE);
     }
@@ -163,6 +168,12 @@ int main() {
         pthread_create(&hilosAviones[j],NULL,avion, arg); 
     }
 
+    for (int j = 0; j < MAX_AVIONES; j++){
+        int *arg = malloc(sizeof(*arg));  
+        *arg = j; 
+        pthread_create(&hilosTermialLlegada[j],NULL,terminalLlegada, arg); 
+    }
+
     //Espera de hilos
     for (p = 0; p < MAX_MOSTRADORES; p++){
         pthread_join(mostradores[p],NULL);
@@ -175,6 +186,9 @@ int main() {
     }
     for(int k=0; k< MAX_AVIONES;k++){
         pthread_join(hilosAviones[k], NULL);
+    }
+    for(int k=0; k< MAX_AVIONES;k++){
+        pthread_join(hilosTermialLlegada[k], NULL);
     }
 
     //destruccion de semaforos
@@ -202,16 +216,17 @@ int main() {
     verAviones(aviones, cantAviones);
     verColasAlmacenes(almacenes);
     //VER TERMINAL DE LLEGADA
-    /*Equipaje e;
-    while(esVacio(terminal) == 0) {
-        printf("Longitud %i\n", longitud(terminal));
-        e = primero(terminal);
-        printf("Equipaje [%s] en la terminal\n", e.estado);
-        desencolar(&terminal);
-    }*/
+    // Equipaje e;
+    // while(esVacio(terminal) == 0) {
+    //     printf("Longitud %i\n", longitud(terminal));
+    //     e = primero(terminal);
+    //     printf("Equipaje [%s] en la terminal\n", e.estado);
+    //     desencolar(&terminal);
+    // }
     
     //cerrando archivos
     fclose(fileMostrador);
+    fclose(finalLlegada);
     fclose(fileCinta);
     fclose(almacenLog);
     fclose(avionesLog);
@@ -223,6 +238,7 @@ int main() {
     printf("\nDe mano %i",mano );
     printf("\nDesde cintas %i",51298-mano );
     printf("\nPERDIDOS %i", perdidos );
+    printf("\nRetirados %i", retirados );
     return 0;
 }
 
@@ -562,6 +578,47 @@ void *avion(void *args){
             pthread_exit(NULL);
         } 
         sem_post(&mutexAviones[id]);
+    }
+}
+
+void *terminalLlegada(void *args){
+    int id = *((int *)args);
+    Equipaje e;
+    while(1){
+        sem_wait(&semTerminal);
+        if(esVacio(terminal) == 0){
+            e = primero(terminal);
+            desencolar(&terminal);
+            // Generar un número aleatorio entre 0 y 1
+            int resultado = rand() % 5;
+
+            if (resultado == 0) {
+                // El equipaje se pierde
+                fprintf(finalLlegada, "Equipaje %i perdido en la terminal\n", e.id);
+                sem_wait(&semPerdidos);
+                perdidos++; // Incrementar contador de equipajes perdidos
+                int indice = 0, almacenado = 0;
+                almacenado = almacenar(&objetosPerdidos, e);
+                if (almacenado) {
+                    incrementar(indice, perdidosInterfaz);
+                    fprintf(finalLlegada, "El equipaje %i se perdió y fue enviado al almacén de perdidos %d\n", e.id, indice);
+                    fprintf(almacenLog, "El equipaje %i se perdió y fue enviado al almacén de perdidos %d\n", e.id, indice);
+                }
+                sem_post(&semPerdidos);
+            } else {
+                retirados++; // Incrementar contador de equipajes retirados
+                // El equipaje es recogido
+                fprintf(finalLlegada,"Equipaje [%s] recogido en la terminal\n", e.estado);
+            }
+
+
+            //Mostrar salida
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e); //Mostrar Salida
+        }else{
+            sem_post(&semTerminal);
+            pthread_exit(NULL);
+        }
+        sem_post(&semTerminal);
     }
 }
 
