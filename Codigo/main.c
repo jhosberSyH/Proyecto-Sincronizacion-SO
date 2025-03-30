@@ -493,13 +493,10 @@ void *avion(void *args){
                     //NO SE PUEDE CARGAR, SE LLEVA A PERDIDOS
                     sem_wait(&semPerdidos);
                     int indice = 0, almacenado = 0;
-                    while ((indice < MAX_ALMACEN) && (!almacenado)){
-                        almacenado = almacenar(&objetosPerdidos[indice],tmpEquipaje);
-                        if(almacenado){
-                            incrementar(indice,perdidosInterfaz);
-                            fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
-                        }
-                        indice++;
+                    almacenado = almacenar(&objetosPerdidos,tmpEquipaje);
+                    if(almacenado){
+                        incrementar(indice,perdidosInterfaz);
+                        fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
                     }
                     sem_post(&semPerdidos);
                     sem_wait(&mutexAsig);
@@ -536,13 +533,10 @@ void *avion(void *args){
                 sem_wait(&semPerdidos);
                 perdidos++; //variable para ver cuantos son en total
                 int indice = 0, almacenado = 0;
-                while ((indice < MAX_ALMACEN) && (!almacenado)){
-                    almacenado = almacenar(&objetosPerdidos[indice],primero(aviones[id].enEspera));
-                    if(almacenado){
-                        incrementar(indice,perdidosInterfaz);
-                        fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", primero(aviones[id].enEspera).id,indice);
-                    }
-                    indice++;
+                almacenado = almacenar(&objetosPerdidos,primero(aviones[id].enEspera));
+                if(almacenado){
+                    incrementar(indice,perdidosInterfaz);
+                    fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", primero(aviones[id].enEspera).id,indice);
                 }
                 sem_post(&semPerdidos);
                 desencolar(&aviones[id].enEspera);
