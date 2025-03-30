@@ -523,7 +523,7 @@ void *almacen(void *args){
                 almacenado = almacenar(&objetosPerdidos,tmpEquipaje);
                 if(almacenado){
                     incrementar(indice,perdidosInterfaz);
-                    fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
+                    fprintf(almacenLog,"NO CABE EN EL VUELO %s el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.codVuelo,tmpEquipaje.id,indice);
                 }
                 sem_post(&semPerdidos);
             }
@@ -613,7 +613,7 @@ void *avion(void *args){
                     almacenado = almacenar(&objetosPerdidos,tmpEquipaje);
                     if(almacenado){
                         incrementar(indice,perdidosInterfaz);
-                        fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
+                        fprintf(almacenLog,"NO CABE EN EL VUELO %s el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.codVuelo,tmpEquipaje.id,indice);
                     }
                     mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_PERDIDO,ENTRADA,tmpEquipaje); //Mostrar Salida
                     sem_post(&semPerdidos);
@@ -673,7 +673,7 @@ void *avion(void *args){
                 almacenado = almacenar(&objetosPerdidos,primero(aviones[id].enEspera));
                 if(almacenado){
                     incrementar(indice,perdidosInterfaz);
-                    fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", primero(aviones[id].enEspera).id,indice);
+                    fprintf(almacenLog,"NO CABE EN EL VUELO %s el equipaje %i se envio al almacen de perdidos %d \n",aviones[id].codigoVuelo, primero(aviones[id].enEspera).id,indice);
                 }
                 sem_post(&semPerdidos);
                 desencolar(&aviones[id].enEspera);
