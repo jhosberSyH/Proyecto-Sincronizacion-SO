@@ -12,6 +12,8 @@ typedef struct {
     Cola equipajeEsp; //Equipaje especial (MAXIMA PRIORIDAD)
     Cola equipajes;   //Equipaje facturado (PRIORIDAD MEDIA)
     Cola equipajeSD;  //Equipaje sobredimensionado (PRIORIDAD BAJA)
+    Cola perdidos;
+    int orden;
     int lleno;  //Espacios del almacén llenos
     int esPerdido; //Bandera para saber si el equipaje es perdido
 } Almacen;
@@ -32,10 +34,12 @@ void constructorAlmacen(Almacen almacen[]){
         almacen[i].capacidad = MAX_CAPACIDAD_ALMACEN;
         almacen[i].lleno = 0;
         almacen[i].esPerdido = 0;
+        almacen[i].orden = 0;
         //INICIALIZAR COLAS DE EQUIPAJES
         crear(&almacen[i].equipajeEsp);
         crear(&almacen[i].equipajes);
         crear(&almacen[i].equipajeSD);
+        crear(&almacen[i].perdidos);
     }    
 }
 
@@ -83,29 +87,67 @@ int almacenar(Almacen *almacen,Equipaje equipaje){
     escribirAlmacenado(*almacen, equipaje);
     return 1;
 }
-void descargarAlmacen(Almacen *almacen, Avion aviones[MAX_AVIONES], sem_t semAviones[MAX_AVIONES], Equipaje *e){
+int descargarAlmacen(Almacen *almacen, int aviones[MAX_AVIONES], Equipaje *e){
+    int descargado = 0;
+    //MIENTRAS NO HAYA DESCARGADO UNO DE UN AVIÓN NO LLENO
+    while(!descargado && (almacen->lleno > 0)){
+        //asignacion distribuida (NO AFECTA PERO LUEGO VEMOS SI LO DEJAMOS)
 
-    if(almacen->lleno > 0){
-        if(esVacio(almacen->equipajeEsp) == 0){
+        /*if(((almacen->orden % 3) == 0) && (esVacio(almacen->equipajeSD) == 0)){
+            //printf("SD\n");
+            *e = primero(almacen->equipajeSD);
+            desencolar(&almacen->equipajeSD);
+            if(!aviones[e->idVuelo]){
+                descargado= 1;
+            }
+        }
+        if(!descargado && ((almacen->orden % 3) != 0) && (esVacio(almacen->equipajes) == 0)){
+            //printf("A\n");
+            *e = primero(almacen->equipajes);
+            desencolar(&almacen->equipajes);
+            if(!aviones[e->idVuelo]){
+                descargado= 1;
+            }
+        }*/
+        if(!descargado && esVacio(almacen->equipajeEsp) == 0){
             *e = primero(almacen->equipajeEsp);
             desencolar(&almacen->equipajeEsp);
-        }else{
-            if(esVacio(almacen->equipajes) == 0){
+            if(!aviones[e->idVuelo]){
+                descargado= 1;
+            }
+        }
+        if(!descargado && esVacio(almacen->equipajes) == 0){
                 *e = primero(almacen->equipajes);
                 desencolar(&almacen->equipajes);
-            }else{
-                if(esVacio(almacen->equipajeSD) == 0){
-                    *e = primero(almacen->equipajeSD);
-                    desencolar(&almacen->equipajeSD);
+                if(!aviones[e->idVuelo]){
+                    descargado= 1;
                 }
+        }
+        if(!descargado && esVacio(almacen->equipajeSD) == 0){
+            *e = primero(almacen->equipajeSD);
+            desencolar(&almacen->equipajeSD);
+            if(!aviones[e->idVuelo]){
+                descargado= 1;
             }
+        }
+        almacen->lleno -=1;
+        almacen->capacidad +=1;
+        if(aviones[e->idVuelo]){
+            //SE ALMACENA EN PERDIDOS (COLA DE ALMACEN) PARA ESCRIBIR AL FINAL DE TODO
+            descargado = 0;
+            encolar(&almacen->perdidos, *e);
+        }else{
+            
+            descargado = 1;
+            almacen->orden +=1; //PARA CARGA DISTRIBUIDA (NO ESTA ACTIVO)
+            return 1;
         }
         //FALTA HACER IMPRESIONES DE LOGS
         //CARGAR EQUIPAJE AL AVIÓN
         //printf("SE VA A CARGAR %i, %s\n", e.idVuelo, aviones[e.idVuelo].ciudad);
-        almacen->lleno -=1;
-        almacen->capacidad +=1;
     }
+
+    return 0;
 }
 
 int compararPais(char pais[],Almacen *almacen){
