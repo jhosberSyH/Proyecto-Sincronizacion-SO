@@ -615,7 +615,11 @@ void *avion(void *args){
 
                 }
             }
-            
+            sem_wait(&mutexAsig);
+            if(aviones[id].estaLleno || (asignaciones[id] <= 0)){
+                noHayMasEquipajes = 1;
+            }
+            sem_post(&mutexAsig);      
         }
         //Verificar si estaLleno
         if(noHayMasEquipajes){
