@@ -36,7 +36,7 @@ int existeVuelo(Equipaje *e);
 
 //Semaforos y Mutex
 sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],semTerminal, semPerdidos, semTiempoMostrador;
-sem_t semTiempoCinta, semTiempoAlmacen;
+sem_t semTiempoCinta, semTiempoAlmacen, semTiempoAvion;
 sem_t mutexSupervisor[5],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
 
 //Contadores para saber cuantos hilos hay activos
@@ -58,8 +58,8 @@ int mano = 0;
 
 //variables para Interfaz
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN_PERDIDOS],requisitoInterfaz = 0;
-int buscarInterfaz[5], totalEquipajeMostrador = 0, totalEquipajeCintas = 0, totalEquipajeAlmacen = 0;
-double tiempoEnMostradorTotal = 0, tiempoEnCintaTotal = 0, tiempoEnAlmacenTotal = 0;
+int buscarInterfaz[5], totalEquipajeMostrador = 0, totalEquipajeCintas = 0, totalEquipajeAlmacen = 0, totalEquipajeAvion = 0;
+double tiempoEnMostradorTotal = 0, tiempoEnCintaTotal = 0, tiempoEnAlmacenTotal = 0, tiempoEnAvionTotal = 0;
 
 
 
@@ -96,6 +96,7 @@ int main() {
     sem_init(&semTiempoMostrador,1);
     sem_init(&semTiempoAlmacen,1);
     sem_init(&semTiempoCinta,1);
+    sem_init(&semTiempoAvion,1);
     sem_init(&mutexCantLlenos, 1);
     sem_init(&mutexAsig, 1);
 
@@ -218,8 +219,7 @@ int main() {
 
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz,perdidosInterfaz);
-    printf("Tiempo promedio en mostrador: %.10f segundos\nTiempo promedio en cintas: %.10f segundos\nTiempo promedio en Almacen: %.10f\n", (tiempoEnMostradorTotal / totalEquipajeMostrador / CLOCKS_PER_SEC), (tiempoEnCintaTotal / totalEquipajeCintas / CLOCKS_PER_SEC), (tiempoEnAlmacenTotal / totalEquipajeAlmacen / CLOCKS_PER_SEC));
-    printf("Total de equipajes en mostrador: %d\nTotal de equipajes en cintas: %d\nTotal de equipajes en almacen: %d", totalEquipajeMostrador, totalEquipajeCintas, totalEquipajeAlmacen);
+    printf("Tiempo promedio en mostrador: %.10f segundos\nTiempo promedio en cintas: %.10f segundos\nTiempo promedio en Almacen: %.10f segundos\nTiempo promedio en Avion: %.10f segundos\n", (tiempoEnMostradorTotal / totalEquipajeMostrador / CLOCKS_PER_SEC), (tiempoEnCintaTotal / totalEquipajeCintas / CLOCKS_PER_SEC), (tiempoEnAlmacenTotal / totalEquipajeAlmacen / CLOCKS_PER_SEC), (tiempoEnAvionTotal / totalEquipajeAvion / CLOCKS_PER_SEC));
     printf("\nDe mano %i",mano );
     printf("\nDesde cintas %i",51298-mano );
     printf("\nPERDIDOS %i", perdidos );
@@ -468,7 +468,9 @@ void *avion(void *args){
     int id = *((int *)args);
     //printf("Descargador %i\n", id);
     //return;
+    clock_t tiempoEnAvion = clock();
     int cargado, noHayMasEquipajes = 0;
+    Equipaje tmpEquipaje;
     while(1){
         sem_wait(&mutexAviones[id]);
         //SI SON DE CONEXION Y FALTA POR DESCARGAR EQUIPAJES SE DESCARGAN
@@ -484,9 +486,12 @@ void *avion(void *args){
         }else{
             //CARGAR EQUIPAJE DEL AVION
             if(esVacio(aviones[id].enEspera) == 0){
-                Equipaje tmpEquipaje = primero(aviones[id].enEspera);
+                tmpEquipaje = primero(aviones[id].enEspera);
                 desencolar(&aviones[id].enEspera);
                 int descarga = cargarEquipaje(&aviones[tmpEquipaje.idVuelo], &tmpEquipaje);
+                sem_wait(&semTiempoAvion);
+                totalEquipajeAvion++;
+                sem_post(&semTiempoAvion);
 
                 if(descarga == 2){
                     printf("PASO EL ESTADO 2\n");
@@ -523,7 +528,7 @@ void *avion(void *args){
                 }
             }
             sem_wait(&mutexAsig);
-            asignaciones[id] = asignaciones[id] - 1 ;
+            asignaciones[id] = asignaciones[id] - 1;
             if(asignaciones[id] <= 0){
                 noHayMasEquipajes = 1;
             }
@@ -550,6 +555,10 @@ void *avion(void *args){
             cantLlenos++;
             //printf("-> %i, ", cantLlenos);
             sem_post(&mutexCantLlenos);
+            sem_wait(&semTiempoAvion);
+            tiempoEnAvion = clock() - tiempoEnAvion;
+            tiempoEnAvionTotal += (double)tiempoEnAvion;
+            sem_post(&semTiempoAvion);
             pthread_exit(NULL);
         } 
         sem_post(&mutexAviones[id]);
