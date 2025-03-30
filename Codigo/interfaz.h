@@ -319,12 +319,11 @@ void entradaMostrarEspecificacion(int etapa, int hilo, Equipaje equipaje)
         sleep(random);
         break;
     case 4:
-        // avion
         printf("\t|El Equipaje Numero %d con destino a %s (Codigo de vuelo %i) se logró cargar en el vuelo %d\n", equipaje.id, equipaje.pais,equipaje.idVuelo+1, hilo + 1);
         sleep(random);
         break;
     case 5:
-        // destino
+        printf("\t|El Equipaje Numero %d con destino a %s llego a la terminal\n", equipaje.id, equipaje.pais);
         break;
     case 6:
         printf("\t|El Equipaje Numero %d con destino a %s (Codigo de vuelo %i) no se logró cargar en el vuelo %d y se perdió\n", equipaje.id, equipaje.pais,equipaje.idVuelo+1, hilo + 1);
@@ -352,11 +351,13 @@ void salidaMostrarEspecificacion(int etapa, int hilo, Equipaje equipaje)
         printf("\t|El Equipaje Numero %d con destino a %s se organizo y salio del Almacen %d\n", equipaje.id, equipaje.pais, hilo + 1);
         break;
     case 4:
-        // avion
         printf("\t|El Equipaje Numero %d (%s) con destino a %s se descargó del vuelo %d\n", equipaje.id, equipaje.estado, equipaje.pais, hilo + 1);
         break;
     case 5:
-        // destino
+        printf("\t|El Equipaje Numero %d con destino a %s fue recogido\n", equipaje.id, equipaje.pais);
+        break;
+    case 6:
+        printf("\t|El Equipaje Numero %d con destino a %s no fue recogido\n", equipaje.id, equipaje.pais);
         break;
     default:
         printf("\t\t\tNo existe esa etapa!\n");
