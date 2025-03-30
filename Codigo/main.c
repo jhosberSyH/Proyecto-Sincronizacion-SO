@@ -58,6 +58,7 @@ int cantLlenos = 0;
 int perdidos = 0;
 int retirados = 0;
 int mano = 0;
+int totalEquipajes = 0; //Total de equipajes leidos
 
 //variables para Interfaz
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN_PERDIDOS],requisitoInterfaz = 0;
@@ -235,10 +236,14 @@ int main() {
     //verificaciones 
     respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz,perdidosInterfaz);
     printf("Tiempo promedio en mostrador: %.10f segundos\nTiempo promedio en cintas: %.10f segundos\nTiempo promedio en Almacen: %.10f segundos\nTiempo promedio en Avion: %.10f segundos\n", (tiempoEnMostradorTotal / totalEquipajeMostrador / CLOCKS_PER_SEC), (tiempoEnCintaTotal / totalEquipajeCintas / CLOCKS_PER_SEC), (tiempoEnAlmacenTotal / totalEquipajeAlmacen / CLOCKS_PER_SEC), (tiempoEnAvionTotal / totalEquipajeAvion / CLOCKS_PER_SEC));
-    printf("\nDe mano %i",mano );
-    printf("\nDesde cintas %i",51298-mano );
-    printf("\nPERDIDOS %i", perdidos );
-    printf("\nRetirados %i", retirados );
+    printf("+------------------------------------------------------------+");
+    printf("\nEquipajes de mano:                    %i",mano );
+    printf("\nEquipajes que pasaron");
+    printf("\npor cintas clasificadoras:            %i", totalEquipajes-mano );
+    printf("\nEquipajes Perdidos:                   %i", perdidos );
+    printf("\nEquipajes Retirados en terminal:      %i", retirados );
+    printf("\nEquipajes que llegaron al aeropuerto: %i", totalEquipajes);
+    printf("\n+------------------------------------------------------------+");
     return 0;
 }
 
@@ -581,7 +586,7 @@ void *avion(void *args){
     }
 }
 
-void *terminalLlegada(void *args){
+void *terminalLlegada(void *args){ 
     int id = *((int *)args);
     Equipaje e;
     while(1){
@@ -640,6 +645,7 @@ void leer_entradas(const char *filename) {
             }
         }
     }
+    totalEquipajes = longitud(pasajeros);
     printf("%i", longitud(pasajeros));
     fclose(file);
 }
