@@ -42,6 +42,7 @@ int existeVuelo(Equipaje *e);
 sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],semTerminal, semPerdidos, semTiempoMostrador;
 sem_t semTiempoCinta, semTiempoAlmacen, semTiempoAvion;
 sem_t mutexSupervisor[5],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
+sem_t mutexCantHilos;
 
 //Contadores para saber cuantos hilos hay activos
 int contadorHiloMostrador = 0,contadorHiloCinta = 0,contadorHiloAlmacen = 0,contadorHiloAvion = 0,contadorHiloTerminal = 0;
@@ -61,6 +62,9 @@ int perdidos = 0;
 int retirados = 0;
 int mano = 0;
 int totalEquipajes = 0; //Total de equipajes leidos
+int finAlmacen[MAX_ALMACEN] = {0};
+int finAvion[MAX_AVIONES] = {0};
+
 
 //variables para Interfaz
 int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN_PERDIDOS],requisitoInterfaz = 0;
@@ -107,6 +111,8 @@ int main() {
     sem_init(&semTiempoAvion,1);
     sem_init(&mutexCantLlenos, 1);
     sem_init(&mutexAsig,1);
+    sem_init(&mutexCantHilos, 1);
+
     
     for(int i=0;i<MAX_ALMACEN;i++){
         sem_init(&mutexAlmacenes[i],1);
@@ -347,7 +353,12 @@ void *cinta(void *args){
         sem_wait(&mutexSupervisor[ETAPA_CINTA]);
         contadorHiloCinta++;
         sem_post(&mutexSupervisor[ETAPA_CINTA]);
+    }else{
+        sem_wait(&mutexCantHilos);
+        contadorHiloCinta++;
+        sem_post(&mutexCantHilos);
     }
+    
     while (1){
         while (esVacio(cintas[id]) != 1){
             //Escribir en la interfaz
@@ -402,6 +413,10 @@ void *cinta(void *args){
                 sem_wait(&mutexSupervisor[ETAPA_CINTA]);
                 contadorHiloCinta--;
                 sem_post(&mutexSupervisor[ETAPA_CINTA]);
+            }else{
+                sem_wait(&mutexCantHilos);
+                contadorHiloCinta--;
+                sem_post(&mutexCantHilos);
             }
             tiempoEnCinta = clock() - tiempoEnCinta;
             sem_wait(&semTiempoCinta);
@@ -422,6 +437,10 @@ void *almacen(void *args){
         sem_wait(&mutexSupervisor[ETAPA_ALMACEN]);
         ++contadorHiloAlmacen;
         sem_post(&mutexSupervisor[ETAPA_ALMACEN]);
+    }else{
+        sem_wait(&mutexCantHilos);
+        contadorHiloAlmacen++;
+        sem_post(&mutexCantHilos);
     }
     while (1){
         sem_wait(&mutexAlmacenes[id]);
@@ -469,17 +488,31 @@ void *almacen(void *args){
         }else{
             //ESPERAR QUE HAYA ELEMENTOS O SE LLENEN LOS AVIONES
             sem_post(&mutexAlmacenes[id]);
-            sleep(5);
+            sleep(3);
             sem_wait(&mutexAlmacenes[id]);
+            //printf("CUANTOS EQUIPAJES TIENE? -> %i\n", almacenes[id].lleno);
+            //sem_wait(&mutexCantHilos);
+            //printf("CINTAS ACTUALES->%i", contadorHiloCinta);
+            //sem_post(&mutexCantHilos);
 
-            while((cantLlenos<cantAviones) && (almacenes[id].lleno <= 0)){
+
+            while(!finAlmacen[id] && (cantLlenos<cantAviones) && (almacenes[id].lleno <= 0)){
                 sem_post(&mutexAlmacenes[id]);
-                sleep(5);
+                sleep(3);
                 sem_wait(&mutexAlmacenes[id]);
-
+                //printf("++++ESTA LLENO? -> %i\n", almacenes[id].lleno);
+                //printf("AVIONES LLENOS? -> %i\n", cantLlenos);
+                //sem_wait(&mutexCantHilos);
+                //printf("CINTAS ACTUALES->%i ", contadorHiloCinta);
+                if((contadorHiloCinta == 0) && (almacenes[id].lleno <= 0)){
+                    //printf("FINALIZADO ENTONCES\n");
+                    finAlmacen[id] = 1;
+                }
+                sem_post(&mutexCantHilos);
             }
         }
-        if(cantLlenos>=cantAviones){
+        if((cantLlenos>=cantAviones) || finAlmacen[id]){
+            //printf("LISTO-> %i\n", contadorHiloAlmacen);
             //REGISTRAR PERDIDOS
             while(esVacio(almacenes[id].perdidos) == 0){
                 sem_wait(&semPerdidos);
@@ -502,6 +535,10 @@ void *almacen(void *args){
                 sem_wait(&mutexSupervisor[ETAPA_ALMACEN]);
                 contadorHiloAlmacen--;
                 sem_post(&mutexSupervisor[ETAPA_ALMACEN]);
+            }else{
+                sem_wait(&mutexCantHilos);
+                contadorHiloAlmacen--;
+                sem_post(&mutexCantHilos);
             }
             tiempoEnAlmacen = clock() - tiempoEnAlmacen;
             sem_wait(&semTiempoAlmacen);
@@ -569,7 +606,7 @@ void *avion(void *args){
                 sem_wait(&semTiempoAvion);
                 totalEquipajeAvion++;
                 sem_post(&semTiempoAvion);
-
+                
                 if(descarga == 2){
                     printf("PASO EL ESTADO 2\n");
                     encolar(&aviones[id].enEspera, tmpEquipaje);
@@ -591,7 +628,7 @@ void *avion(void *args){
                     //Mostrar salida
                     mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,ENTRADA,tmpEquipaje); //Mostrar Salida
                 }
-
+                
                 //RESTAR ASIGNACION
                 sem_wait(&mutexAsig);
                 asignaciones[id] = asignaciones[id] - 1 ;
@@ -610,19 +647,26 @@ void *avion(void *args){
                     //Esperar a nuevos elementos en la cola
                     sem_post(&mutexAsig);
                     sem_post(&mutexAviones[id]);
-                    sem_wait(&nuevos[id]);
+                    //sem_wait(&nuevos[id]);
+                    sleep(3);
                     sem_wait(&mutexAviones[id]);
-                    while(esVacio(aviones[id].enEspera)){
+                    while(!finAvion[id] && esVacio(aviones[id].enEspera)){
                         sem_post(&mutexAviones[id]);
-                        sem_wait(&nuevos[id]);
+                        //sem_wait(&nuevos[id]);
+                        sleep(3);
                         sem_wait(&mutexAviones[id]);
+                        sem_wait(&mutexCantHilos);
+                        if(esVacio(aviones[id].enEspera) && (contadorHiloAlmacen == 0)){
+                            finAvion[id] = 1;
+                        }
+                        sem_post(&mutexCantHilos);
                     }
-
+                    
                 }
             }
         }
         //Verificar si estaLleno
-        if(noHayMasEquipajes){
+        if(noHayMasEquipajes || finAvion[id]){
             sem_wait(&mutexAsig);
             avionesLlenos[id] = 1;
             sem_post(&mutexAsig);
