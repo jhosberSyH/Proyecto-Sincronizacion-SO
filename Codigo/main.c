@@ -244,6 +244,7 @@ int main() {
     printf("\nEquipajes que pasaron");
     printf("\npor cintas clasificadoras:            %i", totalEquipajes-mano );
     printf("\nEquipajes Perdidos:                   %i", perdidos );
+    printf("\nPorcentaje Equipajes Perdidos:        %.2f", (double)perdidos/(double)(totalEquipajes-mano)*100);
     printf("\nEquipajes Retirados en terminal:      %i", retirados );
     printf("\nEquipajes que llegaron al aeropuerto: %i", totalEquipajes);
     printf("\n+------------------------------------------------------------+");
