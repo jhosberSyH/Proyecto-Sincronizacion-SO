@@ -388,7 +388,7 @@ void *cinta(void *args){
                     //Registrar almacenaje si se pudo realizar la operacion
                     if (almacenado == 1){
                         incrementar(indice,almacenInterfaz);
-                        mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,ENTRADA,primero(cintas[id])); // tinee detalles no funciona al 100% todavia
+                        mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,ENTRADA,primero(cintas[id]));
                     }
                     //Desbloquear almacen
                     sem_post(&mutexAlmacenes[indice]);
@@ -456,6 +456,7 @@ void *almacen(void *args){
             //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje, esto por cercanía, ya que usar el return causa overflow
             sem_wait(&mutexAsig);
             int e = descargarAlmacen(&almacenes[id], avionesLlenos, &tmpEquipaje);
+            mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,SALIDA,tmpEquipaje);
             sem_post(&mutexAsig);
 
 
@@ -531,7 +532,6 @@ void *almacen(void *args){
 
             sem_post(&mutexAlmacenes[id]);
             if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
-                printf("mucha esencia ahhhhhhhhh\n");
                 sem_wait(&mutexSupervisor[ETAPA_ALMACEN]);
                 contadorHiloAlmacen--;
                 sem_post(&mutexSupervisor[ETAPA_ALMACEN]);
@@ -687,9 +687,6 @@ void *avion(void *args){
             sem_post(&mutexAviones[id]);
             sem_wait(&mutexCantLlenos);
             cantLlenos++;
-            if((cantLlenos % 10) == 0){
-                printf("LLENOS -> %i\n", cantLlenos);
-            }
             sem_post(&mutexCantLlenos);
             sem_wait(&semTiempoAvion);
             tiempoEnAvion = clock() - tiempoEnAvion;
@@ -719,11 +716,13 @@ void *terminalLlegada(void *args){
         if(esVacio(terminal) == 0){
             e = primero(terminal);
             desencolar(&terminal);
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,SALIDA,e);
             // Generar un número aleatorio entre 0 y 1
             int resultado = rand() % 5;
             if (resultado == 0) {
                 // El equipaje se pierde
                 fprintf(finalLlegada, "Equipaje %i perdido en la terminal\n", e.id);
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e);
                 sem_wait(&semPerdidos);
                 perdidos++; // Incrementar contador de equipajes perdidos
                 int indice = 0, almacenado = 0;
@@ -735,19 +734,16 @@ void *terminalLlegada(void *args){
                 }
                 sem_post(&semPerdidos);
             } else {
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e);
                 retirados++; // Incrementar contador de equipajes retirados
                 // El equipaje es recogido
                 fprintf(finalLlegada,"Equipaje [%s] recogido en la terminal\n", e.estado);
             }
 
-
-            //Mostrar salida
-            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e); //Mostrar Salida
         }
         if(cantLlenos>=cantAviones){
             sem_post(&semTerminal);
             if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
-                printf("el hilo %d de la terminal se elimino\n",id);
                 sem_wait(&mutexSupervisor[ETAPA_TERMINAL]);
                 contadorHiloTerminal--;
                 sem_post(&mutexSupervisor[ETAPA_TERMINAL]);
