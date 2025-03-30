@@ -436,7 +436,7 @@ void *almacen(void *args){
             //sleep(rand() % TIEMPO_MAXIMO);
             //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje, esto por cercanía, ya que usar el return causa overflow
             sem_wait(&mutexAsig);
-            int e = descargarAlmacen(&almacenes[id], avionesLlenos, &tmpEquipaje, asignaciones);
+            int e = descargarAlmacen(&almacenes[id], avionesLlenos, &tmpEquipaje);
             sem_post(&mutexAsig);
 
 
@@ -615,11 +615,6 @@ void *avion(void *args){
 
                 }
             }
-            sem_wait(&mutexAsig);
-            if(aviones[id].estaLleno || (asignaciones[id] <= 0)){
-                noHayMasEquipajes = 1;
-            }
-            sem_post(&mutexAsig);      
         }
         //Verificar si estaLleno
         if(noHayMasEquipajes){
