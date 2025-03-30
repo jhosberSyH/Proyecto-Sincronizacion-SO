@@ -112,29 +112,32 @@ int descargarAlmacen(Almacen *almacen, int aviones[MAX_AVIONES], Equipaje *e){
         if(!descargado && esVacio(almacen->equipajeEsp) == 0){
             *e = primero(almacen->equipajeEsp);
             desencolar(&almacen->equipajeEsp);
-            //if(!aviones[e->idVuelo]){
+            if(!aviones[e->idVuelo]){
                 descargado= 1;
-            //}
+            }
+            almacen->lleno -=1;
+            almacen->capacidad +=1;
         }
         if(!descargado && esVacio(almacen->equipajes) == 0){
                 *e = primero(almacen->equipajes);
                 desencolar(&almacen->equipajes);
-                //if(!aviones[e->idVuelo]){
+                if(!aviones[e->idVuelo]){
                     descargado= 1;
-                //}
+                }
+                almacen->lleno -=1;
+                almacen->capacidad +=1;
         }
         if(!descargado && esVacio(almacen->equipajeSD) == 0){
             *e = primero(almacen->equipajeSD);
             desencolar(&almacen->equipajeSD);
-            //if(!aviones[e->idVuelo]){
+            if(!aviones[e->idVuelo]){
                 descargado= 1;
-            //}
-        }
-        if(descargado){
+            }
             almacen->lleno -=1;
             almacen->capacidad +=1;
         }
-        if(descargado && aviones[e->idVuelo]){
+
+        if(aviones[e->idVuelo]){
             //SE ALMACENA EN PERDIDOS (COLA DE ALMACEN) PARA ESCRIBIR AL FINAL DE TODO
             descargado = 0;
             encolar(&almacen->perdidos, *e);
