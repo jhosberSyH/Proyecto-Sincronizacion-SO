@@ -12,6 +12,7 @@
 #define MAX_CINTAS 500
 #define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
+#define MAX_TERMINALES 200
 
 // Enumerando Etapas Del Proyecto
 #define MAX_ETAPA 6
@@ -28,6 +29,7 @@
 #define SALIDA 2
 #define TIEMPO 2
 
+void salidaEnConsola();
 void *mostrador(void *args);
 void *cinta(void *args);
 void *almacen(void *args);
@@ -67,7 +69,8 @@ int finAvion[MAX_AVIONES] = {0};
 
 
 //variables para Interfaz
-int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN],perdidosInterfaz[MAX_ALMACEN_PERDIDOS],requisitoInterfaz = 0;
+int cintaInterfaz[MAX_CINTAS],mostradorInterfaz[MAX_MOSTRADORES],almacenInterfaz[MAX_ALMACEN];
+int perdidosInterfaz[MAX_ALMACEN_PERDIDOS],avionInterfaz[MAX_AVIONES],terminalInterfaz[MAX_TERMINALES],requisitoInterfaz = 0;
 int buscarInterfaz[5], totalEquipajeMostrador = 0, totalEquipajeCintas = 0, totalEquipajeAlmacen = 0, totalEquipajeAvion = 0;
 double tiempoEnMostradorTotal = 0, tiempoEnCintaTotal = 0, tiempoEnAlmacenTotal = 0, tiempoEnAvionTotal = 0;
 
@@ -80,7 +83,7 @@ int main() {
     pthread_t cintaHilo[MAX_CINTAS];
     pthread_t hilosAlmacenes[MAX_ALMACEN];
     pthread_t hilosAviones[MAX_AVIONES];
-    pthread_t hilosTermialLlegada[MAX_AVIONES];
+    pthread_t hilosTermialLlegada[MAX_TERMINALES];
     pthread_t supervisorHilo;
 
     //creando archivos de escritura
@@ -130,6 +133,8 @@ int main() {
     inicializarInt(MAX_MOSTRADORES,mostradorInterfaz);
     inicializarInt(MAX_ALMACEN,almacenInterfaz);
     inicializarInt(MAX_ALMACEN_PERDIDOS,perdidosInterfaz);
+    inicializarInt(MAX_AVIONES,avionInterfaz);
+    inicializarInt(MAX_TERMINALES,terminalInterfaz);
 
     //creacion de colas y almacenes
     crear(&pasajeros);
@@ -245,17 +250,7 @@ int main() {
     fclose(finalAlmacen);
 
     //verificaciones 
-    respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz,perdidosInterfaz);
-    printf("Tiempo promedio en mostrador: %.10f segundos\nTiempo promedio en cintas: %.10f segundos\nTiempo promedio en Almacen: %.10f segundos\nTiempo promedio en Avion: %.10f segundos\n", (tiempoEnMostradorTotal / totalEquipajeMostrador / CLOCKS_PER_SEC), (tiempoEnCintaTotal / totalEquipajeCintas / CLOCKS_PER_SEC), (tiempoEnAlmacenTotal / totalEquipajeAlmacen / CLOCKS_PER_SEC), (tiempoEnAvionTotal / totalEquipajeAvion / CLOCKS_PER_SEC));
-    printf("+------------------------------------------------------------+");
-    printf("\nEquipajes de mano:                    %i",mano );
-    printf("\nEquipajes que pasaron");
-    printf("\npor cintas clasificadoras:            %i", totalEquipajes-mano );
-    printf("\nEquipajes Perdidos:                   %i", perdidos );
-    printf("\nPorcentaje Equipajes Perdidos:        %.2f", (double)perdidos/(double)(totalEquipajes-mano)*100);
-    printf("\nEquipajes Retirados en terminal:      %i", retirados );
-    printf("\nEquipajes que llegaron al aeropuerto: %i", totalEquipajes);
-    printf("\n+------------------------------------------------------------+");
+    salidaEnConsola();
     return 0;
 }
 
@@ -626,6 +621,9 @@ void *avion(void *args){
                     
                 }else{
                     //Mostrar salida
+                    sem_wait(&semTiempoAvion);
+                    incrementar(id,avionInterfaz);
+                    sem_post(&semTiempoAvion);
                     mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,ENTRADA,tmpEquipaje); //Mostrar Salida
                 }
                 
@@ -721,6 +719,7 @@ void *terminalLlegada(void *args){
             desencolar(&terminal);
             // Generar un número aleatorio entre 0 y 1
             int resultado = rand() % 5;
+            incrementar(0,terminalInterfaz);
             if (resultado == 0) {
                 // El equipaje se pierde
                 fprintf(finalLlegada, "Equipaje %i perdido en la terminal\n", e.id);
@@ -889,4 +888,19 @@ void *supervisor(){
         sleep(1); //escribe cada 30 segundos
         FILE *fileSupervisor = fopen("../salidas/supervisor.txt", "a");
     }
+}
+
+void salidaEnConsola(){
+    respuestasFinal(requisitoInterfaz,almacenInterfaz,cintaInterfaz,mostradorInterfaz,perdidosInterfaz,avionInterfaz,terminalInterfaz);
+    if(requisitoInterfaz == 0 || requisitoInterfaz > TOTAL_OPCIONES) return; //Si esta en modo supervisor no devuelve las cosas
+    printf("\t|Tiempo promedio en mostrador: %.10f segundos\n\t|Tiempo promedio en cintas: %.10f segundos\n\t|Tiempo promedio en Almacen: %.10f segundos\n\t|Tiempo promedio en Avion: %.10f segundos\n", (tiempoEnMostradorTotal / totalEquipajeMostrador / CLOCKS_PER_SEC), (tiempoEnCintaTotal / totalEquipajeCintas / CLOCKS_PER_SEC), (tiempoEnAlmacenTotal / totalEquipajeAlmacen / CLOCKS_PER_SEC), (tiempoEnAvionTotal / totalEquipajeAvion / CLOCKS_PER_SEC));
+    printf("\t+------------------------------------------------------------+\n");
+    printf("\t|Equipajes de mano:                    %i\n",mano );
+    printf("\t|Equipajes que pasaron\n");
+    printf("\t|por cintas clasificadoras:            %i\n", totalEquipajes-mano );
+    printf("\t|Equipajes Perdidos:                   %i\n", perdidos );
+    printf("\t|Porcentaje Equipajes Perdidos:        %.2f%%\n", (double)perdidos/(double)(totalEquipajes-mano)*100);
+    printf("\t|Equipajes Retirados en terminal:      %i\n", retirados );
+    printf("\t|Equipajes que llegaron al aeropuerto: %i\n", totalEquipajes);
+    printf("\t+------------------------------------------------------------+\n\n");
 }
