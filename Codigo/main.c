@@ -18,7 +18,9 @@
 #define ETAPA_MOSTRADOR 1
 #define ETAPA_CINTA 2
 #define ETAPA_ALMACEN 3
-#define ETAPA_TERMINAL 4
+#define ETAPA_AVION 4
+#define ETAPA_TERMINAL 5
+#define ETAPA_PERDIDO 6
 #define TIEMPO_MAXIMO 2
 
 //Enumenrando Otros
@@ -310,7 +312,7 @@ void *mostrador(void *args){
                 encolar(&cintas[indice],aux);
                 sem_post(&semCinta[indice]);
                 //Registrar entrada a la cinta
-                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
+                mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
             }
             //Seccion critica para el tiempo total en mostrador
             sem_wait(&semTiempoMostrador);
@@ -433,7 +435,7 @@ void *almacen(void *args){
             //sleep(rand() % TIEMPO_MAXIMO);
             //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje, esto por cercanía, ya que usar el return causa overflow
             sem_wait(&mutexAsig);
-            int e = descargarAlmacen(&almacenes[id], avionesLlenos, &tmpEquipaje);
+            int e = descargarAlmacen(&almacenes[id], avionesLlenos, &tmpEquipaje, asignaciones);
             sem_post(&mutexAsig);
 
 
@@ -548,6 +550,7 @@ void *avion(void *args){
                 sem_wait(&semTerminal);
                 //encolar en terminal
                 encolar(&terminal, e);
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,SALIDA,e); //Mostrar Salida
                 sem_post(&semTerminal);
             }
         }else{
@@ -574,9 +577,13 @@ void *avion(void *args){
                         incrementar(indice,perdidosInterfaz);
                         fprintf(almacenLog,"NO CABE EN EL VUELO el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
                     }
+                    mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_PERDIDO,ENTRADA,tmpEquipaje); //Mostrar Salida
                     sem_post(&semPerdidos);
 
                     
+                }else{
+                    //Mostrar salida
+                    mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,ENTRADA,tmpEquipaje); //Mostrar Salida
                 }
 
                 //RESTAR ASIGNACION

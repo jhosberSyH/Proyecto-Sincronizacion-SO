@@ -87,7 +87,7 @@ int almacenar(Almacen *almacen,Equipaje equipaje){
     escribirAlmacenado(*almacen, equipaje);
     return 1;
 }
-int descargarAlmacen(Almacen *almacen, int aviones[MAX_AVIONES], Equipaje *e){
+int descargarAlmacen(Almacen *almacen, int aviones[MAX_AVIONES], Equipaje *e, int asignaciones[MAX_AVIONES]){
     int descargado = 0;
     //MIENTRAS NO HAYA DESCARGADO UNO DE UN AVIÓN NO LLENO
     while(!descargado && (almacen->lleno > 0)){
@@ -135,6 +135,7 @@ int descargarAlmacen(Almacen *almacen, int aviones[MAX_AVIONES], Equipaje *e){
         if(aviones[e->idVuelo]){
             //SE ALMACENA EN PERDIDOS (COLA DE ALMACEN) PARA ESCRIBIR AL FINAL DE TODO
             descargado = 0;
+            asignaciones[e->idVuelo] = asignaciones[e->idVuelo] - 1;
             encolar(&almacen->perdidos, *e);
         }else{
             
