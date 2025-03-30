@@ -13,13 +13,15 @@
 #define MAX_ALMACEN 250
 #define MAX_ALMACEN_PERDIDOS 1
 #define MAX_EQUIPAJES 120736
+#define MAX_TERMINALES_INTERFAZ 1
 #define MAX_BUSQUEDA 3
+#define TOTAL_OPCIONES 7 - 1
 
 void usuario(int *requisito, int valores[]);
 void menu(int *requisito);
 int validarNumero(char num[]);
 int opcion_valida(char num[]);
-void respuestasFinal(int requisito, int almacenes[], int cintas[], int mostradores[], int objetosPerdidos[]);
+void respuestasFinal(int requisito, int almacenes[], int cintas[], int mostradores[], int objetosPerdidos[], int aviones[] ,int terminales[]);
 void incrementar(int id, int valores[]);
 void inicializarInt(int n, int valores[]);
 void mostrarInformacion(int id, int valores[], int n);
@@ -44,7 +46,7 @@ void usuario(int *requisito,int valores[]){
     *requisito -= 1;
     if(*requisito != 0){
         menu(requisito);
-        if(*requisito > 4){
+        if(*requisito > TOTAL_OPCIONES){
             system("clear");
             especificaciones(*requisito,valores);
         }
@@ -62,10 +64,12 @@ void menu(int *requisito)
     printf("\t+------------------ MENU ------------------+\n");
     printf("\t|                                          |\n");
     printf("\t| [1] Informacion Mostrador                |\n");
-    printf("\t| [2] Informacion Cintas                   |\n");
+    printf("\t| [2] Informacion Cinta                    |\n");
     printf("\t| [3] Informacion Almacen                  |\n");
-    printf("\t| [4] Mostrar Todo                         |\n");
-    printf("\t| [5] Buscar 3 Equipajes por numero        |\n");
+    printf("\t| [4] Informacion Avion                    |\n");
+    printf("\t| [5] Informacion Terminal                 |\n");
+    printf("\t| [6] Mostrar Todo                         |\n");
+    printf("\t| [7] Buscar 3 Equipajes por numero        |\n");
     printf("\t|                                          |\n");
     printf("\t+------------------------------------------+\n");
     printf("Opcion: ");
@@ -86,7 +90,7 @@ int opcion_valida(char num[])
 
     valido = validarNumero(num);
 
-    if ((valido == 1) && (atoi(num) < 1) || (atoi(num) > 5))
+    if ((valido == 1) && (atoi(num) < 1) || (atoi(num) > 7))
     {
         printf("!No se ingreso un valor valido!\n");
         valido = 0;
@@ -125,7 +129,7 @@ int validarNumero(char num[])
 }
 
 // Muestra todas las repuesta que tienen que esperar a que termine el programa
-void respuestasFinal(int requisito, int almacenes[], int cintas[], int mostradores[], int objetosPerdidos[])
+void respuestasFinal(int requisito, int almacenes[], int cintas[], int mostradores[], int objetosPerdidos[], int aviones[] ,int terminales[])
 {
     switch (requisito)
     {
@@ -142,10 +146,18 @@ void respuestasFinal(int requisito, int almacenes[], int cintas[], int mostrador
         mostrarInformacion(4, objetosPerdidos, MAX_ALMACEN_PERDIDOS);
         break;
     case 4:
+        mostrarInformacion(5, aviones, MAX_AVIONES);
+        break;
+    case 5:
+        mostrarInformacion(6, terminales, MAX_TERMINALES_INTERFAZ);
+        break;
+    case 6:
         mostrarInformacion(1, mostradores, MAX_MOSTRADORES);
         mostrarInformacion(2, cintas, MAX_CINTAS);
         mostrarInformacion(3, almacenes, MAX_ALMACEN);
         mostrarInformacion(4, objetosPerdidos, MAX_ALMACEN_PERDIDOS);
+        mostrarInformacion(5, aviones, MAX_AVIONES);
+        mostrarInformacion(6, terminales, MAX_TERMINALES_INTERFAZ);
         break;
     }
 }
@@ -187,6 +199,14 @@ void mostrarInformacion(int id, int valores[], int n)
     case 4:
         strcpy(nombrePlural, "Almacenes de Perdidos");
         strcpy(nombre, "Almacen de Perdidos");
+        break;
+    case 5:
+        strcpy(nombrePlural, "Aviones");
+        strcpy(nombre, "Avion");
+        break;
+    case 6:
+        strcpy(nombrePlural, "Terminales");
+        strcpy(nombre, "Terminal");
         break;
     default:
         break;
@@ -230,7 +250,7 @@ int limpiar = -1;
 // Muestra los equipajes que se buscan por numero
 void mostrarEspecificacion(int requisito, int hilo, int valores[], int etapa, int situacion, Equipaje equipaje)
 {
-    if (requisito > 4)
+    if (requisito > TOTAL_OPCIONES)
     {
         int conseguido = 0, i = 0;
         if (limpiar < 0)
