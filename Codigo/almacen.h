@@ -13,7 +13,7 @@ typedef struct {
     Cola equipajes;   //Equipaje facturado (PRIORIDAD MEDIA)
     Cola equipajeSD;  //Equipaje sobredimensionado (PRIORIDAD BAJA)
     Cola perdidos;
-    int orden;
+
     int lleno;  //Espacios del almacén llenos
     int esPerdido; //Bandera para saber si el equipaje es perdido
 } Almacen;
@@ -34,7 +34,6 @@ void constructorAlmacen(Almacen almacen[]){
         almacen[i].capacidad = MAX_CAPACIDAD_ALMACEN;
         almacen[i].lleno = 0;
         almacen[i].esPerdido = 0;
-        almacen[i].orden = 0;
         //INICIALIZAR COLAS DE EQUIPAJES
         crear(&almacen[i].equipajeEsp);
         crear(&almacen[i].equipajes);
@@ -55,11 +54,9 @@ void constructorAlmacenPerdidos(Almacen *almacen){
 }
 
 void escribirAlmacenado(Almacen almacen, Equipaje e ){
-    //printf("aca");
     fprintf(almacenLog, "El Equipaje %s número %i con peso %.2f y destino (%s,%s) en el almacén  %i (Prioridad %i)\n",e.tipo, e.id, e.peso, e.ciudad, e.pais, almacen.id, e.prioridad);
 }
 void escribirNoAlmacenado(Almacen almacen){
-    //printf("aca tmb");
     //fprintf(almacenLog, "NO CABE YA\n");
 }
 
@@ -91,24 +88,7 @@ int descargarAlmacen(Almacen *almacen, int aviones[MAX_AVIONES], Equipaje *e){
     int descargado = 0;
     //MIENTRAS NO HAYA DESCARGADO UNO DE UN AVIÓN NO LLENO
     while(!descargado && (almacen->lleno > 0)){
-        //asignacion distribuida (NO AFECTA PERO LUEGO VEMOS SI LO DEJAMOS)
 
-        /*if(((almacen->orden % 3) == 0) && (esVacio(almacen->equipajeSD) == 0)){
-            //printf("SD\n");
-            *e = primero(almacen->equipajeSD);
-            desencolar(&almacen->equipajeSD);
-            if(!aviones[e->idVuelo]){
-                descargado= 1;
-            }
-        }
-        if(!descargado && ((almacen->orden % 3) != 0) && (esVacio(almacen->equipajes) == 0)){
-            //printf("A\n");
-            *e = primero(almacen->equipajes);
-            desencolar(&almacen->equipajes);
-            if(!aviones[e->idVuelo]){
-                descargado= 1;
-            }
-        }*/
         if(!descargado && esVacio(almacen->equipajeEsp) == 0){
             *e = primero(almacen->equipajeEsp);
             desencolar(&almacen->equipajeEsp);
@@ -144,7 +124,6 @@ int descargarAlmacen(Almacen *almacen, int aviones[MAX_AVIONES], Equipaje *e){
         }else{
             
             descargado = 1;
-            almacen->orden +=1; //PARA CARGA DISTRIBUIDA (NO ESTA ACTIVO)
             return 1;
         }
         //FALTA HACER IMPRESIONES DE LOGS
