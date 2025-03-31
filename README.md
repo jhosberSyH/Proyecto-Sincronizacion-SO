@@ -33,6 +33,14 @@ El programa es un simulador de un sistema de aeropuerto que implementa un contro
 
 # Utilidades
 
+- <sys/sysinfo.h>
+
+Librería de C que da acceso a información del sistema, como el uso de la CPU y de la memoria.
+
+- <sys/resource.h>
+
+Librería de C que da acceso a información específica del proceso, como la cantidad de memoria que está usando y el uso del procesador.
+
 - semaforo.h:
 
 Archivo que contiene la clase "semaforo", utilizada como herramienta para garantizar la exclusión mutua.
