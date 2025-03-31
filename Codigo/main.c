@@ -5,6 +5,7 @@
 #include <sys/sysinfo.h> //Obtiene informacion del sistema
 #include <sys/resource.h> //Obtiene informacio del proceso
 #include <time.h>
+#include <unistd.h>
 
 // Cantidades de hilos
 #define MAX_MOSTRADORES 5000 
@@ -77,7 +78,6 @@ double tiempoEnMostradorTotal = 0, tiempoEnCintaTotal = 0, tiempoEnAlmacenTotal 
 
 int main() {
     int i,t,w,p; //variables para bucles
-
     pthread_t mostradores[MAX_MOSTRADORES];
     pthread_t cintaHilo[MAX_CINTAS];
     pthread_t hilosAlmacenes[MAX_ALMACEN];
@@ -779,6 +779,7 @@ void *supervisor(){
 
         printf("\t+------------------------------------------------------+\n");
         printf("\t|Fecha: %s", date);
+        printf("\t|Identificador del Proceso: %d\n",getpid());
         printf("\t|\tConsumo del CPU\n");
         printf("\t|Tiempo Usuario: %.6f segundos\n", tiempoUsoCpuUsuario);
         printf("\t|Tiempo Sistema: %.6f segundos\n", tiempoUsoCpuSistema);
@@ -800,6 +801,7 @@ void *supervisor(){
         //lleva el registro
         fprintf(fileSupervisor,"\t+------------------------------------------------------+\n");
         fprintf(fileSupervisor,"\t|Fecha: %s", date);
+        fprintf(fileSupervisor,"\t|Identificador del Proceso: %d\n",getpid());
         fprintf(fileSupervisor,"\t|\tConsumo del CPU\n");
         fprintf(fileSupervisor,"\t|Tiempo Usuario: %.6f segundos\n", tiempoUsoCpuUsuario);
         fprintf(fileSupervisor,"\t|Tiempo Sistema: %.6f segundos\n", tiempoUsoCpuSistema);
