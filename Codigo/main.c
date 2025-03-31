@@ -666,8 +666,14 @@ void *terminalLlegada(void *args){
     while(1){
         sem_wait(&semTerminal);
         if(esVacio(terminal) == 0){
+            //asigna numero unico de equipaje
+            sem_wait(&mutexMostrador);
+            nroEquipaje++;
             e = primero(terminal);
             desencolar(&terminal);
+            e.id = nroEquipaje; 
+            sem_post(&mutexMostrador);
+
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,SALIDA,e);
             // Generar un número aleatorio entre 0 y 1
             int resultado = rand() % 5;
@@ -682,15 +688,15 @@ void *terminalLlegada(void *args){
                 almacenado = almacenar(&objetosPerdidos, e);
                 if (almacenado) {
                     incrementar(indice, perdidosInterfaz);
-                    fprintf(finalLlegada, "El equipaje %i se perdió y fue enviado al almacén de perdidos %d\n", e.id, indice);
-                    fprintf(almacenLog, "El equipaje %i se perdió y fue enviado al almacén de perdidos %d\n", e.id, indice);
+                    fprintf(finalLlegada, "El equipaje %i del vuelo %s se perdió y fue enviado al almacén de perdidos %d\n", e.id, e.codVuelo, indice);
+                    fprintf(almacenLog, "El equipaje %i del vuelo %s se perdió y fue enviado al almacén de perdidos %d\n", e.id, e.codVuelo, indice);
                 }
                 sem_post(&semPerdidos);
             } else {
                 mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e);
                 retirados++; // Incrementar contador de equipajes retirados
                 // El equipaje es recogido
-                fprintf(finalLlegada,"Equipaje [%s] recogido en la terminal\n", e.estado);
+                fprintf(finalLlegada,"Equipaje %i del vuelo %s recogido en la terminal\n", e.id, e.codVuelo);
             }
 
         }
@@ -743,7 +749,7 @@ int existeVuelo(Equipaje *e){
                 if(strcmp(e->tipo, "Mano") != 0){
                     asignaciones[i] = asignaciones[i] + 1;
                 }else{
-
+                    
                     mano++; //Para ver cuantos equipajes de mano son y probar
                 }
             }
