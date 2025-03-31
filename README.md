@@ -1,12 +1,17 @@
 # Proyecto de Sincronizacion entre Procesos - Sistemas Operativos
 ## Prof. Mirella Herrera
+### Integrantes
 
-Integrantes     |   Cédula
-David Brito     | 30.521.360
-Andres Gubaira  | 31.006.669
-Josned Aguirre  | 31.083.291
-Josue Carrion   | 30.020.470
-Jhosber Ynojosa | 31.116.618
+- David Brito     | 30.521.360
+
+- Andres Gubaira  | 31.006.669
+
+- Josned Aguirre  | 31.083.291
+
+- Josue Carrion   | 30.020.470
+
+- Jhosber Ynojosa | 31.116.618
+
 
 # Descripción del problema
 
