@@ -11,7 +11,7 @@
 #define MAX_CINTAS 500
 #define MAX_ALMACEN 250
 #define MAX_EQUIPAJES 120736
-#define MAX_TERMINALES 200
+#define MAX_TERMINALES 1
 
 // Enumerando Etapas Del Proyecto
 #define MAX_ETAPA 6
@@ -174,7 +174,7 @@ int main() {
         pthread_create(&hilosAviones[j],NULL,avion, arg); 
     }
 
-    for (int j = 0; j < MAX_AVIONES; j++){
+    for (int j = 0; j < MAX_TERMINALES; j++){
         int *arg = malloc(sizeof(*arg));  
         *arg = j; 
         pthread_create(&hilosTermialLlegada[j],NULL,terminalLlegada, arg); 
@@ -193,7 +193,7 @@ int main() {
     for(int k=0; k< MAX_AVIONES;k++){
         pthread_join(hilosAviones[k], NULL);
     }
-    for(int k=0; k< MAX_AVIONES;k++){
+    for(int k=0; k< MAX_TERMINALES;k++){
         pthread_join(hilosTermialLlegada[k], NULL);
     }
 
@@ -265,9 +265,7 @@ void *mostrador(void *args){
             if(esVacio(pasajeros)){
                 banderaFinMostrador = 0;
             }
-
             sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular el procesamiento en el mostrador
-            
             //Desbloquear accesos a equipajes y a la bandera
             sem_post(&semMostrador);
             sem_post(&mutexMostrador);
@@ -529,7 +527,6 @@ void *avion(void *args){
         }else{
             //CARGAR EQUIPAJE DEL AVION
             if(esVacio(aviones[id].enEspera) == 0){
-
                 Equipaje tmpEquipaje = primero(aviones[id].enEspera);
                 desencolar(&aviones[id].enEspera);
                 int descarga = cargarEquipaje(&aviones[tmpEquipaje.idVuelo], &tmpEquipaje);
@@ -627,8 +624,8 @@ void *avion(void *args){
             //Aumentar número registrado de aviones llenos
             cantLlenos++;
             sem_post(&mutexCantLlenos);
-            sem_wait(&semTiempoAvion);
             tiempoEnAvion = clock() - tiempoEnAvion;
+            sem_wait(&semTiempoAvion);
             tiempoEnAvionTotal += (double)tiempoEnAvion;
             sem_post(&semTiempoAvion);
             if (requisitoInterfaz == 0){ //desactiva el Modo Supervisor
