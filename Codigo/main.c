@@ -91,10 +91,9 @@ int main() {
     avionesLog = fopen("../salidas/finalAviones.txt", "w");
     fileMostrador = fopen("../salidas/mostrador.txt", "w");
     fileCinta = fopen("../salidas/cinta.txt", "w");
-    finalAlmacen = fopen ("../salidas/finalAlmacen.txt", "w");
     finalLlegada = fopen ("../salidas/finalLlegada.txt", "w");
 
-    if((fileMostrador == NULL) || (fileCinta == NULL) || (finalAlmacen == NULL) || (avionesLog == NULL) || (almacenLog == NULL) || (finalLlegada == NULL)){
+    if((fileMostrador == NULL) || (fileCinta == NULL) || (avionesLog == NULL) || (almacenLog == NULL) || (finalLlegada == NULL)){
         perror("Error Creando los archivos\n");
         exit(EXIT_FAILURE);
     }
@@ -228,7 +227,6 @@ int main() {
         sem_destroy(&mutexAviones[i]);
     }    //Escribiendo estado final de aviones y almacenes
     verAviones(aviones, cantAviones);
-    verColasAlmacenes(almacenes);
 
     
     //cerrando archivos
@@ -237,7 +235,6 @@ int main() {
     fclose(fileCinta);
     fclose(almacenLog);
     fclose(avionesLog);
-    fclose(finalAlmacen);
 
     //verificaciones 
     salidaEnConsola();
@@ -669,14 +666,8 @@ void *terminalLlegada(void *args){
     while(1){
         sem_wait(&semTerminal);
         if(esVacio(terminal) == 0){
-            //asigna numero unico de equipaje
-            sem_wait(&mutexMostrador);
-            nroEquipaje++;
             e = primero(terminal);
             desencolar(&terminal);
-            e.id = nroEquipaje; 
-            sem_post(&mutexMostrador);
-
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,SALIDA,e);
             // Generar un número aleatorio entre 0 y 1
             int resultado = rand() % 5;
@@ -691,15 +682,15 @@ void *terminalLlegada(void *args){
                 almacenado = almacenar(&objetosPerdidos, e);
                 if (almacenado) {
                     incrementar(indice, perdidosInterfaz);
-                    fprintf(finalLlegada, "El equipaje %i del vuelo %s se perdió y fue enviado al almacén de perdidos %d\n", e.id, e.codVuelo, indice);
-                    fprintf(almacenLog, "El equipaje %i del vuelo %s se perdió y fue enviado al almacén de perdidos %d\n", e.id, e.codVuelo, indice);
+                    fprintf(finalLlegada, "El equipaje %i se perdió y fue enviado al almacén de perdidos %d\n", e.id, indice);
+                    fprintf(almacenLog, "El equipaje %i se perdió y fue enviado al almacén de perdidos %d\n", e.id, indice);
                 }
                 sem_post(&semPerdidos);
             } else {
                 mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e);
                 retirados++; // Incrementar contador de equipajes retirados
                 // El equipaje es recogido
-                fprintf(finalLlegada,"Equipaje %i del vuelo %s recogido en la terminal\n", e.id, e.codVuelo);
+                fprintf(finalLlegada,"Equipaje [%s] recogido en la terminal\n", e.estado);
             }
 
         }
@@ -752,6 +743,7 @@ int existeVuelo(Equipaje *e){
                 if(strcmp(e->tipo, "Mano") != 0){
                     asignaciones[i] = asignaciones[i] + 1;
                 }else{
+
                     mano++; //Para ver cuantos equipajes de mano son y probar
                 }
             }

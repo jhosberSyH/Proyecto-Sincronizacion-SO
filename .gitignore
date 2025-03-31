@@ -1,3 +1,10 @@
 #No se guarda en github el ejecutable ni los .o
 .o
 RUN
+salidas/finalAlmacen.txt
+salidas/finalAviones.txt
+salidas/finalLlegada.txt
+salidas/logAlmacen.txt
+salidas/mostrador.txt
+salidas/supervisor.txt
+salidas/cinta.txt
