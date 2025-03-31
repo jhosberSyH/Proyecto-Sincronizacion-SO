@@ -22,7 +22,7 @@
 #define ETAPA_AVION 4
 #define ETAPA_TERMINAL 5
 #define ETAPA_PERDIDO 6
-#define TIEMPO_MAXIMO 2
+#define TIEMPO_MAXIMO 1
 
 //Enumenrando Otros
 #define ENTRADA 1
@@ -276,6 +276,8 @@ void *mostrador(void *args){
             if(esVacio(pasajeros)){
                 banderaFinMostrador = 0;
             }
+
+            sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular el procesamiento en el mostrador
             
             //Desbloquear accesos a equipajes y a la bandera
             sem_post(&semMostrador);
@@ -364,6 +366,7 @@ void *cinta(void *args){
                 if(compararPais(primero(cintas[id]).pais,&almacenes[indice])){
                     //Bloquear almacen para poder mover el equipaje a este
                     sem_wait(&mutexAlmacenes[indice]);
+                    sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular el movimiento al almacen
                     //Clasificar por prioridad y moverlo al almacen
                     cintas[id].primero->info.prioridad = traducirPrioridad(primero(cintas[id]).tipo);
                     almacenado = almacenar(&almacenes[indice],primero(cintas[id]));
@@ -444,7 +447,7 @@ void *almacen(void *args){
             if(e==1){
                 //MOVER HASTA EL AVION 
                 sem_wait(&mutexAviones[tmpEquipaje.idVuelo]);
-                //Esperar x tiempo
+                sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular el movimiento al avion
                 encolar(&aviones[tmpEquipaje.idVuelo].enEspera, tmpEquipaje);
                 sem_post(&mutexAviones[tmpEquipaje.idVuelo]);
             }
@@ -529,6 +532,8 @@ void *avion(void *args){
     while(1){
         sem_wait(&mutexAviones[id]);
         //SI SON DE CONEXION Y FALTA POR DESCARGAR EQUIPAJES SE DESCARGAN
+
+        sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular la descarga y carga de equipajes en el avion
         if((strcmp(aviones[id].estado, "Conexion") == 0) && aviones[id].faltaDescargar){
             Equipaje e;
             cargado = descargarEquipaje(&aviones[id], &e);
@@ -675,8 +680,9 @@ void *terminalLlegada(void *args){
             sem_post(&mutexMostrador);
 
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,SALIDA,e);
-            // Generar un número aleatorio entre 0 y 1
+            // Generar un número aleatorio entre 0 y 5
             int resultado = rand() % 5;
+            sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular la retirada del equipaje
             incrementar(0,terminalInterfaz);
             if (resultado == 0) {
                 // El equipaje se pierde
