@@ -22,6 +22,7 @@ FILE *almacenLog;
 FILE *finalAlmacen;
 
 void constructorAlmacen(Almacen almacen[]);
+void constructorAlmacenPerdidos(Almacen almacen[]);
 int almacenar(Almacen *almacen,Equipaje equipaje);
 int compararPais(char pais[],Almacen *almacen);
 void escribirAlmacenado(Almacen almacen, Equipaje e );
@@ -57,7 +58,7 @@ void escribirAlmacenado(Almacen almacen, Equipaje e ){
     fprintf(almacenLog, "El Equipaje %s número %i con peso %.2f y destino (%s,%s) en el almacén  %i (Prioridad %i)\n",e.tipo, e.id, e.peso, e.ciudad, e.pais, almacen.id, e.prioridad);
 }
 void escribirNoAlmacenado(Almacen almacen){
-    //fprintf(almacenLog, "NO CABE YA\n");
+    fprintf(almacenLog, "NO CABE YA\n");
 }
 
 int almacenar(Almacen *almacen,Equipaje equipaje){
@@ -76,7 +77,6 @@ int almacenar(Almacen *almacen,Equipaje equipaje){
             encolar(&almacen->equipajeSD, equipaje);
         }
     }
-    //encolarPrioridad(&almacen->equipajes,equipaje);
     if(!almacen->esPerdido){
         almacen->capacidad -= 1;
     }
@@ -126,9 +126,6 @@ int descargarAlmacen(Almacen *almacen, int aviones[MAX_AVIONES], Equipaje *e){
             descargado = 1;
             return 1;
         }
-        //FALTA HACER IMPRESIONES DE LOGS
-        //CARGAR EQUIPAJE AL AVIÓN
-        //printf("SE VA A CARGAR %i, %s\n", e.idVuelo, aviones[e.idVuelo].ciudad);
     }
 
     return 0;

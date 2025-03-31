@@ -7,14 +7,14 @@
 typedef struct
 {
     int id;
-    char tipo[20];
+    char tipo[20]; //Tipo de equipaje (Mano, Sobredimensionado, Facturado, Especial)
     char ciudad[50];
     char pais[50];
     char vuelo[10];
-    int idVuelo;
-    char codVuelo[10];
+    int idVuelo; //Identificador del vuelo al que pertenece el equipaje
+    char codVuelo[10]; //Codigo del vuelo al que pertenece el equipaje
     int prioridad;
-    char estado[20];
+    char estado[20]; //Estado del equipaje (Descargar, Mantener, Listo)
     char fragilidad[5];
     float peso;
 } Equipaje;

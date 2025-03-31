@@ -1,7 +1,6 @@
 #include "semaforo.h"
 #include "almacen.h"
 #include "interfaz.h"
-#include "ColaEntero.h"
 #include "avion.h"
 #include <sys/sysinfo.h> //Obtiene informacion del sistema
 #include <sys/resource.h> //Obtiene informacio del proceso
@@ -30,40 +29,40 @@
 #define TIEMPO 2
 
 void salidaEnConsola();
+void leer_entradas(const char *filename);
+int existeVuelo(Equipaje *e);
+void *supervisor();
 void *mostrador(void *args);
 void *cinta(void *args);
 void *almacen(void *args);
 void *descargadorAvion(void *args);
 void *avion(void *args);
 void *terminalLlegada(void *args);
-void *supervisor();
-void leer_entradas(const char *filename);
-int existeVuelo(Equipaje *e);
+
+Cola pasajeros,cintas[MAX_CINTAS];
+Almacen almacenes[MAX_ALMACEN], objetosPerdidos;
+Avion aviones[MAX_AVIONES];
+FILE *fileMostrador,*fileCinta, *finalLlegada;
+Cola terminal;
 
 //Semaforos y Mutex
 sem_t semMostrador,mutexMostrador,semCinta[MAX_CINTAS],semTerminal, semPerdidos, semTiempoMostrador;
 sem_t semTiempoCinta, semTiempoAlmacen, semTiempoAvion;
 sem_t mutexSupervisor[5],mutexAlmacen,mutexCintaInterfaz, mutexAlmacenes[MAX_ALMACEN], mutexAviones[MAX_AVIONES];
 sem_t mutexCantHilos;
+sem_t mutexCantLlenos, mutexAsig;
 
 //Contadores para saber cuantos hilos hay activos
 int contadorHiloMostrador = 0,contadorHiloCinta = 0,contadorHiloAlmacen = 0,contadorHiloAvion = 0,contadorHiloTerminal = 0;
-
-Cola pasajeros,cintas[MAX_CINTAS];
-Almacen almacenes[MAX_ALMACEN], objetosPerdidos;
-Avion aviones[MAX_AVIONES];
+int cantAviones = 0;
 int banderaFinMostrador = 1,nroEquipaje = 0;
-FILE *fileMostrador,*fileCinta, *finalLlegada;
-int cantAviones = 0; //Cantidad de aviones en el aeropuerto
-Cola terminal;
 
-sem_t mutexCantLlenos, mutexAsig;
 int asignaciones[MAX_AVIONES] = {0}, avionesLlenos[MAX_AVIONES] = {0}; //Registra cuantos equipajes faltan por cargar en cada avión
 int cantLlenos = 0;
 int perdidos = 0;
 int retirados = 0;
 int mano = 0;
-int totalEquipajes = 0; //Total de equipajes leidos
+int totalEquipajes = 0;
 int finAlmacen[MAX_ALMACEN] = {0};
 int finAvion[MAX_AVIONES] = {0};
 
@@ -143,12 +142,6 @@ int main() {
     //lectura de archivo
     crearAviones(aviones, &cantAviones);
     leer_entradas("../pruebas/informacion_equipajes.txt");
-    printf("\t===1 Entrada leida===\n");
-
-
-    //  for(int i = 0; i < cantAviones; i++){
-    //      printf("ASIGNADO A %i: %i\n", i, asignaciones[i]);
-    //  }
 
     //creacion de hilos
     if (requisitoInterfaz == 0){
@@ -225,19 +218,17 @@ int main() {
     }
     for(int i=0;i<MAX_AVIONES;i++){
         sem_destroy(&mutexAviones[i]);
-    }    //Escribiendo estado final de aviones y almacenes
+    }    
+    //Escribiendo estado final de aviones y almacenes
     verAviones(aviones, cantAviones);
+    salidaEnConsola();
 
-    
     //cerrando archivos
     fclose(fileMostrador);
     fclose(finalLlegada);
     fclose(fileCinta);
     fclose(almacenLog);
     fclose(avionesLog);
-
-    //verificaciones 
-    salidaEnConsola();
     return 0;
 }
 
@@ -262,13 +253,11 @@ void *mostrador(void *args){
             //Bloquear acceso a la cola de equipajes
             sem_wait(&mutexMostrador);
             nroEquipaje++;
-            pasajeros.primero->info.id = nroEquipaje; //asigna numero unico de equipaje
-            
+            pasajeros.primero->info.id = nroEquipaje; 
             //Registrar en la interfaz la entrada al mostrador
-            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,ENTRADA,pasajeros.primero->info); //Mostrar Entrada
+            mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,ENTRADA,pasajeros.primero->info);
             incrementar(id,mostradorInterfaz);
             registrar(id,ETAPA_MOSTRADOR,pasajeros.primero->info,fileMostrador);
-            //Guardar equipaje en aux y quitarlo de la cola
             aux = primero(pasajeros);
             desencolar(&pasajeros);
 
@@ -285,24 +274,23 @@ void *mostrador(void *args){
             //FINAL SECCION CRITICA
 
             //PROCESAMIENTO EN EL MOSTRADOR()
+            //Salida del mostrador si es de Mano va al avion si no va a cinta
             if(strcmp(aux.tipo,"Mano") == 0){
-                //Salida del mostrador
                 aux.prioridad = traducirPrioridad(aux.tipo);
                 
                 sem_wait(&mutexAviones[aux.idVuelo]);
                 cargarEquipaje(&aviones[aux.idVuelo],&aux);
                 sem_post(&mutexAviones[aux.idVuelo]);
-                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); //Mostrar Salida
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); 
 
             }else{
                 indice = (nroEquipaje - 1) % MAX_CINTAS; //distribucion de cintas por modulo para distribuir equitativamente
-                //Salida del mostrador
-                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); //Mostrar Salida
-                //Bloquear cinta para poder encolar el equipaje
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_MOSTRADOR,SALIDA,aux); 
+
                 sem_wait(&semCinta[indice]); 
                 encolar(&cintas[indice],aux);
                 sem_post(&semCinta[indice]);
-                //Registrar entrada a la cinta
+
                 mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_CINTA,ENTRADA,aux);
             }
             //Seccion critica para el tiempo total en mostrador
@@ -359,15 +347,13 @@ void *cinta(void *args){
             if (requisitoInterfaz == 0){ //activar tiempo de espera para el modo supervisor
                 //sleep(TIEMPO);
             }
-            //sleep(rand() % TIEMPO_MAXIMO);
             //Descargar cinta y mover a un almacen
             while ((indice < MAX_ALMACEN) && (!almacenado)){
                 //Buscar almacen con el país destino del equipaje o uno vacío
+                //Clasificar por prioridad y moverlo al almacen
                 if(compararPais(primero(cintas[id]).pais,&almacenes[indice])){
-                    //Bloquear almacen para poder mover el equipaje a este
                     sem_wait(&mutexAlmacenes[indice]);
                     sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular el movimiento al almacen
-                    //Clasificar por prioridad y moverlo al almacen
                     cintas[id].primero->info.prioridad = traducirPrioridad(primero(cintas[id]).tipo);
                     almacenado = almacenar(&almacenes[indice],primero(cintas[id]));
                     //Registrar almacenaje si se pudo realizar la operacion
@@ -383,12 +369,11 @@ void *cinta(void *args){
             indice = 0;
             almacenado = 0;
             desencolar(&cintas[id]);
-            //Liberar cinta
             sem_post(&semCinta[id]);
-            //Seccion critica para el tiempo total en la cinta
             sem_wait(&semTiempoCinta);
             totalEquipajeCintas++;
             sem_post(&semTiempoCinta);
+            //Liberar cinta
         }
         sem_wait(&semMostrador);
 
@@ -434,11 +419,10 @@ void *almacen(void *args){
         }
         //CONSUMIR
         if(almacenes[id].lleno > 0){
-            //printf("DESCARGA DE ALMACEN %i (%i) \n", id, almacenes[id].lleno);
             Equipaje tmpEquipaje;
             tmpEquipaje.id = -1;
-            //sleep(rand() % TIEMPO_MAXIMO);
-            //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje, esto por cercanía, ya que usar el return causa overflow
+            //el 4to parametro de descargarAlmacen retorna el valor de tmpEquipaje
+            //esto por cercanía, ya que usar el return causa overflow
             sem_wait(&mutexAsig);
             int e = descargarAlmacen(&almacenes[id], avionesLlenos, &tmpEquipaje);
             mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,SALIDA,tmpEquipaje);
@@ -453,7 +437,6 @@ void *almacen(void *args){
             }
             
             tiempoEnAlmacen = clock() - tiempoEnAlmacen;
-            //SC para el tiempo en almacen
             sem_wait(&semTiempoAlmacen);
             totalEquipajeAlmacen++;
             sem_post(&semTiempoAlmacen);
@@ -532,7 +515,6 @@ void *avion(void *args){
     while(1){
         sem_wait(&mutexAviones[id]);
         //SI SON DE CONEXION Y FALTA POR DESCARGAR EQUIPAJES SE DESCARGAN
-
         sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular la descarga y carga de equipajes en el avion
         if((strcmp(aviones[id].estado, "Conexion") == 0) && aviones[id].faltaDescargar){
             Equipaje e;
@@ -541,7 +523,7 @@ void *avion(void *args){
                 sem_wait(&semTerminal);
                 //encolar en terminal
                 encolar(&terminal, e);
-                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,SALIDA,e); //Mostrar Salida
+                mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,SALIDA,e);
                 sem_post(&semTerminal);
             }
         }else{
@@ -641,8 +623,8 @@ void *avion(void *args){
             }
 
             sem_post(&mutexAviones[id]);
-            //Aumentar número registrado de aviones llenos
             sem_wait(&mutexCantLlenos);
+            //Aumentar número registrado de aviones llenos
             cantLlenos++;
             sem_post(&mutexCantLlenos);
             sem_wait(&semTiempoAvion);
@@ -680,7 +662,7 @@ void *terminalLlegada(void *args){
             sem_post(&mutexMostrador);
 
             mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_AVION,SALIDA,e);
-            // Generar un número aleatorio entre 0 y 5
+            // Generar un número aleatorio entre 0 y 5 para definir si es perdido
             int resultado = rand() % 5;
             sleep((rand() % TIEMPO_MAXIMO)); //espera tiempo random para simular la retirada del equipaje
             incrementar(0,terminalInterfaz);
@@ -689,7 +671,7 @@ void *terminalLlegada(void *args){
                 fprintf(finalLlegada, "Equipaje %i perdido en la terminal\n", e.id);
                 mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e);
                 sem_wait(&semPerdidos);
-                perdidos++; // Incrementar contador de equipajes perdidos
+                perdidos++;
                 int indice = 0, almacenado = 0;
                 almacenado = almacenar(&objetosPerdidos, e);
                 if (almacenado) {
@@ -700,8 +682,7 @@ void *terminalLlegada(void *args){
                 sem_post(&semPerdidos);
             } else {
                 mostrarEspecificacion(requisitoInterfaz,id,buscarInterfaz,ETAPA_TERMINAL,SALIDA,e);
-                retirados++; // Incrementar contador de equipajes retirados
-                // El equipaje es recogido
+                retirados++; // El equipaje es recogido
                 fprintf(finalLlegada,"Equipaje %i del vuelo %s recogido en la terminal\n", e.id, e.codVuelo);
             }
 
@@ -738,7 +719,6 @@ void leer_entradas(const char *filename) {
         }
     }
     totalEquipajes = longitud(pasajeros);
-    printf("%i", longitud(pasajeros));
     fclose(file);
 }
 int existeVuelo(Equipaje *e){
@@ -755,11 +735,9 @@ int existeVuelo(Equipaje *e){
                 if(strcmp(e->tipo, "Mano") != 0){
                     asignaciones[i] = asignaciones[i] + 1;
                 }else{
-                    
                     mano++; //Para ver cuantos equipajes de mano son y probar
                 }
             }
-            //printf("El vuelo de (%s, %s) si existe\n", e->ciudad, e->pais);
             return 1;
         }
     }
@@ -848,7 +826,7 @@ void *supervisor(){
         }
 
         fclose(fileSupervisor);
-        sleep(1); //escribe cada 30 segundos
+        sleep(1); //escribe cada segundo
         FILE *fileSupervisor = fopen("../salidas/supervisor.txt", "a");
     }
 }

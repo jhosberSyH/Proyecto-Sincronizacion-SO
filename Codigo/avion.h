@@ -47,8 +47,6 @@ int buscarEquipajeSobredimensionado(Avion *avion, Equipaje *e);
 
 void verAviones(Avion aviones[MAX_AVIONES], int cantidad);
 
-
-
 FILE *avionesLog;
 
 /*
