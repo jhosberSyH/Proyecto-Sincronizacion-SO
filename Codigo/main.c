@@ -22,7 +22,7 @@
 #define ETAPA_AVION 4
 #define ETAPA_TERMINAL 5
 #define ETAPA_PERDIDO 6
-#define TIEMPO_RAND 3
+#define TIEMPO_RAND 2
 #define PROBABILIDAD_ESPERA 1000
 
 //Enumenrando Otros
@@ -363,6 +363,39 @@ void *cinta(void *args){
                     sem_post(&mutexAlmacenes[indice]);
                 }
                 indice++;
+            }
+            if(almacenado == 0){
+                //Colocar en cualquier almacen disponible
+                indice = 0;
+                while ((indice < MAX_ALMACEN) && (!almacenado)){
+                    sem_wait(&mutexAlmacenes[indice]);
+                    if(almacenes[indice].capacidad > 0){
+                        //if(rand() % PROBABILIDAD_ESPERA == 1) sleep((rand() % TIEMPO_RAND)); //espera tiempo random para simular el movimiento al almacen
+                        cintas[id].primero->info.prioridad = traducirPrioridad(primero(cintas[id]).tipo);
+                        almacenado = almacenar(&almacenes[indice],primero(cintas[id]));
+                        //Registrar almacenaje si se pudo realizar la operacion
+                        if (almacenado == 1){
+                            incrementar(indice,almacenInterfaz);
+                            mostrarEspecificacion(requisitoInterfaz,indice,buscarInterfaz,ETAPA_ALMACEN,ENTRADA,primero(cintas[id]));
+                        }
+                    }
+                    //Desbloquear almacen
+                    sem_post(&mutexAlmacenes[indice]);
+                    indice++;
+                }
+                //Registrar como perdido si no cabe en ningun almacen
+                if(almacenado == 0){
+                    sem_wait(&semPerdidos);
+                    perdidos++;
+                    Equipaje tmpEquipaje = primero(cintas[id]);
+                    int indice = 0, almacenado = 0;
+                    almacenado = almacenar(&objetosPerdidos,tmpEquipaje);
+                    if(almacenado){
+                        incrementar(indice,perdidosInterfaz);
+                        fprintf(fileCinta,"No cabe en ningun almacén el equipaje %i se envio al almacen de perdidos %d \n", tmpEquipaje.id,indice);
+                    }
+                    sem_post(&semPerdidos);
+                } 
             }
             indice = 0;
             almacenado = 0;
